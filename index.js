@@ -1,0 +1,230 @@
+'use strict';
+
+const os = require('os');
+const qml = os.platform() === 'win32' ? require('./bin_win32/qml') :  require('./bin_linux/qml');
+
+const EventEmitter = require('events');
+const GLFW = require('node-glfw');
+
+const path = require('path');
+const use = require('use');
+
+const Used = require('./used');
+const Overlay = require('./overlay');
+
+
+class Qml extends EventEmitter {
+	
+	
+	constructor() {
+		
+		super();
+		
+		this.setMaxListeners(0);
+		
+		this._used  = null;
+		this._isReady = false;
+		
+		this._overlay = null;
+		this._libs = [];
+		
+		this.Used    = Used;
+		this.Overlay = Overlay;
+		
+	}
+	
+	
+	_resize() {
+		qml.resize(this._canvas.width, this._canvas.height);
+	}
+	
+	
+	get ctx() { return qml; }
+	
+	
+	used(opts) {
+		
+		opts.qml = this;
+		
+		if (this._used) {
+			this._used._destroy();
+		}
+		
+		this._used =  new Used(opts);
+		
+		if (this._isReady) {
+			this._used._ready();
+		}
+		
+		return this._used;
+		
+	}
+	
+	
+	overlay(opts) {
+		opts.qml = this;
+		if (this._overlay) {
+			return this._overlay;
+		}
+		this._overlay =  new Overlay(opts);
+		return this._overlay;
+	}
+	
+	
+	get isTracing() { return this._isTracing; }
+	set isTracing(v) {
+		if (v) {
+			process.env.QML_IMPORT_TRACE = 'true';
+		} else {
+			delete process.env.QML_IMPORT_TRACE;
+		}
+	}
+	
+	
+	get textureId() {
+		if (this._textureId === null) {
+			console.log('Error: no qml textureId yet.', (new Error()).stack);
+		}
+		return this._textureId;
+	}
+	
+	
+	init(opts) {
+		
+		this._three    = opts.three || global.THREE;
+		this._document = opts.document || global.document;
+		this._canvas   = opts.canvas || global.canvas;
+		this._silent   = !! opts.silent;
+		
+		this._textureId = null;
+		
+		this._libs = this._libs.concat(opts.libs || []);
+		
+		// Expect FBO texture. Automatic Overlay created/updated as needed
+		this.on('fbo', data => {
+			this._textureId = data.texture;
+			if (this._overlay) {
+				this._overlay.reset();
+			}
+			if (opts.overlay) {
+				opts.overlay.textureId = this._textureId;
+				this.overlay(opts.overlay);
+			}
+		});
+		
+		this.on('error', data => {
+			if ( ! this._silent ) {
+				console.error('Qml Error: (' + data.type + ')', data.message);
+			}
+		});
+		
+		this.on('ready', () => {
+			
+			this._isReady = true;
+			
+			this._libs.forEach(l => qml.libs(use.resolveDir(l)));
+			
+			if (this._used) {
+				this._used._ready();
+			}
+			
+		});
+		
+		this._cc = GLFW.GetCurrentContext();
+		const wnd = GLFW.Win32Window(this._cc);
+		const ctx = GLFW.Win32Context(this._cc);
+		
+		const error = qml.init(
+			path.dirname(process.mainModule.filename),
+			__dirname,
+			wnd, ctx,
+			this._canvas.width, this._canvas.height,
+			(data) => {
+				let parsed = null;
+				
+				try {
+					parsed = JSON.parse(data);
+					try {
+						this.emit(parsed.type, parsed.data);
+					} catch (ex) {
+						console.error(ex.stack);
+					}
+				} catch (ex) {
+					console.error("Error: Qml event, bad JSON.", data);
+				}
+			}
+		);
+		
+		this._document.on('resize', () => this._resize());
+		
+		this._document.on( 'mousedown', e => qml.mouse(1, e.x, e.y) );
+		this._document.on( 'mouseup',   e => qml.mouse(2, e.x, e.y) );
+		this._document.on( 'mousemove', e => qml.mouse(0, e.x, e.y) );
+		
+		// this._document.on( 'keydown', e => console.log(e, e.keyCode > 0 && e.keyCode < 256 ? String.fromCharCode(e.keyCode) : 0) );
+		this._document.on( 'keydown', e => console.log(e.keyCode > 0 && e.keyCode < 256 ? String.fromCharCode(e.keyCode) : 0) );
+		this._document.on( 'keydown', e => qml.keyboard(1, e.which, e.keyCode > 0 && e.keyCode < 256 ? String.fromCharCode(e.keyCode).charCodeAt(0) || 0 : 0) );
+		this._document.on( 'keyup',   e => qml.keyboard(0, e.which, e.keyCode > 0 && e.keyCode < 256 ? String.fromCharCode(e.keyCode).charCodeAt(0) || 0 : 0) );
+		
+		if (error) {
+			console.error(error);
+		}
+		
+	}
+	
+	
+	use(a, b) {
+		const error = qml.use(a, b);
+		if (error) {
+			console.error(error);
+		}
+	}
+	
+	
+	libs(l) {
+		
+		this._libs.push(l);
+		
+		if ( ! this._isReady ) {
+			return;
+		}
+		
+		const error = qml.libs(l);
+		if (error) {
+			console.error(error);
+		}
+		
+	}
+	
+	
+	set(a, b, c) {
+		const error = qml.set(a, b, JSON.stringify(c));
+		if (error) {
+			console.error(error);
+		}
+	}
+	
+	
+	invoke(a, b, c) {
+		const error = qml.invoke(a, b, JSON.stringify(c));
+		if (error) {
+			console.error(error);
+		}
+	}
+	
+	
+	get(a, b) {
+		const error = qml.get(a, b);
+		if (error) {
+			console.error(error);
+		}
+	}
+	
+	
+	release() {
+		GLFW.MakeContextCurrent(this._cc);
+	}
+	
+};
+
+module.exports = new Qml();
