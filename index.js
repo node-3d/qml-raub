@@ -4,10 +4,9 @@ const os = require('os');
 const qml = os.platform() === 'win32' ? require('./bin_win32/qml') :  require('./bin_linux/qml');
 
 const EventEmitter = require('events');
-const GLFW = require('node-glfw');
+const glfw = require('node-glfw-raub');
 
 const path = require('path');
-const use = require('use');
 
 const Used = require('./used');
 const Overlay = require('./overlay');
@@ -122,7 +121,7 @@ class Qml extends EventEmitter {
 			
 			this._isReady = true;
 			
-			this._libs.forEach(l => qml.libs(use.resolveDir(l)));
+			this._libs.forEach(l => qml.libs(l));
 			
 			if (this._used) {
 				this._used._ready();
@@ -130,9 +129,9 @@ class Qml extends EventEmitter {
 			
 		});
 		
-		this._cc = GLFW.GetCurrentContext();
-		const wnd = GLFW.Win32Window(this._cc);
-		const ctx = GLFW.Win32Context(this._cc);
+		this._cc = glfw.GetCurrentContext();
+		const wnd = glfw.Win32Window(this._cc);
+		const ctx = glfw.Win32Context(this._cc);
 		
 		const error = qml.init(
 			path.dirname(process.mainModule.filename),
@@ -222,7 +221,7 @@ class Qml extends EventEmitter {
 	
 	
 	release() {
-		GLFW.MakeContextCurrent(this._cc);
+		glfw.MakeContextCurrent(this._cc);
 	}
 	
 };
