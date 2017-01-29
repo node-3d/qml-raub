@@ -13,7 +13,7 @@
 			"sources": [ "src/exports.cpp" ],
 			"libraries": ['-lqmlui'],
 			"include_dirs": ['<(deps_root)/include'],
-			"variables": { "arch": "Win32" }
+			"variables": { "arch": "Win32" },
 			'conditions': [
 				[
 					'OS=="linux"',

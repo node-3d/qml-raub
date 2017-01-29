@@ -1,29 +1,32 @@
 {
-	"name": "node-qml-raub",
-	"version": "0.0.1",
-	"description": "QML bindings for Node.js",
-	"keywords": [
-		"qml"
-	],
-	"homepage": "http://github.com/raub",
-	"author": "Luis Blanco <raubtierxxx@gmail.com>",
-	"maintainers": [
-		{
-			"name": "Luis Blanco",
-			"email": "raubtierxxx@gmail.com",
-			"skype": "rauber666"
-		}
-	],
-	"main": "index.js",
-	"directories": {
-		"src": "src"
-	},
-	"scripts": {
-		"install": "node-gyp rebuild"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/raub/node-qml.git"
-	},
-	"license": "MIT"
+  "name": "node-qml-raub",
+  "version": "0.0.1",
+  "description": "QML bindings for Node.js",
+  "keywords": [
+    "qml"
+  ],
+  "homepage": "http://github.com/raub",
+  "author": "Luis Blanco <raubtierxxx@gmail.com>",
+  "maintainers": [
+    {
+      "name": "Luis Blanco",
+      "email": "raubtierxxx@gmail.com",
+      "skype": "rauber666"
+    }
+  ],
+  "main": "index.js",
+  "directories": {
+    "src": "src"
+  },
+  "scripts": {
+    "install": "node-gyp rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raub/node-qml.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "node-deps-qmlui-raub": "^0.1.2"
+  }
 }
