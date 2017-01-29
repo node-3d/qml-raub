@@ -1,6 +1,6 @@
 {
   "name": "node-qml-raub",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "QML bindings for Node.js",
   "keywords": [
     "qml"
