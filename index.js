@@ -90,10 +90,17 @@ class Qml extends EventEmitter {
 	
 	init(opts) {
 		
-		this._three    = opts.three || global.THREE;
-		this._document = opts.document || global.document;
-		this._canvas   = opts.canvas || global.canvas;
-		this._silent   = !! opts.silent;
+		this._three     = opts.three    || global.THREE;
+		this._document  = opts.document || global.document;
+		this._canvas    = opts.canvas   || global.canvas;
+		this._renderer  = opts.renderer || null;
+		this._scene     = opts.scene    || null;
+		this._gl        = opts.gl       || this._renderer && this._renderer.context ||global.gl;
+		this._silent    = !! opts.silent;
+		
+		if (!! opts.overlay) {
+			this._overlayOpts = Object.assign({}, opts);
+		}
 		
 		this._textureId = null;
 		
@@ -104,10 +111,9 @@ class Qml extends EventEmitter {
 			this._textureId = data.texture;
 			if (this._overlay) {
 				this._overlay.reset();
-			}
-			if (opts.overlay) {
-				opts.overlay.textureId = this._textureId;
-				this.overlay(opts.overlay);
+			} else if (this._overlayOpts) {
+				this._overlayOpts.textureId = this._textureId;
+				this.overlay(this._overlayOpts);
 			}
 		});
 		

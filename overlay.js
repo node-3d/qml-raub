@@ -8,13 +8,13 @@ class Overlay {
 		
 		this._qml = opts.qml;
 		
-		this._three    = opts.three || global.THREE;
+		this._three    = opts.three    || global.THREE;
 		this._document = opts.document || global.document;
-		this._canvas   = opts.canvas || global.canvas;
+		this._canvas   = opts.canvas   || global.canvas;
 		
 		this._renderer = opts.renderer;
 		this._scene    = opts.scene;
-		this._gl       = opts.gl || this._renderer.context || global.gl;
+		this._gl       = opts.gl || this._renderer && this._renderer.context || global.gl;
 		
 		this._texture = this._genTexture();
 		
