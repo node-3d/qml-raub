@@ -1,6 +1,6 @@
 'use strict';
 
-require('node-deps-qt-qml');
+require('node-deps-qt-qml-raub');
 
 const os = require('os');
 const qml = os.platform() === 'win32' ? require('./bin_win32/qml') :  require('./bin_linux/qml');
