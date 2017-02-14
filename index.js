@@ -164,12 +164,20 @@ class Qml extends EventEmitter {
 		
 		this._document.on('resize', () => this._resize());
 		
-		this._document.on( 'mousedown', e => qml.mouse(1, e.x, e.y) );
-		this._document.on( 'mouseup',   e => qml.mouse(2, e.x, e.y) );
-		this._document.on( 'mousemove', e => qml.mouse(0, e.x, e.y) );
+		this.mbuttons = 0;
 		
-		// this._document.on( 'keydown', e => console.log(e, e.keyCode > 0 && e.keyCode < 256 ? String.fromCharCode(e.keyCode) : 0) );
-		this._document.on( 'keydown', e => console.log(e.keyCode > 0 && e.keyCode < 256 ? String.fromCharCode(e.keyCode) : 0) );
+		this._document.on( 'mousedown', e => {
+			this.mbuttons |= (1 << e.button);
+			qml.mouse(1, e.button, this.mbuttons, e.x, e.y);
+		});
+		this._document.on( 'mouseup', e => {
+			this.mbuttons &= ~(1 << e.button);
+			qml.mouse(2, e.button, this.mbuttons, e.x, e.y);
+		});
+		this._document.on( 'mousemove', e => {
+			qml.mouse(0, 0, this.mbuttons, e.x, e.y);
+		});
+		
 		this._document.on( 'keydown', e => qml.keyboard(1, e.which, e.keyCode > 0 && e.keyCode < 256 ? String.fromCharCode(e.keyCode).charCodeAt(0) || 0 : 0) );
 		this._document.on( 'keyup',   e => qml.keyboard(0, e.which, e.keyCode > 0 && e.keyCode < 256 ? String.fromCharCode(e.keyCode).charCodeAt(0) || 0 : 0) );
 		

@@ -58,7 +58,7 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[0]->IsString() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::init(), The first argument must be a string!"
+			"Error: NodeQml::init(), argument #0 must be a string!"
 		));
 		return;
 	}
@@ -68,7 +68,7 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[1]->IsString() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::init(), The first argument must be a string!"
+			"Error: NodeQml::init(), argument #1 must be a string!"
 		));
 		return;
 	}
@@ -79,7 +79,7 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[2]->IsInt32() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::init(), The second argument must be a number!"
+			"Error: NodeQml::init(), argument #2 must be a number!"
 		));
 		return;
 	}
@@ -89,7 +89,7 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[3]->IsInt32() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::init(), The third argument must be a number!"
+			"Error: NodeQml::init(), argument #3 must be a number!"
 		));
 		return;
 	}
@@ -99,7 +99,7 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[4]->IsInt32() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::init(), The fourth argument must be a number!"
+			"Error: NodeQml::init(), argument #4 must be a number!"
 		));
 		return;
 	}
@@ -109,7 +109,7 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[5]->IsInt32() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::init(), The fifth argument must be a number!"
+			"Error: NodeQml::init(), argument #5 must be a number!"
 		));
 		return;
 	}
@@ -119,7 +119,7 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[6]->IsFunction() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::init(), The sixth argument must be a function!"
+			"Error: NodeQml::init(), argument #6 must be a function!"
 		));
 		return;
 	}
@@ -140,7 +140,7 @@ void NodeQml::resize(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[0]->IsInt32() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::resize(), The first argument must be a number!"
+			"Error: NodeQml::resize(), argument #0 must be a number!"
 		));
 		return;
 	}
@@ -149,7 +149,7 @@ void NodeQml::resize(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[1]->IsInt32() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::resize(), The second argument must be a number!"
+			"Error: NodeQml::resize(), argument #1 must be a number!"
 		));
 		return;
 	}
@@ -166,7 +166,7 @@ void NodeQml::mouse(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[0]->IsInt32() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::mouse(), The first argument must be a number!"
+			"Error: NodeQml::mouse(), argument #0 must be a number!"
 		));
 		return;
 	}
@@ -175,7 +175,7 @@ void NodeQml::mouse(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[1]->IsInt32() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::mouse(), The second argument must be a number!"
+			"Error: NodeQml::mouse(), argument #1 must be a number!"
 		));
 		return;
 	}
@@ -184,13 +184,32 @@ void NodeQml::mouse(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[2]->IsInt32() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::mouse(), The second argument must be a number!"
+			"Error: NodeQml::mouse(), argument #2 must be a number!"
 		));
 		return;
 	}
 	int param2 = static_cast<int>(args[2]->NumberValue());
 	
-	qmlui_mouse(param0, param1, param2);
+	
+	if ( ! args[3]->IsInt32() ) {
+		args.GetReturnValue().Set(String::NewFromUtf8(
+			isolate,
+			"Error: NodeQml::mouse(), argument #3 must be a number!"
+		));
+		return;
+	}
+	int param3 = static_cast<int>(args[3]->NumberValue());
+	
+	if ( ! args[4]->IsInt32() ) {
+		args.GetReturnValue().Set(String::NewFromUtf8(
+			isolate,
+			"Error: NodeQml::mouse(), argument #4 must be a number!"
+		));
+		return;
+	}
+	int param4 = static_cast<int>(args[4]->NumberValue());
+	
+	qmlui_mouse(param0, param1, param2, param3, param4);
 	
 }
 
@@ -201,7 +220,7 @@ void NodeQml::keyboard(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[0]->IsInt32() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::keyboard(), The first argument must be a number!"
+			"Error: NodeQml::keyboard(), argument #0 must be a number!"
 		));
 		return;
 	}
@@ -210,7 +229,7 @@ void NodeQml::keyboard(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[1]->IsInt32() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::keyboard(), The second argument must be a number!"
+			"Error: NodeQml::keyboard(), argument #1 must be a number!"
 		));
 		return;
 	}
@@ -219,7 +238,7 @@ void NodeQml::keyboard(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[2]->IsInt32() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::keyboard(), The third argument must be a number!"
+			"Error: NodeQml::keyboard(), argument #2 must be a number!"
 		));
 		return;
 	}
@@ -266,7 +285,7 @@ void NodeQml::set(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[0]->IsString() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::set(), The first argument must be a string!"
+			"Error: NodeQml::set(), argument #0 must be a string!"
 		));
 		return;
 	}
@@ -276,7 +295,7 @@ void NodeQml::set(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[1]->IsString() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::set(), The second argument must be a string!"
+			"Error: NodeQml::set(), argument #1 must be a string!"
 		));
 		return;
 	}
@@ -286,7 +305,7 @@ void NodeQml::set(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[2]->IsString() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::set(), The third argument must be a string!"
+			"Error: NodeQml::set(), argument #2 must be a string!"
 		));
 		return;
 	}
@@ -305,7 +324,7 @@ void NodeQml::get(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[0]->IsString() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::set(), The first argument must be a string!"
+			"Error: NodeQml::set(), argument #0 must be a string!"
 		));
 		return;
 	}
@@ -315,7 +334,7 @@ void NodeQml::get(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[1]->IsString() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::set(), The second argument must be a string!"
+			"Error: NodeQml::set(), argument #1 must be a string!"
 		));
 		return;
 	}
@@ -334,7 +353,7 @@ void NodeQml::invoke(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[0]->IsString() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::invoke(), The first argument must be a string!"
+			"Error: NodeQml::invoke(), argument #0 must be a string!"
 		));
 		return;
 	}
@@ -344,7 +363,7 @@ void NodeQml::invoke(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[1]->IsString() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::invoke(), The second argument must be a string!"
+			"Error: NodeQml::invoke(), argument #1 must be a string!"
 		));
 		return;
 	}
@@ -354,7 +373,7 @@ void NodeQml::invoke(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[2]->IsString() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::invoke(), The third argument must be a string!"
+			"Error: NodeQml::invoke(), argument #2 must be a string!"
 		));
 		return;
 	}
@@ -373,7 +392,7 @@ void NodeQml::libs(const FunctionCallbackInfo<Value>& args) {
 	if ( ! args[0]->IsString() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::libs(), The first argument must be a string!"
+			"Error: NodeQml::libs(), argument #0 must be a string!"
 		));
 		return;
 	}
