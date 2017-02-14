@@ -10,9 +10,9 @@ const addonPaths = {
 	darwin: 'bin_darwin',
 };
 
-process.env.path += ';' + __dirname + addonPaths[os.platform()];
+process.env.path += ';' + __dirname + '/' + addonPaths[os.platform()];
 
-const qml = require(addonPaths[os.platform()] + '/qml');
+const qml = require('./' + addonPaths[os.platform()] + '/qml');
 
 require('node-deps-qt-gui-raub');
 
