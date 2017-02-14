@@ -3,7 +3,18 @@
 require('node-deps-qt-qml-raub');
 
 const os = require('os');
-const qml = os.platform() === 'win32' ? require('./bin_win32/qml') :  require('./bin_linux/qml');
+
+const addonPaths = {
+	win32 : '../bin_win32' ,
+	linux : '../bin_linux' ,
+	darwin: '../bin_darwin',
+};
+
+process.env.path += ';' + __dirname + addonPaths[os.platform()];
+
+const qml = require(addonPaths[os.platform()] + '/qml');
+
+require('node-deps-qt-gui-raub');
 
 const EventEmitter = require('events');
 const glfw = require('node-glfw-raub');
