@@ -1,6 +1,6 @@
 {
   "name": "node-qml-raub",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "QML bindings for Node.js",
   "keywords": [
     "qml"
@@ -28,6 +28,7 @@
   "license": "MIT",
   "dependencies": {
     "node-deps-qmlui-raub": "^0.1.3",
+    "node-deps-qt-qml-raub": "^0.1.6",
     "node-glfw-raub": "^0.4.7"
   }
 }
