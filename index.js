@@ -1,6 +1,8 @@
 'use strict';
 
-require('node-deps-qt-qml-raub');
+const depCore = require('node-deps-qt-core-raub');
+const depGui  = require('node-deps-qt-gui-raub');
+const depQml  = require('node-deps-qt-qml-raub');
 
 const os = require('os');
 
@@ -10,11 +12,13 @@ const addonPaths = {
 	darwin: 'bin_darwin',
 };
 
-process.env.path += ';' + __dirname + '/' + addonPaths[os.platform()];
+const binPath = __dirname + '/' + addonPaths[os.platform()];
+
+process.env.path += ';' + binPath;
 
 const qml = require('./' + addonPaths[os.platform()] + '/qml');
 
-require('node-deps-qt-gui-raub');
+
 
 const EventEmitter = require('events');
 const glfw = require('node-glfw-raub');
@@ -152,9 +156,13 @@ class Qml extends EventEmitter {
 		const wnd = glfw.Win32Window(this._cc);
 		const ctx = glfw.Win32Context(this._cc);
 		
+		qml.plugins(depCore + '/' + addonPaths[os.platform()] + '/plugins');
+		qml.plugins(depGui  + '/' + addonPaths[os.platform()] + '/plugins');
+		qml.plugins(depQml  + '/' + addonPaths[os.platform()] + '/plugins');
+		
 		const error = qml.init(
 			path.dirname(process.mainModule.filename),
-			__dirname,
+			binPath,
 			wnd, ctx,
 			this._canvas.width, this._canvas.height,
 			(data) => {
@@ -216,6 +224,16 @@ class Qml extends EventEmitter {
 		}
 		
 		const error = qml.libs(l);
+		if (error) {
+			console.error(error);
+		}
+		
+	}
+	
+	
+	plugins(p) {
+		
+		const error = qml.plugins(p);
 		if (error) {
 			console.error(error);
 		}
