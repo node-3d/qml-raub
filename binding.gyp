@@ -1,7 +1,9 @@
 {
 	'variables': {
 		'platform' : '<(OS)',
-		'deps_root': '<!(node -e "console.log(require(\'node-deps-qmlui-raub\'))")',
+		'qmlui_root'   : '<!(node -e "console.log(require(\'node-deps-qmlui-raub\').root)")',
+		'qmlui_include': '<(qmlui_root)/include',
+		'qmlui_bin'    : '<!(node -e "console.log(require(\'node-deps-qmlui-raub\').bin)")',
 	},
 	'conditions': [
 		['platform == "mac"', { 'variables': { 'platform': 'darwin' } }],
@@ -12,7 +14,8 @@
 			"target_name": "qml",
 			"sources": [ "src/exports.cpp" ],
 			"libraries": ['-lqmlui'],
-			"include_dirs": ['<(deps_root)/include'],
+			"include_dirs": ['<(qmlui_include)'],
+			'library_dirs': [ '<(qmlui_bin)' ],
 			"variables": { "arch": "Win32" },
 			'conditions': [
 				[
@@ -30,7 +33,6 @@
 				[
 					'OS=="win"',
 					{
-						'library_dirs': [ '<(deps_root)/bin_<(platform)' ],
 						'msvs_version'  : '2013',
 						'msvs_settings' : {
 							'VCCLCompilerTool' : {
@@ -48,52 +50,36 @@
 			],
 		},
 		{
-			"target_name": "copy_binary",
-			"type":"none",
-			"dependencies" : [ "qml" ],
-			'conditions': [
-				[
-					'OS=="linux"',
-					{
-						'copies': [
+			'target_name': 'copy_binary',
+			'type':'none',
+			'dependencies' : ['qml'],
+			'copies': [
+				{
+					'destination': '<(module_root_dir)/bin_<(platform)',
+					'conditions': [
+						[
+							'OS=="linux"',
 							{
-								'destination': '<(module_root_dir)/bin_linux',
-								'files': [
-									'<(module_root_dir)/build/Release/qml.node',
-								]
+								'files': [ '<(module_root_dir)/build/Release/qml.node' ]
 							}
-						]
-					}
-				],
-				[
-					'OS=="mac"',
-					{
-						'copies': [
+						],
+						[
+							'OS=="mac"',
 							{
-								'destination': '<(module_root_dir)/bin_darwin',
-								'files': [
-									'<(module_root_dir)/build/Release/qml.node',
-								]
+								'files': [ '<(module_root_dir)/build/Release/qml.node' ]
 							}
-						]
-					}
-				],
-				[
-					'OS=="win"',
-					{
-						'copies': [
+						],
+						[
+							'OS=="win"',
 							{
-								'destination': '<(module_root_dir)/bin_win32',
-								'files': [
-									'<(module_root_dir)/build/Release/qml.node',
-									'<(deps_root)/bin_<(platform)/qmlui.dll',
-								]
-							}
-						]
-					},
-				],
-				
-			],
+								'files': [ '<(module_root_dir)/build/Release/qml.node' ]
+							},
+						],
+						
+					]
+				}
+			]
+			
 		}
 	]
 }
