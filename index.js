@@ -158,9 +158,9 @@ class Qml extends EventEmitter {
 		const wnd = glfw.Win32Window(this._cc);
 		const ctx = glfw.Win32Context(this._cc);
 		
-		qml.plugins(depCore + '/' + addonPaths[os.platform()] + '/plugins');
-		qml.plugins(depGui  + '/' + addonPaths[os.platform()] + '/plugins');
-		qml.plugins(depQml  + '/' + addonPaths[os.platform()] + '/plugins');
+		qml.plugins(depCore.bin + '/plugins');
+		qml.plugins(depGui.bin  + '/plugins');
+		qml.plugins(depQml.bin  + '/plugins');
 		
 		const error = qml.init(
 			path.dirname(process.mainModule.filename),
