@@ -28,6 +28,7 @@ void initialize (Local<Object> exports) {
 	NODE_SET_METHOD( exports, "set",      NodeQml::set      );
 	NODE_SET_METHOD( exports, "invoke",   NodeQml::invoke   );
 	NODE_SET_METHOD( exports, "libs",     NodeQml::libs     );
+	NODE_SET_METHOD( exports, "plugins",  NodeQml::plugins  );
 }
 
 Persistent<Function, CopyablePersistentTraits<Function>> jsEventCb;
@@ -403,5 +404,23 @@ void NodeQml::libs(const FunctionCallbackInfo<Value>& args) {
 	
 }
 
+
+void NodeQml::plugins(const FunctionCallbackInfo<Value>& args) {
+	
+	auto isolate = args.GetIsolate();
+	
+	if ( ! args[0]->IsString() ) {
+		args.GetReturnValue().Set(String::NewFromUtf8(
+			isolate,
+			"Error: NodeQml::plugins(), argument #0 must be a string!"
+		));
+		return;
+	}
+	v8::String::Utf8Value param0(args[0]->ToString());
+	std::string dir = std::string(*param0);
+	
+	qmlui_plugins(dir.c_str());
+	
+}
 
 NODE_MODULE(qml, initialize);

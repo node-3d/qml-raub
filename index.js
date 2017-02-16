@@ -4,6 +4,8 @@ const depCore = require('node-deps-qt-core-raub');
 const depGui  = require('node-deps-qt-gui-raub');
 const depQml  = require('node-deps-qt-qml-raub');
 
+require('node-deps-qmlui-raub');
+
 const os = require('os');
 
 const addonPaths = {
