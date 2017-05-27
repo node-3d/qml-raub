@@ -66,16 +66,6 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 	v8::String::Utf8Value param0(args[0]->ToString());
 	std::string cwdOwn = std::string(*param0);
 	
-	if ( ! args[1]->IsString() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::init(), argument #1 must be a string!"
-		));
-		return;
-	}
-	v8::String::Utf8Value param1(args[1]->ToString());
-	std::string cwdLib = std::string(*param1);
-	
 	
 	if ( ! args[2]->IsInt32() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
@@ -84,7 +74,7 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 		));
 		return;
 	}
-	int param2 = static_cast<int>(args[2]->NumberValue());
+	size_t param1 = static_cast<size_t>(args[2]->NumberValue());
 	
 	
 	if ( ! args[3]->IsInt32() ) {
@@ -94,7 +84,7 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 		));
 		return;
 	}
-	int param3 = static_cast<int>(args[3]->NumberValue());
+	size_t param2 = static_cast<size_t>(args[3]->NumberValue());
 	
 	
 	if ( ! args[4]->IsInt32() ) {
@@ -104,7 +94,7 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 		));
 		return;
 	}
-	int param4 = static_cast<int>(args[4]->NumberValue());
+	int param3 = static_cast<int>(args[4]->NumberValue());
 	
 	
 	if ( ! args[5]->IsInt32() ) {
@@ -114,7 +104,7 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 		));
 		return;
 	}
-	int param5 = static_cast<int>(args[5]->NumberValue());
+	int param4 = static_cast<int>(args[5]->NumberValue());
 	
 	
 	if ( ! args[6]->IsFunction() ) {
@@ -124,12 +114,12 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 		));
 		return;
 	}
-	Handle<Function> param6 = Handle<Function>::Cast(args[6]);
-	Persistent<Function> cb(isolate, param6);
+	Handle<Function> param5 = Handle<Function>::Cast(args[6]);
+	Persistent<Function> cb(isolate, param5);
 	jsEventCb = cb;
 	
 	
-	qmlui_init(cwdOwn.c_str(), cwdLib.c_str(), param2, param3, param4, param5, callCb);
+	qmlui_init(cwdOwn.c_str(), param1, param2, param3, param4, callCb);
 	
 }
 

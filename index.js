@@ -6,19 +6,17 @@ const depQml  = require('node-deps-qt-qml-raub');
 
 require('node-deps-qmlui-raub');
 
-const os = require('os');
-
 const addonPaths = {
-	win32 : 'bin_win32' ,
+	win32 : 'bin_windows' ,
 	linux : 'bin_linux' ,
 	darwin: 'bin_darwin',
 };
 
-const binPath = __dirname + '/' + addonPaths[os.platform()];
+const binPath = __dirname + '/' + addonPaths[process.platform];
 
 process.env.path += ';' + binPath;
 
-const qml = require('./' + addonPaths[os.platform()] + '/qml');
+const qml = require('./' + addonPaths[process.platform] + '/qml');
 
 
 
@@ -114,10 +112,10 @@ class Qml extends EventEmitter {
 		this._canvas    = opts.canvas   || global.canvas;
 		this._renderer  = opts.renderer || null;
 		this._scene     = opts.scene    || null;
-		this._gl        = opts.gl       || this._renderer && this._renderer.context ||global.gl;
+		this._gl        = opts.gl       || this._renderer && this._renderer.context || global.gl;
 		this._silent    = !! opts.silent;
 		
-		if (!! opts.overlay) {
+		if ( !! opts.overlay ) {
 			this._overlayOpts = Object.assign({}, opts);
 		}
 		
