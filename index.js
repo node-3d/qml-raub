@@ -162,7 +162,6 @@ class Qml extends EventEmitter {
 		
 		const error = qml.init(
 			path.dirname(process.mainModule.filename),
-			binPath,
 			wnd, ctx,
 			this._canvas.width, this._canvas.height,
 			(data) => {

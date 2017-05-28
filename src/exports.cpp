@@ -67,6 +67,16 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 	std::string cwdOwn = std::string(*param0);
 	
 	
+	if ( ! args[1]->IsInt32() ) {
+		args.GetReturnValue().Set(String::NewFromUtf8(
+			isolate,
+			"Error: NodeQml::init(), argument #1 must be a number!"
+		));
+		return;
+	}
+	size_t param1 = static_cast<size_t>(args[1]->NumberValue());
+	
+	
 	if ( ! args[2]->IsInt32() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
@@ -74,7 +84,7 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 		));
 		return;
 	}
-	size_t param1 = static_cast<size_t>(args[2]->NumberValue());
+	size_t param2 = static_cast<size_t>(args[2]->NumberValue());
 	
 	
 	if ( ! args[3]->IsInt32() ) {
@@ -84,7 +94,7 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 		));
 		return;
 	}
-	size_t param2 = static_cast<size_t>(args[3]->NumberValue());
+	int param3 = static_cast<int>(args[3]->NumberValue());
 	
 	
 	if ( ! args[4]->IsInt32() ) {
@@ -94,27 +104,17 @@ void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
 		));
 		return;
 	}
-	int param3 = static_cast<int>(args[4]->NumberValue());
+	int param4 = static_cast<int>(args[4]->NumberValue());
 	
 	
-	if ( ! args[5]->IsInt32() ) {
+	if ( ! args[5]->IsFunction() ) {
 		args.GetReturnValue().Set(String::NewFromUtf8(
 			isolate,
-			"Error: NodeQml::init(), argument #5 must be a number!"
+			"Error: NodeQml::init(), argument #5 must be a function!"
 		));
 		return;
 	}
-	int param4 = static_cast<int>(args[5]->NumberValue());
-	
-	
-	if ( ! args[6]->IsFunction() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::init(), argument #6 must be a function!"
-		));
-		return;
-	}
-	Handle<Function> param5 = Handle<Function>::Cast(args[6]);
+	Handle<Function> param5 = Handle<Function>::Cast(args[5]);
 	Persistent<Function> cb(isolate, param5);
 	jsEventCb = cb;
 	
