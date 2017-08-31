@@ -24,7 +24,7 @@ class Used {
 		
 		if ( ! this._source ) {
 			this._isValid = false;
-			return console.error("Either file or text should be in the opts.", (new Error()).stack);
+			return console.error('Either file or text should be in the opts.', (new Error()).stack);
 		}
 		
 		this._qml.on('use', e => {
@@ -34,7 +34,7 @@ class Used {
 			}
 			
 			if (e.status !== 'success') {
-				return console.error("Qml Error: could not use:", this._source);
+				return console.error('Qml Error: could not use:', this._source);
 			}
 			
 			this._isReady = true;

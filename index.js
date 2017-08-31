@@ -31,7 +31,6 @@ const Overlay = require('./overlay');
 
 class Qml extends EventEmitter {
 	
-	
 	constructor() {
 		
 		super();
