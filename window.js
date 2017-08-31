@@ -53,6 +53,23 @@ class Window extends EventEmitter {
 			
 		});
 		
+		this._qml.on('use', e => {
+			
+			if ( ! this._isValid || e.used !== this._source) {
+				return;
+			}
+			
+			if (e.status !== 'success') {
+				return console.error('Qml Error: could not use:', this._source);
+			}
+			
+			this._isReady = true;
+			this._interops.forEach(io => io._ready());
+			this._invokations.forEach(invokation => invokation());
+			this._invokations = [];
+			
+		});
+		
 		const error = qml.window(
 			opts.width, opts.height,
 			(data) => {
@@ -192,6 +209,40 @@ class Window extends EventEmitter {
 		}
 	}
 	
+	interop(opts) {
+		
+		opts.qml = this._qml;
+		
+		const io = new Interop(opts);
+		
+		if ( ! this._isValid ) {
+			return io;
+		}
+		
+		this._interops.push(io);
+		
+		if (this._isReady) {
+			io._ready();
+		}
+		
+		return io;
+		
+	}
+	
+	
+	invoke(name, key, value) {
+		
+		if ( ! this._isValid ) {
+			return;
+		}
+		
+		if (this._isReady) {
+			this._qml.invoke(name, key, value);
+		} else {
+			this._invokations.push(() => this._qml.invoke(name, key, value));
+		}
+		
+	}
 	
 	get(a, b) {
 		const error = qml.get(a, b);
@@ -203,6 +254,38 @@ class Window extends EventEmitter {
 	
 	release() {
 		glfw.MakeContextCurrent(this._cc);
+	}
+	
+	
+	_destroy() {
+		
+		this._qml    = null;
+		this._file   = null;
+		this._text   = null;
+		this._isFile = null;
+		this._source = null;
+		
+		this._isReady = false;
+		this._isValid = false;
+		
+		this._interops = [];
+		this._invokations = [];
+		this._queue    = [];
+		
+	}
+	
+	
+	_ready() {
+		if (this._isValid) {
+			this._qml.use(this._isFile, this._source);
+		}
+	}
+	
+	
+	update() {
+		if (this._isReady) {
+			this._interops.forEach(io => io.update());
+		}
 	}
 	
 };
