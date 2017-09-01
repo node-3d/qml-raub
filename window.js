@@ -88,35 +88,51 @@ class Window extends EventEmitter {
 			}
 		);
 		
-		this._document.on('resize', () => this._resize());
-		
 		this.mbuttons = 0;
-		
-		this._document.on( 'mousedown', e => {
-			this.mbuttons |= (1 << e.button);
-			qml.mouse(1, e.button, this.mbuttons, e.x, e.y);
-		});
-		this._document.on( 'mouseup', e => {
-			this.mbuttons &= ~(1 << e.button);
-			qml.mouse(2, e.button, this.mbuttons, e.x, e.y);
-		});
-		this._document.on( 'mousemove', e => {
-			qml.mouse(0, 0, this.mbuttons, e.x, e.y);
-		});
-		
-		this._document.on( 'keydown', e => qml.keyboard(1, e.which, e.keyCode > 0 && e.keyCode < 256 ? String.fromCharCode(e.keyCode).charCodeAt(0) || 0 : 0) );
-		this._document.on( 'keyup',   e => qml.keyboard(0, e.which, e.keyCode > 0 && e.keyCode < 256 ? String.fromCharCode(e.keyCode).charCodeAt(0) || 0 : 0) );
 		
 		if (error) {
 			console.error(error);
 		}
 		
-		
 	}
 	
 	
-	_resize(w, h) {
+	resize(w, h) {
 		this._qml.resize(w, h);
+	}
+	
+	mousedown(e) {
+		this.mbuttons |= (1 << e.button);
+		qml.mouse(1, e.button, this.mbuttons, e.x, e.y);
+	}
+	
+	mouseup(e) {
+		this.mbuttons &= ~(1 << e.button);
+		qml.mouse(2, e.button, this.mbuttons, e.x, e.y);
+	}
+	
+	mousemove(e) {
+		qml.mouse(0, 0, this.mbuttons, e.x, e.y);
+	}
+	
+	keydown(e) {
+		qml.keyboard(
+			1,
+			e.which,
+			e.keyCode > 0 && e.keyCode < 256 ?
+				String.fromCharCode(e.keyCode).charCodeAt(0) || 0 :
+				0
+		);
+	}
+	
+	keyup(e) {
+		qml.keyboard(
+			0,
+			e.which,
+			e.keyCode > 0 && e.keyCode < 256 ?
+				String.fromCharCode(e.keyCode).charCodeAt(0) || 0 :
+				0
+		);
 	}
 	
 	
@@ -160,7 +176,7 @@ class Window extends EventEmitter {
 	}
 	
 	
-	use(a, b) {
+	load(a, b) {
 		const error = qml.use(a, b);
 		if (error) {
 			console.error(error);
@@ -183,15 +199,6 @@ class Window extends EventEmitter {
 		
 	}
 	
-	
-	plugins(p) {
-		
-		const error = qml.plugins(p);
-		if (error) {
-			console.error(error);
-		}
-		
-	}
 	
 	
 	set(a, b, c) {
