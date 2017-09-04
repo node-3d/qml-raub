@@ -14,8 +14,6 @@ class Window extends EventEmitter {
 		super();
 		this.setMaxListeners(0);
 		
-		this._qml = opts.qml;
-		
 		this._isReady = false;
 		
 		this._silent    = !! opts.silent;
@@ -24,13 +22,11 @@ class Window extends EventEmitter {
 		
 		this._libs = opts.libs || [];
 		
-		
-		this._isValid = true;
-		
-		this._interops = [];
-		this._invokations = [];
-		
 		this.mbuttons = 0;
+		
+		this._enqueuedQml = null;
+		
+		this._unload();
 		
 		// Expect FBO texture. Automatic Overlay created/updated as needed
 		this.on('fbo', data => {
@@ -48,15 +44,15 @@ class Window extends EventEmitter {
 			
 			this._isReady = true;
 			
-			this._libs.forEach(l => qml.libs(l));
+			this._libs.forEach(l => qml.libs(this._index, l));
 			
-			if (this._used) {
-				this._used._ready();
+			if (this._enqueuedQml) {
+				this._loadEnqueued();
 			}
 			
 		});
 		
-		this._qml.on('use', e => {
+		this.on('use', e => {
 			
 			if ( ! this._isValid || e.used !== this._source) {
 				return;
@@ -67,8 +63,8 @@ class Window extends EventEmitter {
 			}
 			
 			this._isReady = true;
-			this._interops.forEach(io => io._ready());
-			this._invokations.forEach(invokation => invokation());
+			this._variables.forEach(v => v._ready());
+			this._invokations.forEach(i => i());
 			this._invokations = [];
 			
 		});
@@ -104,19 +100,23 @@ class Window extends EventEmitter {
 		this._qml.resize(this._index, w, h);
 	}
 	
+	
 	mousedown(e) {
 		this.mbuttons |= (1 << e.button);
 		qml.mouse(this._index, 1, e.button, this.mbuttons, e.x, e.y);
 	}
+	
 	
 	mouseup(e) {
 		this.mbuttons &= ~(1 << e.button);
 		qml.mouse(this._index, 2, e.button, this.mbuttons, e.x, e.y);
 	}
 	
+	
 	mousemove(e) {
 		qml.mouse(this._index, 0, 0, this.mbuttons, e.x, e.y);
 	}
+	
 	
 	keydown(e) {
 		qml.keyboard(
@@ -128,6 +128,7 @@ class Window extends EventEmitter {
 				0
 		);
 	}
+	
 	
 	keyup(e) {
 		qml.keyboard(
@@ -146,17 +147,11 @@ class Window extends EventEmitter {
 	
 	load(opts) {
 		
-		opts.qml = this;
-		
 		if (this._used) {
 			this._used._destroy();
 		}
 		
-		this._used =  new Used(opts);
-		
-		if (this._isReady) {
-			this._used._ready();
-		}
+		_loadWhenReady();
 		
 		return this._used;
 		
@@ -181,14 +176,6 @@ class Window extends EventEmitter {
 	}
 	
 	
-	load(a, b) {
-		const error = qml.use(a, b);
-		if (error) {
-			console.error(error);
-		}
-	}
-	
-	
 	libs(l) {
 		
 		this._libs.push(l);
@@ -197,47 +184,27 @@ class Window extends EventEmitter {
 			return;
 		}
 		
-		const error = qml.libs(this._index, l);
-		if (error) {
-			console.error(error);
-		}
+		this._libs(l);
 		
 	}
 	
 	
-	
-	set(a, b, c) {
-		const error = qml.set(a, b, JSON.stringify(c));
-		if (error) {
-			console.error(error);
-		}
-	}
-	
-	
-	invoke(a, b, c) {
-		const error = qml.invoke(a, b, JSON.stringify(c));
-		if (error) {
-			console.error(error);
-		}
-	}
-	
-	interop(opts) {
-		
-		opts.qml = this._qml;
-		
-		const io = new Interop(opts);
+	variable(opts) {
 		
 		if ( ! this._isValid ) {
-			return io;
+			return null;
 		}
 		
-		this._interops.push(io);
+		const v = new Variable(opts);
+		
+		
+		this._variables.push(v);
 		
 		if (this._isReady) {
-			io._ready();
+			v._ready();
 		}
 		
-		return io;
+		return v;
 		
 	}
 	
@@ -249,18 +216,67 @@ class Window extends EventEmitter {
 		}
 		
 		if (this._isReady) {
-			this._qml.invoke(name, key, value);
+			this._invoke(name, key, value);
 		} else {
-			this._invokations.push(() => this._qml.invoke(name, key, value));
+			this._invokations.push(() => this._invoke(name, key, value));
 		}
 		
 	}
 	
-	get(a, b) {
-		const error = qml.get(a, b);
+	
+	_invoke(name, key, value) {
+		const error = qml.invoke(this._index, name, key, JSON.stringify(value));
 		if (error) {
 			console.error(error);
 		}
+		return error;
+	}
+	
+	
+	_get(key, name) {
+		const error = qml.get(key, name);
+		if (error) {
+			console.error(error);
+		}
+		return error;
+	}
+	
+	
+	_set(a, b, c) {
+		const error = qml.set(this._index, a, b, JSON.stringify(c));
+		if (error) {
+			console.error(error);
+		}
+		return error;
+	}
+	
+	
+	_load(isFile, source) {
+		const error = qml.use(this._index, isFile, source);
+		if (error) {
+			console.error(error);
+		}
+		return error;
+	}
+	
+	
+	_loadWhenReady() {
+		this._isEnqueued = ! this._isReady;
+		if (this._isValid) {
+			this._load(this._isFile, this._source);
+		}
+	}
+	
+	
+	_libs(l) {
+		
+		const error = qml.libs(this._index, l);
+		if (error) {
+			console.error(error);
+		}
+		
+		return error;
+		
 	}
 	
 	
@@ -269,21 +285,29 @@ class Window extends EventEmitter {
 	}
 	
 	
-	_destroy() {
+	_unload() {
 		
-		this.mbuttons = 0;
-		
-		this._isReady = false;
-		this._isValid = false;
+		this._isLoaded = false;
+		this._isValid  = true;
 		
 		this._file   = null;
 		this._text   = null;
 		this._isFile = null;
 		this._source = null;
 		
-		this._interops    = [];
+		this._variables   = [];
 		this._invokations = [];
-		this._queue       = [];
+		
+	}
+	
+	_destroy() {
+		
+		this._unload();
+		
+		this._isLoaded = false;
+		this._textureId = null;
+		this._libs = [];
+		this.mbuttons = 0;
 		
 		delete Window.windows[this._index];
 		this._index
@@ -293,13 +317,6 @@ class Window extends EventEmitter {
 			console.error(error);
 		}
 		
-	}
-	
-	
-	_ready() {
-		if (this._isValid) {
-			this._qml.use(this._isFile, this._source);
-		}
 	}
 	
 	
