@@ -27,7 +27,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "node-deps-qmlui-raub": "0.2.0",
+    "node-deps-qmlui-raub": "0.2.1",
     "node-glfw-raub": "0.5.1"
   }
 }

@@ -4,6 +4,8 @@ const EventEmitter = require('events');
 
 const path = require('path');
 
+const qml = require('./qml');
+
 
 class Window extends EventEmitter {
 	
@@ -28,6 +30,7 @@ class Window extends EventEmitter {
 		this._interops = [];
 		this._invokations = [];
 		
+		this.mbuttons = 0;
 		
 		// Expect FBO texture. Automatic Overlay created/updated as needed
 		this.on('fbo', data => {
@@ -70,7 +73,7 @@ class Window extends EventEmitter {
 			
 		});
 		
-		const error = qml.window(
+		this._index = qml.window(
 			opts.width, opts.height,
 			(data) => {
 				let parsed = null;
@@ -88,35 +91,36 @@ class Window extends EventEmitter {
 			}
 		);
 		
-		this.mbuttons = 0;
-		
 		if (error) {
 			console.error(error);
 		}
+		
+		Window._libs.forEach(l => this.libs(l));
 		
 	}
 	
 	
 	resize(w, h) {
-		this._qml.resize(w, h);
+		this._qml.resize(this._index, w, h);
 	}
 	
 	mousedown(e) {
 		this.mbuttons |= (1 << e.button);
-		qml.mouse(1, e.button, this.mbuttons, e.x, e.y);
+		qml.mouse(this._index, 1, e.button, this.mbuttons, e.x, e.y);
 	}
 	
 	mouseup(e) {
 		this.mbuttons &= ~(1 << e.button);
-		qml.mouse(2, e.button, this.mbuttons, e.x, e.y);
+		qml.mouse(this._index, 2, e.button, this.mbuttons, e.x, e.y);
 	}
 	
 	mousemove(e) {
-		qml.mouse(0, 0, this.mbuttons, e.x, e.y);
+		qml.mouse(this._index, 0, 0, this.mbuttons, e.x, e.y);
 	}
 	
 	keydown(e) {
 		qml.keyboard(
+			this._index,
 			1,
 			e.which,
 			e.keyCode > 0 && e.keyCode < 256 ?
@@ -127,6 +131,7 @@ class Window extends EventEmitter {
 	
 	keyup(e) {
 		qml.keyboard(
+			this._index,
 			0,
 			e.which,
 			e.keyCode > 0 && e.keyCode < 256 ?
@@ -192,7 +197,7 @@ class Window extends EventEmitter {
 			return;
 		}
 		
-		const error = qml.libs(l);
+		const error = qml.libs(this._index, l);
 		if (error) {
 			console.error(error);
 		}
@@ -266,18 +271,27 @@ class Window extends EventEmitter {
 	
 	_destroy() {
 		
-		this._qml    = null;
+		this.mbuttons = 0;
+		
+		this._isReady = false;
+		this._isValid = false;
+		
 		this._file   = null;
 		this._text   = null;
 		this._isFile = null;
 		this._source = null;
 		
-		this._isReady = false;
-		this._isValid = false;
-		
-		this._interops = [];
+		this._interops    = [];
 		this._invokations = [];
-		this._queue    = [];
+		this._queue       = [];
+		
+		delete Window.windows[this._index];
+		this._index
+		const error = qml.close(this._index);
+		
+		if (error) {
+			console.error(error);
+		}
 		
 	}
 	
@@ -297,4 +311,18 @@ class Window extends EventEmitter {
 	
 };
 
-module.exports = new Qml();
+
+Window._windows = {};
+
+Window._libs = [];
+
+Window._addLibDir = (l) => {
+	
+	Window._libs.push(l);
+	
+	Object.keys(Window._windows).forEach(w => w.libs(l));
+	
+};
+
+
+module.exports = Window;
