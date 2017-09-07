@@ -10,10 +10,10 @@ class Variable {
 			throw new Error('Variable requires opts.window.');
 		}
 		
-		this._owner = opts.window;
+		this._owner = opts.view;
 		
-		this._name  = opts.name  || 'notset';
-		this._key   = opts.key   || 'notset';
+		this._name  = opts.name  || 'unnamed';
+		this._key   = opts.key   || 'null';
 		this._value = opts.value || null;
 		
 		this._getJs = opts.getJs || null;
@@ -40,7 +40,7 @@ class Variable {
 	}
 	
 	
-	get qml() { return this._qml; }
+	get key() { return this._key; }
 	get name() { return this._name; }
 	
 	
@@ -59,7 +59,7 @@ class Variable {
 	}
 	
 	
-	_ready() {
+	_initialize() {
 		
 		if (this._isValid) {
 			

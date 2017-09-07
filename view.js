@@ -7,37 +7,26 @@ const path = require('path');
 const qml = require('./qml');
 
 
-class Window extends EventEmitter {
+class View extends EventEmitter {
 	
 	constructor(opts) {
 		
 		super();
 		this.setMaxListeners(0);
 		
-		this._isReady = false;
-		
-		this._silent    = !! opts.silent;
-		
-		this._textureId = null;
-		
-		this._libs = opts.libs || [];
-		
-		this.mbuttons = 0;
-		
-		this._enqueuedQml = null;
-		
-		this._unload();
-		
-		// Expect FBO texture. Automatic Overlay created/updated as needed
-		this.on('fbo', data => {
-			this._textureId = data.texture;
-			this.emit('reset', this._textureId);
-		});
-		
+		this._silent = !! opts.silent;
 		this.on('error', data => {
 			if ( ! this._silent ) {
 				console.error('Qml Error: (' + data.type + ')', data.message);
 			}
+		});
+		
+		this._destroy();
+		
+		// Expect FBO texture
+		this.on('fbo', data => {
+			this._textureId = data.texture;
+			this.emit('reset', this._textureId);
 		});
 		
 		this.on('ready', () => {
@@ -46,9 +35,7 @@ class Window extends EventEmitter {
 			
 			this._libs.forEach(l => qml.libs(this._index, l));
 			
-			if (this._enqueuedQml) {
-				this._loadEnqueued();
-			}
+			this._loadWhenReady();
 			
 		});
 		
@@ -62,8 +49,8 @@ class Window extends EventEmitter {
 				return console.error('Qml Error: could not use:', this._source);
 			}
 			
-			this._isReady = true;
-			this._variables.forEach(v => v._ready());
+			this._isLoaded = true;
+			this._variables.forEach(v => v._initialize());
 			this._invokations.forEach(i => i());
 			this._invokations = [];
 			
@@ -87,17 +74,13 @@ class Window extends EventEmitter {
 			}
 		);
 		
-		if (error) {
-			console.error(error);
-		}
-		
-		Window._libs.forEach(l => this.libs(l));
+		View._libs.forEach(l => this.libs(l));
 		
 	}
 	
 	
 	resize(w, h) {
-		this._qml.resize(this._index, w, h);
+		qml.resize(this._index, w, h);
 	}
 	
 	
@@ -142,31 +125,13 @@ class Window extends EventEmitter {
 	}
 	
 	
-	get context() { return this._qml; }
-	
-	
 	load(opts) {
 		
-		if (this._used) {
-			this._used._destroy();
-		}
+		this._unload();
 		
-		_loadWhenReady();
-		
-		return this._used;
+		this._loadWhenReady();
 		
 	}
-	
-	
-	get isTracing() { return this._isTracing; }
-	set isTracing(v) {
-		if (v) {
-			process.env.QML_IMPORT_TRACE = 'true';
-		} else {
-			delete process.env.QML_IMPORT_TRACE;
-		}
-	}
-	
 	
 	get textureId() {
 		if (this._textureId === null) {
@@ -176,15 +141,15 @@ class Window extends EventEmitter {
 	}
 	
 	
-	libs(l) {
+	libs(directory) {
 		
-		this._libs.push(l);
+		this._libs.push(directory);
 		
 		if ( ! this._isReady ) {
 			return;
 		}
 		
-		this._libs(l);
+		qml.libs(this._index, directory);
 		
 	}
 	
@@ -197,11 +162,10 @@ class Window extends EventEmitter {
 		
 		const v = new Variable(opts);
 		
-		
 		this._variables.push(v);
 		
 		if (this._isReady) {
-			v._ready();
+			v._initialize();
 		}
 		
 		return v;
@@ -224,64 +188,12 @@ class Window extends EventEmitter {
 	}
 	
 	
-	_invoke(name, key, value) {
-		const error = qml.invoke(this._index, name, key, JSON.stringify(value));
-		if (error) {
-			console.error(error);
-		}
-		return error;
-	}
-	
-	
-	_get(key, name) {
-		const error = qml.get(key, name);
-		if (error) {
-			console.error(error);
-		}
-		return error;
-	}
-	
-	
-	_set(a, b, c) {
-		const error = qml.set(this._index, a, b, JSON.stringify(c));
-		if (error) {
-			console.error(error);
-		}
-		return error;
-	}
-	
-	
-	_load(isFile, source) {
-		const error = qml.use(this._index, isFile, source);
-		if (error) {
-			console.error(error);
-		}
-		return error;
-	}
-	
-	
 	_loadWhenReady() {
-		this._isEnqueued = ! this._isReady;
-		if (this._isValid) {
-			this._load(this._isFile, this._source);
-		}
-	}
-	
-	
-	_libs(l) {
 		
-		const error = qml.libs(this._index, l);
-		if (error) {
-			console.error(error);
+		if (this._isReady && ! this._isLoaded) {
+			qml.load(this._index, this._isFile, this._source);
 		}
 		
-		return error;
-		
-	}
-	
-	
-	release() {
-		glfw.MakeContextCurrent(this._cc);
 	}
 	
 	
@@ -300,46 +212,46 @@ class Window extends EventEmitter {
 		
 	}
 	
+	
 	_destroy() {
 		
 		this._unload();
 		
-		this._isLoaded = false;
+		this._isReady = false;
 		this._textureId = null;
 		this._libs = [];
 		this.mbuttons = 0;
 		
-		delete Window.windows[this._index];
-		this._index
-		const error = qml.close(this._index);
-		
-		if (error) {
-			console.error(error);
+		if (View._instances[this._index]) {
+			delete View._instances[this._index];
+			qml.close(this._index);
 		}
+		
+		this._index = -1;
 		
 	}
 	
 	
 	update() {
-		if (this._isReady) {
-			this._interops.forEach(io => io.update());
+		if (this._isLoaded) {
+			this._variables.forEach(v => v.update());
 		}
 	}
 	
 };
 
 
-Window._windows = {};
+View._instances = {};
 
-Window._libs = [];
+View._libs = [];
 
-Window._addLibDir = (l) => {
+View._addLibDir = (l) => {
 	
-	Window._libs.push(l);
+	View._libs.push(l);
 	
-	Object.keys(Window._windows).forEach(w => w.libs(l));
+	Object.keys(View._instances).forEach(w => w.libs(l));
 	
 };
 
 
-module.exports = Window;
+module.exports = View;
