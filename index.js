@@ -9,10 +9,10 @@ module.exports = {
 	context,
 	View,
 	
-	init(windowHandle, windowContext) { qml.init(windowHandle, windowContext); }
+	init    : qml.init,
 	
-	libs(directory) { QmlWindow._addLibDir(directory); }
+	libs    : View._addLibDir,
 	
-	plugins(directory) { qml.plugins(directory); }
+	plugins : qml.plugins,
 	
 };

@@ -48,6 +48,8 @@ module.exports = {
 			throw new Error(error);
 		}
 		
+		isInited = true;
+		
 	},
 	
 	
@@ -61,7 +63,7 @@ module.exports = {
 	
 	view(width, height, cb) {
 		
-		if (isInited) {
+		if ( ! isInited ) {
 			throw new Error('Qml must be inited to create a View.');
 		}
 		
