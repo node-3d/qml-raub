@@ -41,7 +41,7 @@ module.exports = {
 		const error = qml.init(
 			path.dirname(process.mainModule.filename),
 			windowHandle,
-			windowContext,
+			windowContext
 		);
 		
 		if (error) {

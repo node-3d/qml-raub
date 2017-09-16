@@ -9,10 +9,10 @@ module.exports = {
 	context,
 	View,
 	
-	init    : qml.init,
+	init    : context.init,
 	
 	libs    : View._addLibDir,
 	
-	plugins : qml.plugins,
+	plugins : context.plugins,
 	
 };

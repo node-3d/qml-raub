@@ -139,7 +139,7 @@ void NodeQml::window(const FunctionCallbackInfo<Value>& args) {
 		return;
 	}
 	
-	args.GetReturnValue().Set(Number::New(i));
+	args.GetReturnValue().Set(Number::New(isolate, i));
 	
 }
 
