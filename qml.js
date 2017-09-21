@@ -68,7 +68,10 @@ module.exports = {
 		}
 		
 		const i = qml.window(width, height, cb);
-		if (i < 0) {
+		
+		if (typeof error === 'string') {
+			throw new Error(error);
+		} else if (i < 0) {
 			throw new Error('Could not create a new (QML) View.');
 		}
 		
@@ -110,7 +113,7 @@ module.exports = {
 	
 	
 	load(i, isFile, source) {
-		const error = qml.use(i, isFile, source);
+		const error = qml.load(i, isFile, source);
 		if (error) {
 			throw new Error(error);
 		}

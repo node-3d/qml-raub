@@ -56,8 +56,8 @@ class View extends EventEmitter {
 			
 		});
 		
-		this._index = qml.window(
-			opts.width, opts.height,
+		this._index = qml.view(
+			opts.width || 512, opts.height || 512,
 			(data) => {
 				let parsed = null;
 				
@@ -75,6 +75,10 @@ class View extends EventEmitter {
 		);
 		
 		View._libs.forEach(l => this.libs(l));
+		
+		if (opts.file || opts.source) {
+			this.load(opts);
+		}
 		
 	}
 	
@@ -128,6 +132,16 @@ class View extends EventEmitter {
 	load(opts) {
 		
 		this._unload();
+		
+		if (opts.file) {
+			this._isFile = true;
+			this._source = opts.file;
+		} else if (opts.source) {
+			this._isFile = false;
+			this._source = opts.source;
+		} else {
+			throw new Error('To load QML, specify opts.file or opts.source.');
+		}
 		
 		this._loadWhenReady();
 		
@@ -190,7 +204,7 @@ class View extends EventEmitter {
 	
 	_loadWhenReady() {
 		
-		if (this._isReady && ! this._isLoaded) {
+		if (this._index > -1 && this._isReady && ! this._isLoaded) {
 			qml.load(this._index, this._isFile, this._source);
 		}
 		
