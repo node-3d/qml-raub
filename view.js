@@ -205,7 +205,19 @@ class View extends EventEmitter {
 	_loadWhenReady() {
 		
 		if (this._index > -1 && this._isReady && ! this._isLoaded) {
-			qml.load(this._index, this._isFile, this._source);
+			
+			if (this._isFile) {
+				
+				const realPath = path.isAbsolute(this._source) ?
+					this._source :
+					path.join(path.dirname(process.mainModule.filename), this._source);
+					
+				qml.load(this._index, true, realPath);
+				
+			} else {
+				qml.load(this._index, false, this._source);
+			}
+			
 		}
 		
 	}
