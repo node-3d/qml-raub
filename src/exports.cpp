@@ -322,13 +322,13 @@ void NodeQml::load(const FunctionCallbackInfo<Value>& args) {
 		
 		v8::String::Utf8Value param1(args[1]->ToString());
 		std::string str = std::string(*param1);
-		qmlui_use(param0, str.c_str(), true);
+		qmlui_load(param0, str.c_str(), true);
 		
 	} else if (args[1]->IsBoolean() && args[2]->IsString()) {
 		
 		v8::String::Utf8Value param2(args[2]->ToString());
 		std::string str = std::string(*param2);
-		qmlui_use(param0, str.c_str(), args[1]->BooleanValue());
+		qmlui_load(param0, str.c_str(), args[1]->BooleanValue());
 		
 	} else {
 		

@@ -39,14 +39,14 @@ class View extends EventEmitter {
 			
 		});
 		
-		this.on('use', e => {
+		this.on('load', e => {
 			
-			if ( ! this._isValid || e.used !== this._source) {
+			if ( ! this._isValid || e.loaded !== this._source) {
 				return;
 			}
 			
 			if (e.status !== 'success') {
-				return console.error('Qml Error: could not use:', this._source);
+				return console.error('Qml Error: could not load:', this._source);
 			}
 			
 			this._isLoaded = true;
