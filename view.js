@@ -148,9 +148,6 @@ class View extends EventEmitter {
 	}
 	
 	get textureId() {
-		if (this._textureId === null) {
-			console.log('Error: no qml textureId yet.', (new Error()).stack);
-		}
 		return this._textureId;
 	}
 	
