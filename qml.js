@@ -26,31 +26,49 @@ qml.plugins(depGui.bin  + '/plugins');
 qml.plugins(depQml.bin  + '/plugins');
 
 
-let isInited = false;
+const _private = {
+	
+	isInited : false,
+	
+	callbacks : [],
+	
+	proxy: (index, data) => {
+		
+		if ( ! _private.callbacks[index] ) {
+			return console.warn('No callback for index:', index);
+		}
+		
+		_private.callbacks[index](data);
+		
+	},
+	
+};
+
 
 module.exports = {
 	
 	get isInited() {
-		return isInited;
+		return _private.isInited;
 	},
 	
 	init(windowHandle, windowContext) {
 		
-		if (isInited) {
+		if (_private.isInited) {
 			throw new Error('Qml has already been inited.');
 		}
 		
 		const error = qml.init(
 			path.dirname(process.mainModule.filename),
 			windowHandle,
-			windowContext
+			windowContext,
+			_private.proxy
 		);
 		
 		if (error) {
 			throw new Error(error);
 		}
 		
-		isInited = true;
+		_private.isInited = true;
 		
 	},
 	
@@ -65,11 +83,11 @@ module.exports = {
 	
 	view(width, height, cb) {
 		
-		if ( ! isInited ) {
+		if ( ! _private.isInited ) {
 			throw new Error('Qml must be inited to create a View.');
 		}
 		
-		const i = qml.window(width, height, cb);
+		const i = qml.view(width, height);
 		
 		if (typeof error === 'string') {
 			throw new Error(error);
@@ -77,16 +95,23 @@ module.exports = {
 			throw new Error('Could not create a new (QML) View.');
 		}
 		
+		_private.callbacks[i] = cb;
+		
 		return i;
 		
 	},
 	
 	
 	close(i) {
+		
 		const error = qml.close(i);
+		
 		if (error) {
 			throw new Error(error);
 		}
+		
+		delete _private.callbacks[i];
+		
 	},
 	
 	

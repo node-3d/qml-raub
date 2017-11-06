@@ -32,11 +32,11 @@ void callCb(int i, const char *data) {
 	auto context = isolate->GetCurrentContext();
 	auto global = context->Global();
 	
-	Handle<Value> argv[1];
-	argv[0] = String::NewFromUtf8(isolate, data);
+	argv[0] = JS_NUM(i);
+	argv[1] = String::NewFromUtf8(isolate, data);
 	
 	auto fn = Local<Function>::New(isolate, jsEventCb);
-	fn->Call(global, 1, argv);
+	fn->Call(global, 2, argv);
 	
 }
 
