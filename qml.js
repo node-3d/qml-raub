@@ -8,6 +8,7 @@ const depQml  = require('node-deps-qt-qml-raub');
 
 require('node-deps-qmlui-raub');
 
+
 const addonPaths = {
 	win32 : 'bin_windows' ,
 	linux : 'bin_linux' ,
@@ -23,6 +24,7 @@ const qml = require('./' + addonPaths[process.platform] + '/qml');
 qml.plugins(depCore.bin + '/plugins');
 qml.plugins(depGui.bin  + '/plugins');
 qml.plugins(depQml.bin  + '/plugins');
+
 
 let isInited = false;
 

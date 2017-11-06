@@ -1,24 +1,25 @@
-#ifndef BINDINGS_HPP
-#define BINDINGS_HPP
+#ifndef EXPORTS_HPP
+#define EXPORTS_HPP
 
 #include <node.h>
 
 
 namespace NodeQml {
 	
-	void init     ( const v8::FunctionCallbackInfo<v8::Value>& args );
-	void window   ( const v8::FunctionCallbackInfo<v8::Value>& args );
-	void close    ( const v8::FunctionCallbackInfo<v8::Value>& args );
-	void resize   ( const v8::FunctionCallbackInfo<v8::Value>& args );
-	void mouse    ( const v8::FunctionCallbackInfo<v8::Value>& args );
-	void keyboard ( const v8::FunctionCallbackInfo<v8::Value>& args );
-	void load     ( const v8::FunctionCallbackInfo<v8::Value>& args );
-	void set      ( const v8::FunctionCallbackInfo<v8::Value>& args );
-	void get      ( const v8::FunctionCallbackInfo<v8::Value>& args );
-	void invoke   ( const v8::FunctionCallbackInfo<v8::Value>& args );
-	void libs     ( const v8::FunctionCallbackInfo<v8::Value>& args );
-	void plugins  ( const v8::FunctionCallbackInfo<v8::Value>& args );
+	NAN_METHOD(init    );
+	NAN_METHOD(view    );
+	NAN_METHOD(close   );
+	NAN_METHOD(exit    );
+	NAN_METHOD(resize  );
+	NAN_METHOD(mouse   );
+	NAN_METHOD(keyboard);
+	NAN_METHOD(load    );
+	NAN_METHOD(set     );
+	NAN_METHOD(get     );
+	NAN_METHOD(invoke  );
+	NAN_METHOD(libs    );
+	NAN_METHOD(plugins );
 	
 }
 
-#endif
+#endif // EXPORTS_HPP

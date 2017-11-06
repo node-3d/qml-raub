@@ -58,7 +58,7 @@ class View extends EventEmitter {
 		
 		this._index = qml.view(
 			opts.width || 512, opts.height || 512,
-			(data) => {
+			data => {
 				let parsed = null;
 				
 				try {

@@ -1,8 +1,10 @@
+#include <string>
+
 #include <qmlui.hpp>
 
+#include "common.hpp"
 #include "exports.hpp"
 
-#include <string>
 
 using v8::FunctionCallbackInfo;
 using v8::Isolate;
@@ -18,23 +20,11 @@ using v8::Function;
 using v8::Persistent;
 using v8::CopyablePersistentTraits;
 
-void initialize (Local<Object> exports) {
-	NODE_SET_METHOD( exports, "init",     NodeQml::init     );
-	NODE_SET_METHOD( exports, "window",   NodeQml::window   );
-	NODE_SET_METHOD( exports, "close",    NodeQml::close    );
-	NODE_SET_METHOD( exports, "resize",   NodeQml::resize   );
-	NODE_SET_METHOD( exports, "mouse",    NodeQml::mouse    );
-	NODE_SET_METHOD( exports, "keyboard", NodeQml::keyboard );
-	NODE_SET_METHOD( exports, "load",     NodeQml::load     );
-	NODE_SET_METHOD( exports, "get",      NodeQml::get      );
-	NODE_SET_METHOD( exports, "set",      NodeQml::set      );
-	NODE_SET_METHOD( exports, "invoke",   NodeQml::invoke   );
-	NODE_SET_METHOD( exports, "libs",     NodeQml::libs     );
-	NODE_SET_METHOD( exports, "plugins",  NodeQml::plugins  );
-}
+using namespace NodeQml;
+
 
 Persistent<Function, CopyablePersistentTraits<Function>> jsEventCb;
-void callCb(const char *data) {
+void callCb(int i, const char *data) {
 	
 	auto isolate = Isolate::GetCurrent();
 	HandleScope scope(isolate);
@@ -53,474 +43,240 @@ void callCb(const char *data) {
 // -------- METHODS -------- //
 
 
-void NodeQml::init(const FunctionCallbackInfo<Value>& args) {
+NAN_METHOD(NodeQml::init) {
 	
-	auto isolate = args.GetIsolate();
+	Nan::HandleScope scope;
+	auto isolate = Isolate::GetCurrent();
 	
+	REQ_ARGS(4);
 	
-	if ( ! args[0]->IsString() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::init(), argument #0 must be a string!"
-		));
-		return;
-	}
-	v8::String::Utf8Value param0(args[0]->ToString());
-	std::string cwdOwn = std::string(*param0);
+	REQ_STR_ARG(0, param0);
+	REQ_INT_ARG(1, param1);
+	REQ_INT_ARG(2, param2);
+	REQ_FUN_ARG(3, param3);
+	jsEventCb = Persistent<Function>(isolate, param3);
 	
-	
-	if ( ! args[1]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::init(), argument #1 must be a number!"
-		));
-		return;
-	}
-	size_t param1 = static_cast<size_t>(args[1]->NumberValue());
-	
-	
-	if ( ! args[2]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::init(), argument #2 must be a number!"
-		));
-		return;
-	}
-	size_t param2 = static_cast<size_t>(args[2]->NumberValue());
-	
-	qmlui_init(cwdOwn.c_str(), param1, param2);
+	qmlui_init(param0, param1, param2, callCb);
 	
 }
 
 
-void NodeQml::window(const FunctionCallbackInfo<Value>& args) {
+NAN_METHOD(NodeQml::view) {
 	
-	auto isolate = args.GetIsolate();
+	Nan::HandleScope scope;
 	
-	if ( ! args[0]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::window(), argument #0 must be a number!"
-		));
-		return;
-	}
-	int param0 = static_cast<int>(args[0]->NumberValue());
+	REQ_ARGS(2);
 	
-	
-	if ( ! args[1]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::window(), argument #1 must be a number!"
-		));
-		return;
-	}
-	int param1 = static_cast<int>(args[1]->NumberValue());
-	
-	
-	if ( ! args[2]->IsFunction() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::window(), argument #2 must be a function!"
-		));
-		return;
-	}
-	Handle<Function> param2 = Handle<Function>::Cast(args[2]);
-	Persistent<Function> cb(isolate, param2);
-	jsEventCb = cb;
+	REQ_INT32_ARG(0, param0);
+	REQ_INT32_ARG(1, param1);
 	
 	int i = -1;
-	qmlui_window(&i, param0, param1, callCb);
+	qmlui_view(&i, param0, param1);
 	
 	if ( i < 0 ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::window(), could not create a new window!"
-		));
+		Nan::ThrowTypeError("NodeQml::window(), could not create a new window!");
 		return;
 	}
 	
-	args.GetReturnValue().Set(Number::New(isolate, i));
+	info.GetReturnValue().Set(JS_NUM(i));
 	
 }
 
 
-void NodeQml::close(const FunctionCallbackInfo<Value>& args) {
+NAN_METHOD(NodeQml::close) {
 	
-	auto isolate = args.GetIsolate();
+	Nan::HandleScope scope;
 	
-	if ( ! args[0]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::close(), argument #0 must be a number!"
-		));
-		return;
-	}
-	int param0 = static_cast<int>(args[0]->NumberValue());
+	REQ_ARGS(1);
+	
+	REQ_INT32_ARG(0, param0);
 	
 	qmlui_close(param0);
 	
 }
 
 
-void NodeQml::resize(const FunctionCallbackInfo<Value>& args) {
+NAN_METHOD(NodeQml::exit) {
 	
-	auto isolate = args.GetIsolate();
+	Nan::HandleScope scope;
 	
-	if ( ! args[0]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::resize(), argument #0 must be a number!"
-		));
-		return;
-	}
-	int param0 = static_cast<int>(args[0]->NumberValue());
+	qmlui_exit();
 	
-	if ( ! args[1]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::resize(), argument #1 must be a number!"
-		));
-		return;
-	}
-	int param1 = static_cast<int>(args[1]->NumberValue());
+}
+
+
+NAN_METHOD(NodeQml::resize) {
 	
-	if ( ! args[2]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::resize(), argument #2 must be a number!"
-		));
-		return;
-	}
-	int param2 = static_cast<int>(args[2]->NumberValue());
+	Nan::HandleScope scope;
+	
+	REQ_ARGS(3);
+	
+	REQ_INT32_ARG(0, param0);
+	REQ_INT32_ARG(1, param1);
+	REQ_INT32_ARG(2, param2);
 	
 	qmlui_resize(param0, param1, param2);
 	
 }
 
-void NodeQml::mouse(const FunctionCallbackInfo<Value>& args) {
+NAN_METHOD(NodeQml::mouse) {
 	
-	auto isolate = args.GetIsolate();
+	Nan::HandleScope scope;
 	
-	if ( ! args[0]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::resize(), argument #0 must be a number!"
-		));
-		return;
-	}
-	int param0 = static_cast<int>(args[0]->NumberValue());
+	REQ_ARGS(6);
 	
-	if ( ! args[1]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::mouse(), argument #1 must be a number!"
-		));
-		return;
-	}
-	int param1 = static_cast<int>(args[1]->NumberValue());
-	
-	if ( ! args[2]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::mouse(), argument #2 must be a number!"
-		));
-		return;
-	}
-	int param2 = static_cast<int>(args[2]->NumberValue());
-	
-	if ( ! args[3]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::mouse(), argument #3 must be a number!"
-		));
-		return;
-	}
-	int param3 = static_cast<int>(args[3]->NumberValue());
-	
-	
-	if ( ! args[4]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::mouse(), argument #4 must be a number!"
-		));
-		return;
-	}
-	int param4 = static_cast<int>(args[4]->NumberValue());
-	
-	if ( ! args[5]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::mouse(), argument #5 must be a number!"
-		));
-		return;
-	}
-	int param5 = static_cast<int>(args[5]->NumberValue());
+	REQ_INT32_ARG(0, param0);
+	REQ_INT32_ARG(1, param1);
+	REQ_INT32_ARG(2, param2);
+	REQ_INT32_ARG(3, param3);
+	REQ_INT32_ARG(4, param4);
+	REQ_INT32_ARG(5, param5);
 	
 	qmlui_mouse(param0, param1, param2, param3, param4, param5);
 	
 }
 
-void NodeQml::keyboard(const FunctionCallbackInfo<Value>& args) {
+NAN_METHOD(NodeQml::keyboard) {
 	
-	auto isolate = args.GetIsolate();
+	Nan::HandleScope scope;
 	
-	if ( ! args[0]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::resize(), argument #0 must be a number!"
-		));
-		return;
-	}
-	int param0 = static_cast<int>(args[0]->NumberValue());
+	REQ_ARGS(4);
 	
-	if ( ! args[1]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::keyboard(), argument #1 must be a number!"
-		));
-		return;
-	}
-	int param1 = static_cast<int>(args[1]->NumberValue());
-	
-	if ( ! args[2]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::keyboard(), argument #2 must be a number!"
-		));
-		return;
-	}
-	int param2 = static_cast<int>(args[2]->NumberValue());
-	
-	if ( ! args[3]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::keyboard(), argument #3 must be a number!"
-		));
-		return;
-	}
-	char param3 = static_cast<char>(args[3]->NumberValue());
+	REQ_INT32_ARG(0, param0);
+	REQ_INT32_ARG(1, param1);
+	REQ_INT32_ARG(2, param2);
+	REQ_INT32_ARG(3, param3);
 	
 	qmlui_keyboard(param0, param1, param2, param3);
 	
 }
 
 
-void NodeQml::load(const FunctionCallbackInfo<Value>& args) {
+NAN_METHOD(NodeQml::load) {
 	
-	auto isolate = args.GetIsolate();
+	Nan::HandleScope scope;
 	
-	if ( ! args[0]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::load(), argument #0 must be a number!"
-		));
-		return;
-	}
-	int param0 = static_cast<int>(args[0]->NumberValue());
+	REQ_ARGS(2);
 	
-	if (args[1]->IsString()) {
+	REQ_INT32_ARG(0, param0);
+	
+	if (info[1]->IsString()) {
 		
-		v8::String::Utf8Value param1(args[1]->ToString());
-		std::string str = std::string(*param1);
-		qmlui_load(param0, str.c_str(), true);
+		REQ_STR_ARG(1, param1);
+		qmlui_load(param0, param1, true);
 		
-	} else if (args[1]->IsBoolean() && args[2]->IsString()) {
+	} else if (info[1]->IsBoolean() && info[2]->IsString()) {
 		
-		v8::String::Utf8Value param2(args[2]->ToString());
-		std::string str = std::string(*param2);
-		qmlui_load(param0, str.c_str(), args[1]->BooleanValue());
+		REQ_STR_ARG(2, param2);
+		qmlui_load(param0, param2, info[1]->BooleanValue());
 		
 	} else {
+		Nan::ThrowTypeError("NodeQml::load(), Arguments should be (int, [bool,] string)!");
+	}
+	
+}
+
+
+NAN_METHOD(NodeQml::set) {
+	
+	Nan::HandleScope scope;
+	
+	REQ_ARGS(4);
+	
+	REQ_INT32_ARG(0, param0);
+	REQ_STR_ARG(1, param1);
+	REQ_STR_ARG(2, param2);
+	REQ_STR_ARG(3, param3);
+	
+	qmlui_set(param0, param1, param2, param3);
+	
+}
+
+
+NAN_METHOD(NodeQml::get) {
+	
+	Nan::HandleScope scope;
+	
+	REQ_ARGS(3);
+	
+	REQ_INT32_ARG(0, param0);
+	REQ_STR_ARG(1, param1);
+	REQ_STR_ARG(2, param2);
+	
+	qmlui_get(param0, param1, param2);
+	
+}
+
+
+NAN_METHOD(NodeQml::invoke) {
+	
+	Nan::HandleScope scope;
+	
+	REQ_ARGS(4);
+	
+	REQ_INT32_ARG(0, param0);
+	REQ_STR_ARG(1, param1);
+	REQ_STR_ARG(2, param2);
+	REQ_STR_ARG(3, param3);
+	
+	qmlui_invoke(param0, param1, param2, param3);
+	
+}
+
+
+NAN_METHOD(NodeQml::libs) {
+	
+	Nan::HandleScope scope;
+	
+	REQ_ARGS(2);
+	
+	REQ_INT32_ARG(0, param0);
+	REQ_STR_ARG(1, param1);
+	
+	qmlui_libs(param0, param1);
+	
+}
+
+
+NAN_METHOD(NodeQml::plugins) {
+	
+	Nan::HandleScope scope;
+	
+	REQ_ARGS(1);
+	
+	REQ_STR_ARG(0, param0);
+	
+	qmlui_plugins(param0);
+	
+}
+
+
+#define JS_QML_SET_METHOD(name) Nan::SetMethod(target, #name, NodeQml::name)
+
+extern "C" {
+	
+	NAN_MODULE_INIT(initialize) {
 		
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::load(), Arguments should be (int, [bool,] string)!"
-		));
-		return;
+		atexit(qmlui_exit);
+		
+		Nan::HandleScope scope;
+		
+		JS_QML_SET_METHOD(init    );
+		JS_QML_SET_METHOD(view    );
+		JS_QML_SET_METHOD(close   );
+		JS_QML_SET_METHOD(exit    );
+		JS_QML_SET_METHOD(resize  );
+		JS_QML_SET_METHOD(mouse   );
+		JS_QML_SET_METHOD(keyboard);
+		JS_QML_SET_METHOD(load    );
+		JS_QML_SET_METHOD(get     );
+		JS_QML_SET_METHOD(set     );
+		JS_QML_SET_METHOD(invoke  );
+		JS_QML_SET_METHOD(libs    );
+		JS_QML_SET_METHOD(plugins );
 		
 	}
 	
-}
-
-
-void NodeQml::set(const FunctionCallbackInfo<Value>& args) {
-	
-	auto isolate = args.GetIsolate();
-	
-	if ( ! args[0]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::resize(), argument #0 must be a number!"
-		));
-		return;
-	}
-	int param0 = static_cast<int>(args[0]->NumberValue());
-	
-	if ( ! args[1]->IsString() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::set(), argument #1 must be a string!"
-		));
-		return;
-	}
-	v8::String::Utf8Value param1(args[1]->ToString());
-	std::string obj = std::string(*param1);
-	
-	if ( ! args[2]->IsString() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::set(), argument #2 must be a string!"
-		));
-		return;
-	}
-	v8::String::Utf8Value param2(args[2]->ToString());
-	std::string key = std::string(*param2);
-	
-	if ( ! args[3]->IsString() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::set(), argument #3 must be a string!"
-		));
-		return;
-	}
-	v8::String::Utf8Value param3(args[3]->ToString());
-	std::string value = std::string(*param3);
-	
-	qmlui_set(param0, obj.c_str(), key.c_str(), value.c_str());
+	NODE_MODULE(qml, initialize)
 	
 }
-
-
-void NodeQml::get(const FunctionCallbackInfo<Value>& args) {
-	
-	auto isolate = args.GetIsolate();
-	
-	if ( ! args[0]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::resize(), argument #0 must be a number!"
-		));
-		return;
-	}
-	int param0 = static_cast<int>(args[0]->NumberValue());
-	
-	if ( ! args[1]->IsString() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::set(), argument #1 must be a string!"
-		));
-		return;
-	}
-	v8::String::Utf8Value param1(args[1]->ToString());
-	std::string obj = std::string(*param1);
-	
-	if ( ! args[2]->IsString() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::set(), argument #2 must be a string!"
-		));
-		return;
-	}
-	v8::String::Utf8Value param2(args[2]->ToString());
-	std::string key = std::string(*param2);
-	
-	qmlui_get(param0, obj.c_str(), key.c_str());
-	
-}
-
-
-void NodeQml::invoke(const FunctionCallbackInfo<Value>& args) {
-	
-	auto isolate = args.GetIsolate();
-	
-	if ( ! args[0]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::resize(), argument #0 must be a number!"
-		));
-		return;
-	}
-	int param0 = static_cast<int>(args[0]->NumberValue());
-	
-	if ( ! args[1]->IsString() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::invoke(), argument #1 must be a string!"
-		));
-		return;
-	}
-	v8::String::Utf8Value param1(args[1]->ToString());
-	std::string obj = std::string(*param1);
-	
-	if ( ! args[2]->IsString() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::invoke(), argument #1 must be a string!"
-		));
-		return;
-	}
-	v8::String::Utf8Value param2(args[2]->ToString());
-	std::string key = std::string(*param2);
-	
-	if ( ! args[3]->IsString() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::invoke(), argument #3 must be a string!"
-		));
-		return;
-	}
-	v8::String::Utf8Value param3(args[3]->ToString());
-	std::string value = std::string(*param3);
-	
-	qmlui_invoke(param0, obj.c_str(), key.c_str(), value.c_str());
-	
-}
-
-
-void NodeQml::libs(const FunctionCallbackInfo<Value>& args) {
-	
-	auto isolate = args.GetIsolate();
-	
-	if ( ! args[0]->IsInt32() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::resize(), argument #0 must be a number!"
-		));
-		return;
-	}
-	int param0 = static_cast<int>(args[0]->NumberValue());
-	
-	if ( ! args[1]->IsString() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::libs(), argument #1 must be a string!"
-		));
-		return;
-	}
-	v8::String::Utf8Value param1(args[1]->ToString());
-	std::string dir = std::string(*param1);
-	
-	qmlui_libs(param0, dir.c_str());
-	
-}
-
-
-void NodeQml::plugins(const FunctionCallbackInfo<Value>& args) {
-	
-	auto isolate = args.GetIsolate();
-	
-	if ( ! args[0]->IsString() ) {
-		args.GetReturnValue().Set(String::NewFromUtf8(
-			isolate,
-			"Error: NodeQml::plugins(), argument #0 must be a string!"
-		));
-		return;
-	}
-	v8::String::Utf8Value param0(args[0]->ToString());
-	std::string dir = std::string(*param0);
-	
-	qmlui_plugins(dir.c_str());
-	
-}
-
-NODE_MODULE(qml, initialize);

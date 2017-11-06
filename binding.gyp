@@ -15,9 +15,11 @@
 			'target_name'  : 'qml',
 			'sources'      : [ 'src/exports.cpp' ],
 			'libraries'    : [ '-lqmlui' ],
-			'include_dirs' : [ '<(qmlui_include)' ],
+			'include_dirs' : [
+				'<!(node -e "require(\'nan\')")',
+				'<(qmlui_include)',
+			],
 			'library_dirs' : [ '<(qmlui_bin)' ],
-			# 'variables'    : { 'arch': 'Win32' },
 			'conditions'   : [
 				[
 					'OS=="linux"', { }
