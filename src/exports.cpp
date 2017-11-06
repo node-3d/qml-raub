@@ -32,6 +32,7 @@ void callCb(int i, const char *data) {
 	auto context = isolate->GetCurrentContext();
 	auto global = context->Global();
 	
+	Handle<Value> argv[2];
 	argv[0] = JS_NUM(i);
 	argv[1] = String::NewFromUtf8(isolate, data);
 	
