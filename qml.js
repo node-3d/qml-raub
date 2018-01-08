@@ -57,21 +57,19 @@ module.exports = {
 	},
 	
 	
-	view(width, height, cb) {
+	view(width, height, emitter) {
 		
 		if ( ! _private.isInited ) {
 			throw new Error('Qml must be inited to create a View.');
 		}
 		
-		const i = qml.view(width, height);
+		const i = qml.view(width, height, emitter);
 		
 		if (typeof error === 'string') {
 			throw new Error(error);
 		} else if (i < 0) {
 			throw new Error('Could not create a new (QML) View.');
 		}
-		
-		_private.callbacks[i] = cb;
 		
 		return i;
 		
@@ -85,8 +83,6 @@ module.exports = {
 		if (error) {
 			throw new Error(error);
 		}
-		
-		delete _private.callbacks[i];
 		
 	},
 	
