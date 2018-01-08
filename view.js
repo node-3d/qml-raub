@@ -56,13 +56,11 @@ class View extends EventEmitter {
 			
 		});
 		
-		this._index = qml.view(
-			opts.width || 512, opts.height || 512,
-			data => {
-				let parsed = null;
-				
+		
+		const emitter = {
+			emit: data => {
 				try {
-					parsed = JSON.parse(data);
+					const parsed = JSON.parse(data);
 					try {
 						this.emit(parsed.type, parsed.data);
 					} catch (ex) {
@@ -72,7 +70,10 @@ class View extends EventEmitter {
 					console.error("Error: Qml event, bad JSON.", data);
 				}
 			}
-		);
+		};
+		
+		
+		this._index = qml.view(opts.width || 512, opts.height || 512, emitter);
 		
 		View._libs.forEach(l => this.libs(l));
 		

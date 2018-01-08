@@ -68,6 +68,7 @@ NAN_METHOD(view) { NAN_HS;
 	
 	REQ_INT32_ARG(0, w);
 	REQ_INT32_ARG(1, h);
+	REQ_OBJ_ARG(2, emitter);
 	
 	int i = -1;
 	qmlui_view(&i, w, h);
@@ -76,6 +77,11 @@ NAN_METHOD(view) { NAN_HS;
 		Nan::ThrowTypeError("NodeQml::window(), could not create a new window!");
 		return;
 	}
+	
+	// Set callback emitter
+	states[i] = ViewState();
+	ViewState &state = states[i];
+	state.events.Reset( emitter );
 	
 	info.GetReturnValue().Set(JS_NUM(i));
 	

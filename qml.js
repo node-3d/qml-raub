@@ -8,18 +8,7 @@ const depQml  = require('node-deps-qt-qml-raub');
 
 require('node-deps-qmlui-raub');
 
-
-const addonPaths = {
-	win32 : 'bin_windows' ,
-	linux : 'bin_linux' ,
-	darwin: 'bin_darwin',
-};
-
-const binPath = __dirname + '/' + addonPaths[process.platform];
-
-process.env.path += ';' + binPath;
-
-const qml = require('./' + addonPaths[process.platform] + '/qml');
+const qml = require('./binary/qml');
 
 qml.plugins(depCore.bin + '/plugins');
 qml.plugins(depGui.bin  + '/plugins');
@@ -29,18 +18,6 @@ qml.plugins(depQml.bin  + '/plugins');
 const _private = {
 	
 	isInited : false,
-	
-	callbacks : [],
-	
-	proxy: (index, data) => {
-		
-		if ( ! _private.callbacks[index] ) {
-			return console.warn('No callback for index:', index);
-		}
-		
-		_private.callbacks[index](data);
-		
-	},
 	
 };
 
@@ -60,8 +37,7 @@ module.exports = {
 		const error = qml.init(
 			path.dirname(process.mainModule.filename),
 			windowHandle,
-			windowContext,
-			_private.proxy
+			windowContext
 		);
 		
 		if (error) {
