@@ -1,6 +1,6 @@
 {
   "name": "node-qml-raub",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "QML interoperation addon for Node.js",
   "keywords": [
     "qml"
@@ -27,7 +27,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "nan": "2.7.0",
-    "node-deps-qmlui-raub": "0.3.0"
+    "nan": "2.8.0",
+    "node-deps-qmlui-raub": "0.3.1",
+    "node-addon-tools-raub": "0.0.4"
   }
 }

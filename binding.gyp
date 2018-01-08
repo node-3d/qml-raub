@@ -1,31 +1,33 @@
 {
 	'variables': {
-		'platform'      : '<(OS)',
-		'qmlui_root'    : '<!(node -e "console.log(require(\'node-deps-qmlui-raub\').root)")',
-		'qmlui_include' : '<(qmlui_root)/include',
+		'qmlui_include' : '<!(node -e "console.log(require(\'node-deps-qmlui-raub\').include)")',
 		'qmlui_bin'     : '<!(node -e "console.log(require(\'node-deps-qmlui-raub\').bin)")',
 	},
-	'conditions': [
-		['platform == "mac"', { 'variables': { 'platform': 'darwin' } }],
-		['platform == "win"', { 'variables': { 'platform': 'windows'  } }],
-	],
 	'targets': [
-		
 		{
 			'target_name'  : 'qml',
-			'sources'      : [ 'src/exports.cpp' ],
+			'sources'      : [ 'cpp/exports.cpp' ],
 			'libraries'    : [ '-lqmlui' ],
 			'include_dirs' : [
 				'<!(node -e "require(\'nan\')")',
 				'<(qmlui_include)',
+				'<!(node -e "require(\'node-addon-tools-raub\')")',
 			],
 			'library_dirs' : [ '<(qmlui_bin)' ],
 			'conditions'   : [
 				[
-					'OS=="linux"', { }
+					'OS=="linux"', {
+						'libraries': [
+							'-Wl,-rpath,<(qmlui_bin)',
+						],
+					}
 				],
 				[
-					'OS=="mac"', { }
+					'OS=="mac"', {
+						'libraries': [
+							'-Wl,-rpath,<(qmlui_bin)',
+						],
+					}
 				],
 				[
 					'OS=="win"',
@@ -45,69 +47,76 @@
 				],
 			],
 		},
-		
+		{
+			'target_name'  : 'make_directory',
+			'type'         : 'none',
+			'dependencies' : ['qml'],
+			'actions'      : [{
+				'action_name' : 'Directory created.',
+				'inputs'      : [],
+				'outputs'     : ['build'],
+				'conditions'  : [
+					[ 'OS=="linux"', { 'action': ['mkdir', '-p', 'binary'] } ],
+					[ 'OS=="mac"', { 'action': ['mkdir', '-p', 'binary'] } ],
+					[ 'OS=="win"', { 'action': [
+						'<(module_root_dir)/_rd "<(module_root_dir)/binary" && ' +
+						'md "<(module_root_dir)/binary"'
+					] } ],
+				],
+			}],
+		},
 		{
 			'target_name'  : 'copy_binary',
 			'type'         : 'none',
-			'dependencies' : ['qml'],
-			'copies'       : [
-				{
-					'destination' : '<(module_root_dir)/bin_<(platform)',
-					'conditions'  : [
-						[
-							'OS=="linux"',
-							{ 'files' : [] }
-						],
-						[
-							'OS=="mac"',
-							{ 'files' : [] }
-						],
-						[
-							'OS=="win"',
-							{ 'files' : [ '<(module_root_dir)/build/Release/qml.node' ] },
-						],
-					]
-				}
-			],
+			'dependencies' : ['make_directory'],
+			'actions'      : [{
+				'action_name' : 'Module copied.',
+				'inputs'      : [],
+				'outputs'     : ['binary'],
+				'conditions'  : [
+					[ 'OS=="linux"', { 'action' : [
+						'cp',
+						'<(module_root_dir)/build/Release/qml.node',
+						'<(module_root_dir)/binary/qml.node'
+					] } ],
+					[ 'OS=="mac"', { 'action' : [
+						'cp',
+						'<(module_root_dir)/build/Release/qml.node',
+						'<(module_root_dir)/binary/qml.node'
+					] } ],
+					[ 'OS=="win"', { 'action' : [
+						'copy "<(module_root_dir)/build/Release/qml.node"' +
+						' "<(module_root_dir)/binary/qml.node"'
+					] } ],
+				],
+			}],
 		},
-		
 		{
 			'target_name'  : 'remove_extras',
 			'type'         : 'none',
 			'dependencies' : ['copy_binary'],
-			'actions'      : [
-				{
-					'action_name' : 'action_remove1',
-					'inputs'      : ['build/Release/qml.*'],
-					'outputs'     : ['build'],
-					'conditions'  : [
-						[ 'OS=="linux"', { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
-						[ 'OS=="mac"'  , { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
-						[ 'OS=="win"'  , { 'action' : [ '<(module_root_dir)/_del', '<@(_inputs)' ] } ],
-					],
-				},
-				{
-					'action_name' : 'action_remove2',
-					'inputs'      : ['build/Release/obj/qml/*.obj'],
-					'outputs'     : ['build'],
-					'conditions'  : [
-						[ 'OS=="linux"', { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
-						[ 'OS=="mac"'  , { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
-						[ 'OS=="win"'  , { 'action' : [ '<(module_root_dir)/_del', '<@(_inputs)' ] } ],
-					],
-				},
-				{
-					'action_name' : 'action_remove3',
-					'inputs'      : ['build/Release/obj/qml/*.pdb'],
-					'outputs'     : ['build'],
-					'conditions'  : [
-						[ 'OS=="linux"', { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
-						[ 'OS=="mac"'  , { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
-						[ 'OS=="win"'  , { 'action' : [ '<(module_root_dir)/_del', '<@(_inputs)' ] } ],
-					],
-				},
-			],
+			'actions'      : [{
+				'action_name' : 'Build intermediates removed.',
+				'inputs'      : [],
+				'outputs'     : ['cpp'],
+				'conditions'  : [
+					[ 'OS=="linux"', { 'action' : [
+						'rm',
+						'<(module_root_dir)/build/Release/obj.target/qml/cpp/qml.o',
+						'<(module_root_dir)/build/Release/obj.target/qml.node',
+						'<(module_root_dir)/build/Release/qml.node'
+					] } ],
+					[ 'OS=="mac"', { 'action' : [
+						'rm',
+						'<(module_root_dir)/build/Release/obj.target/qml/cpp/qml.o',
+						'<(module_root_dir)/build/Release/qml.node'
+					] } ],
+					[ 'OS=="win"', { 'action' : [
+						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/qml.*" && ' +
+						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/obj/qml/*.*"'
+					] } ],
+				],
+			}],
 		},
-		
 	]
 }
