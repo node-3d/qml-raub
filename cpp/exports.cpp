@@ -1,79 +1,78 @@
 #include <string>
+#include <map>
 
 #include <qmlui.hpp>
 
 #include "common.hpp"
 
+using namespace v8;
+using namespace node;
+using namespace std;
 
-using v8::FunctionCallbackInfo;
-using v8::Isolate;
-using v8::Local;
-using v8::Object;
-using v8::String;
-using v8::Number;
-using v8::Value;
-using v8::Handle;
-using v8::HandleScope;
-using v8::Context;
-using v8::Function;
-using v8::Persistent;
-using v8::CopyablePersistentTraits;
+#define JS_QML_SET_METHOD(name) Nan::SetMethod(target, #name , NodeQml::name);
 
-using namespace NodeQml;
+#define THIS_WINDOW                                  \
+	REQ_INT32_ARG(0, window);
 
 
-Persistent<Function, CopyablePersistentTraits<Function>> jsEventCb;
-void callCb(int i, const char *data) {
+namespace NodeQml {
+
+
+// Window info
+struct ViewState {
 	
-	auto isolate = Isolate::GetCurrent();
-	HandleScope scope(isolate);
+	Nan::Persistent<Object> events;
 	
-	auto context = isolate->GetCurrentContext();
-	auto global = context->Global();
+	ViewState() {}
 	
-	Handle<Value> argv[2];
-	argv[0] = JS_NUM(i);
-	argv[1] = String::NewFromUtf8(isolate, data);
+	const ViewState & operator = (const ViewState &other) { return *this; }
 	
-	auto fn = Local<Function>::New(isolate, jsEventCb);
-	fn->Call(global, 2, argv);
+};
+
+std::map<int, ViewState> states;
+
+
+void NAN_INLINE(_emit(int id, const char *data)) { NAN_HS;
+	
+	ViewState &state = states[id];
+	Local<Value> argv = JS_STR(data);
+	
+	if (Nan::New(state.events)->Has(JS_STR("emit"))) {
+		
+		Nan::Callback callback(Nan::New(state.events)->Get(JS_STR("emit")).As<Function>());
+		
+		if ( ! callback.IsEmpty() ) {
+			callback.Call(1, &argv);
+		}
+		
+	}
 	
 }
+
 
 // -------- METHODS -------- //
 
 
-NAN_METHOD(NodeQml::init) {
+NAN_METHOD(init) { NAN_HS;
 	
-	Nan::HandleScope scope;
-	auto isolate = Isolate::GetCurrent();
+	REQ_UTF8_ARG(0, cwdOwn);
+	REQ_OFFS_ARG(1, wnd);
+	REQ_OFFS_ARG(2, ctx);
 	
-	REQ_ARGS(4);
-	
-	REQ_STR_ARG(0, param0);
-	REQ_INT_ARG(1, param1);
-	REQ_INT_ARG(2, param2);
-	REQ_FUN_ARG(3, param3);
-	jsEventCb = Persistent<Function>(isolate, param3);
-	
-	qmlui_init(param0, param1, param2, callCb);
+	qmlui_init(*cwdOwn, wnd, ctx, _emit);
 	
 }
 
 
-NAN_METHOD(NodeQml::view) {
+NAN_METHOD(view) { NAN_HS;
 	
-	Nan::HandleScope scope;
-	
-	REQ_ARGS(2);
-	
-	REQ_INT32_ARG(0, param0);
-	REQ_INT32_ARG(1, param1);
+	REQ_INT32_ARG(0, w);
+	REQ_INT32_ARG(1, h);
 	
 	int i = -1;
-	qmlui_view(&i, param0, param1);
+	qmlui_view(&i, w, h);
 	
-	if ( i < 0 ) {
+	if (i < 0) {
 		Nan::ThrowTypeError("NodeQml::window(), could not create a new window!");
 		return;
 	}
@@ -83,92 +82,66 @@ NAN_METHOD(NodeQml::view) {
 }
 
 
-NAN_METHOD(NodeQml::close) {
+NAN_METHOD(close) { NAN_HS; THIS_WINDOW;
 	
-	Nan::HandleScope scope;
-	
-	REQ_ARGS(1);
-	
-	REQ_INT32_ARG(0, param0);
-	
-	qmlui_close(param0);
+	qmlui_close(window);
 	
 }
 
 
-NAN_METHOD(NodeQml::exit) {
-	
-	Nan::HandleScope scope;
+NAN_METHOD(exit) { NAN_HS;
 	
 	qmlui_exit();
 	
 }
 
 
-NAN_METHOD(NodeQml::resize) {
+NAN_METHOD(resize) { NAN_HS; THIS_WINDOW;
 	
-	Nan::HandleScope scope;
+	REQ_INT32_ARG(1, w);
+	REQ_INT32_ARG(2, h);
 	
-	REQ_ARGS(3);
-	
-	REQ_INT32_ARG(0, param0);
-	REQ_INT32_ARG(1, param1);
-	REQ_INT32_ARG(2, param2);
-	
-	qmlui_resize(param0, param1, param2);
-	
-}
-
-NAN_METHOD(NodeQml::mouse) {
-	
-	Nan::HandleScope scope;
-	
-	REQ_ARGS(6);
-	
-	REQ_INT32_ARG(0, param0);
-	REQ_INT32_ARG(1, param1);
-	REQ_INT32_ARG(2, param2);
-	REQ_INT32_ARG(3, param3);
-	REQ_INT32_ARG(4, param4);
-	REQ_INT32_ARG(5, param5);
-	
-	qmlui_mouse(param0, param1, param2, param3, param4, param5);
-	
-}
-
-NAN_METHOD(NodeQml::keyboard) {
-	
-	Nan::HandleScope scope;
-	
-	REQ_ARGS(4);
-	
-	REQ_INT32_ARG(0, param0);
-	REQ_INT32_ARG(1, param1);
-	REQ_INT32_ARG(2, param2);
-	REQ_INT32_ARG(3, param3);
-	
-	qmlui_keyboard(param0, param1, param2, param3);
+	qmlui_resize(window, w, h);
 	
 }
 
 
-NAN_METHOD(NodeQml::load) {
+NAN_METHOD(mouse) { NAN_HS; THIS_WINDOW;
 	
-	Nan::HandleScope scope;
+	REQ_INT32_ARG(1, type);
+	REQ_INT32_ARG(2, button);
+	REQ_INT32_ARG(3, buttons);
+	REQ_INT32_ARG(4, x);
+	REQ_INT32_ARG(5, y);
 	
-	REQ_ARGS(2);
+	qmlui_mouse(window, type, button, buttons, x, y);
 	
-	REQ_INT32_ARG(0, param0);
+}
+
+
+NAN_METHOD(keyboard) { NAN_HS; THIS_WINDOW;
+	
+	REQ_INT32_ARG(1, type);
+	REQ_INT32_ARG(2, key);
+	REQ_INT32_ARG(3, text);
+	
+	qmlui_keyboard(window, type, key, text);
+	
+}
+
+
+NAN_METHOD(load) { NAN_HS; THIS_WINDOW;
 	
 	if (info[1]->IsString()) {
 		
-		REQ_STR_ARG(1, param1);
-		qmlui_load(param0, param1, true);
+		REQ_UTF8_ARG(1, path);
+		qmlui_load(window, *path, true);
 		
 	} else if (info[1]->IsBoolean() && info[2]->IsString()) {
 		
-		REQ_STR_ARG(2, param2);
-		qmlui_load(param0, param2, info[1]->BooleanValue());
+		REQ_BOOL_ARG(1, isFile);
+		REQ_UTF8_ARG(2, str);
+		qmlui_load(window, *str, isFile);
 		
 	} else {
 		Nan::ThrowTypeError("NodeQml::load(), Arguments should be (int, [bool,] string)!");
@@ -177,81 +150,58 @@ NAN_METHOD(NodeQml::load) {
 }
 
 
-NAN_METHOD(NodeQml::set) {
+NAN_METHOD(set) { NAN_HS; THIS_WINDOW;
 	
-	Nan::HandleScope scope;
+	REQ_UTF8_ARG(1, obj);
+	REQ_UTF8_ARG(2, prop);
+	REQ_UTF8_ARG(3, json);
 	
-	REQ_ARGS(4);
-	
-	REQ_INT32_ARG(0, param0);
-	REQ_STR_ARG(1, param1);
-	REQ_STR_ARG(2, param2);
-	REQ_STR_ARG(3, param3);
-	
-	qmlui_set(param0, param1, param2, param3);
+	qmlui_set(window, *obj, *prop, *json);
 	
 }
 
 
-NAN_METHOD(NodeQml::get) {
+NAN_METHOD(get) { NAN_HS; THIS_WINDOW;
 	
-	Nan::HandleScope scope;
+	REQ_UTF8_ARG(1, obj);
+	REQ_UTF8_ARG(2, prop);
 	
-	REQ_ARGS(3);
-	
-	REQ_INT32_ARG(0, param0);
-	REQ_STR_ARG(1, param1);
-	REQ_STR_ARG(2, param2);
-	
-	qmlui_get(param0, param1, param2);
+	qmlui_get(window, *obj, *prop);
 	
 }
 
 
-NAN_METHOD(NodeQml::invoke) {
+NAN_METHOD(invoke) { NAN_HS; THIS_WINDOW;
 	
-	Nan::HandleScope scope;
+	REQ_UTF8_ARG(1, obj);
+	REQ_UTF8_ARG(2, method);
+	REQ_UTF8_ARG(3, json);
 	
-	REQ_ARGS(4);
-	
-	REQ_INT32_ARG(0, param0);
-	REQ_STR_ARG(1, param1);
-	REQ_STR_ARG(2, param2);
-	REQ_STR_ARG(3, param3);
-	
-	qmlui_invoke(param0, param1, param2, param3);
+	qmlui_invoke(window, *obj, *method, *json);
 	
 }
 
 
-NAN_METHOD(NodeQml::libs) {
+NAN_METHOD(libs) { NAN_HS; THIS_WINDOW;
 	
-	Nan::HandleScope scope;
+	REQ_UTF8_ARG(1, str);
 	
-	REQ_ARGS(2);
-	
-	REQ_INT32_ARG(0, param0);
-	REQ_STR_ARG(1, param1);
-	
-	qmlui_libs(param0, param1);
+	qmlui_libs(window, *str);
 	
 }
 
 
-NAN_METHOD(NodeQml::plugins) {
+NAN_METHOD(plugins) { NAN_HS;
 	
-	Nan::HandleScope scope;
+	REQ_UTF8_ARG(0, str);
 	
-	REQ_ARGS(1);
-	
-	REQ_STR_ARG(0, param0);
-	
-	qmlui_plugins(param0);
+	qmlui_plugins(*str);
 	
 }
 
 
-#define JS_QML_SET_METHOD(name) Nan::SetMethod(target, #name, NodeQml::name)
+} // namespace NodeQml
+
 
 extern "C" {
 	
