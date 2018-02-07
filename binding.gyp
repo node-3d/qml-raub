@@ -1,7 +1,10 @@
 {
 	'variables': {
-		'qmlui_include' : '<!(node -e "console.log(require(\'node-deps-qmlui-raub\').include)")',
-		'qmlui_bin'     : '<!(node -e "console.log(require(\'node-deps-qmlui-raub\').bin)")',
+		'rm'             : '<!(node -e "require(\'addon-tools-raub\').rm()")',
+		'cp'             : '<!(node -e "require(\'addon-tools-raub\').cp()")',
+		'mkdir'          : '<!(node -e "require(\'addon-tools-raub\').mkdir()")',
+		'qmlui_include'  : '<!(node -e "require(\'deps-qmlui-raub\').include()")',
+		'qmlui_bin'      : '<!(node -e "require(\'deps-qmlui-raub\').bin()")',
 	},
 	'targets': [
 		{
@@ -9,24 +12,14 @@
 			'sources'      : [ 'cpp/exports.cpp' ],
 			'libraries'    : [ '-lqmlui' ],
 			'include_dirs' : [
-				'<!(node -e "require(\'nan\')")',
+				'<!@(node -e "require(\'addon-tools-raub\').include()")',
 				'<(qmlui_include)',
-				'<!(node -e "require(\'node-addon-tools-raub\')")',
 			],
 			'library_dirs' : [ '<(qmlui_bin)' ],
 			'conditions'   : [
 				[
-					'OS=="linux"', {
-						'libraries': [
-							'-Wl,-rpath,<(qmlui_bin)',
-						],
-					}
-				],
-				[
-					'OS=="mac"', {
-						'libraries': [
-							'-Wl,-rpath,<(qmlui_bin)',
-						],
+					'OS=="linux" or OS=="mac"', {
+						'libraries': ['-Wl,-rpath,<(qmlui_bin)'],
 					}
 				],
 				[
@@ -50,19 +43,12 @@
 		{
 			'target_name'  : 'make_directory',
 			'type'         : 'none',
-			'dependencies' : ['qml'],
+			'dependencies' : ['qmlui'],
 			'actions'      : [{
 				'action_name' : 'Directory created.',
 				'inputs'      : [],
 				'outputs'     : ['build'],
-				'conditions'  : [
-					[ 'OS=="linux"', { 'action': ['mkdir', '-p', 'binary'] } ],
-					[ 'OS=="mac"', { 'action': ['mkdir', '-p', 'binary'] } ],
-					[ 'OS=="win"', { 'action': [
-						'<(module_root_dir)/_rd "<(module_root_dir)/binary" && ' +
-						'md "<(module_root_dir)/binary"'
-					] } ],
-				],
+				'action': ['<(mkdir)', '-p', 'binary']
 			}],
 		},
 		{
@@ -73,22 +59,7 @@
 				'action_name' : 'Module copied.',
 				'inputs'      : [],
 				'outputs'     : ['binary'],
-				'conditions'  : [
-					[ 'OS=="linux"', { 'action' : [
-						'cp',
-						'<(module_root_dir)/build/Release/qml.node',
-						'<(module_root_dir)/binary/qml.node'
-					] } ],
-					[ 'OS=="mac"', { 'action' : [
-						'cp',
-						'<(module_root_dir)/build/Release/qml.node',
-						'<(module_root_dir)/binary/qml.node'
-					] } ],
-					[ 'OS=="win"', { 'action' : [
-						'copy "<(module_root_dir)/build/Release/qml.node"' +
-						' "<(module_root_dir)/binary/qml.node"'
-					] } ],
-				],
+				'action'      : ['<(cp)', 'build/Release/qmlui.node', 'binary/qmlui.node'],
 			}],
 		},
 		{
@@ -112,8 +83,9 @@
 						'<(module_root_dir)/build/Release/qml.node'
 					] } ],
 					[ 'OS=="win"', { 'action' : [
-						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/qml.*" && ' +
-						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/obj/qml/*.*"'
+						'<(rm)',
+						'<(module_root_dir)/build/Release/qml.*',
+						'<(module_root_dir)/build/Release/obj/qml/*.*'
 					] } ],
 				],
 			}],

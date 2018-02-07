@@ -1,13 +1,11 @@
-build*
-lib_d
-*.pro.user
 .idea
-.cproject,.project
 .cproject
 .project
 .lock-wscript
+build*
 .DS_Store
 Debug
 node_modules
-bin_*
+package-lock.json
+binary
 *.log
