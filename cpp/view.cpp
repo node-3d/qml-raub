@@ -13,21 +13,38 @@ using namespace std;
 #define THIS_CHECK                                                            \
 	if (view->_isDestroyed) return;
 
-#define V3_GETTER(NAME, CACHE)                                                \
-	NAN_GETTER(View::NAME ## Getter) { THIS_VIEW; THIS_CHECK;                 \
-		VEC3_TO_OBJ(view->CACHE, NAME);                                       \
-		RET_VALUE(NAME);                                                      \
-	}
 
-#define CACHE_CAS(CACHE, V)                                                   \
-	if (view->CACHE == V) {                                                   \
-		return;                                                               \
-	}                                                                         \
-	view->CACHE = V;
-
-
-map<int, View*> View::_views;
 Nan::Persistent<v8::Function> View::_constructor;
+
+std::map<QmlUi*, View*> View::_uis;
+
+
+void View::commonCb(QmlUi *ui, const char *data) { NAN_HS;
+	
+	View *view = _uis[ui];
+	Local<Value> argv = JS_STR(data);
+	view->_emit(view, 1, &argv);
+	
+}
+
+
+NAN_METHOD(View::_init) {
+	
+	REQ_UTF8_ARG(0, cwdOwn);
+	REQ_OFFS_ARG(1, wnd);
+	REQ_OFFS_ARG(2, ctx);
+	
+	QmlUi::init(*cwdOwn, wnd, ctx, commonCb);
+	
+}
+
+NAN_METHOD(View::plugins) {
+	
+	REQ_UTF8_ARG(0, str);
+	
+	QmlUi::plugins(*str);
+	
+}
 
 
 void View::init(Handle<Object> target) {
@@ -44,6 +61,9 @@ void View::init(Handle<Object> target) {
 	
 	_constructor.Reset(Nan::GetFunction(ctor).ToLocalChecked());
 	Nan::Set(target, JS_STR("View"), Nan::GetFunction(ctor).ToLocalChecked());
+	
+	Nan::SetMethod(ctor, "init", _init);
+	Nan::SetMethod(ctor, "plugins", _init);
 	
 }
 
@@ -68,8 +88,10 @@ NAN_METHOD(View::newCtor) {
 	CTOR_CHECK("View");
 	
 	REQ_OBJ_ARG(0, emitter);
+	REQ_INT32_ARG(1, w);
+	REQ_INT32_ARG(2, h);
 	
-	View *view = new View();
+	View *view = new View(w, h);
 	view->_emitter.Reset(emitter);
 	view->Wrap(info.This());
 	
@@ -78,9 +100,9 @@ NAN_METHOD(View::newCtor) {
 }
 
 
-View::View() {
+View::View(int w, int h) {
 	
-	_qmlui = new QmlUi();
+	_qmlui = new QmlUi(w, h);
 	
 	_isDestroyed = false;
 	
@@ -108,130 +130,97 @@ void View::_destroy() { DES_CHECK;
 }
 
 
-void View::refBody(Body *body) { DES_CHECK;
-	_bodies.push_back(body);
-}
-
-void View::unrefBody(Body* body) { DES_CHECK;
+NAN_METHOD(View::resize) { THIS_VIEW;
 	
-	vector<Body*>::iterator it = _bodies.begin();
+	REQ_INT32_ARG(1, w);
+	REQ_INT32_ARG(2, h);
 	
-	while (it != _bodies.end()) {
-		
-		if (*it == body) {
-			_bodies.erase(it);
-			break;
-		}
-		
-		it++;
-		
-	}
+	view->resize(w, h);
 	
 }
 
 
-void View::doUpdate(float dt) { DES_CHECK;
+NAN_METHOD(View::mouse) { THIS_VIEW;
 	
-	_physWorld->stepSimulation(dt, 10, 1.f / 120.f);
+	REQ_INT32_ARG(1, type);
+	REQ_INT32_ARG(2, button);
+	REQ_INT32_ARG(3, buttons);
+	REQ_INT32_ARG(4, x);
+	REQ_INT32_ARG(5, y);
 	
-	vector<Body*>::iterator it = _bodies.begin();
-	while (it != _bodies.end()) {
-		(*it)->__update();
-		it++;
-	}
-	
-	
-}
-
-
-void View::doUpdate() { DES_CHECK;
-	
-	btScalar dt = static_cast<btScalar>(_clock->getTimeMicroseconds())* 0.000001f;
-	_clock->reset();
-	
-	doUpdate(dt);
+	view->mouse(type, button, buttons, x, y);
 	
 }
 
 
-vector< Local<Value> > View::doTrace(const btVector3 &from, const btVector3 &to) {
+NAN_METHOD(View::keyboard) { THIS_VIEW;
 	
-	btCollisionWorld::AllHitsRayResultCallback allResults(from, to);
-	_physWorld->rayTest(from, to, allResults);
+	REQ_INT32_ARG(1, type);
+	REQ_INT32_ARG(2, key);
+	REQ_INT32_ARG(3, text);
 	
-	vector< Local<Value> > list;
+	view->keyboard(type, key, text);
 	
-	for (int i = 0; i < allResults.m_collisionObjects.size(); i++) {
+}
+
+
+NAN_METHOD(View::load) { THIS_VIEW;
+	
+	if (info[1]->IsString()) {
 		
-		Body *b = reinterpret_cast<Body *>(allResults.m_collisionObjects[i]->getUserPointer());
+		REQ_UTF8_ARG(1, path);
+		view->load(*path, true);
 		
-		list.push_back(Trace::instance(
-			true, b,
-			allResults.m_hitPointWorld[i],
-			allResults.m_hitNormalWorld[i]
-		));
+	} else if (info[1]->IsBoolean() && info[2]->IsString()) {
 		
-	}
-	
-	return list;
-	
-}
-
-
-V3_GETTER(gravity, _cacheGrav);
-
-NAN_SETTER(View::gravitySetter) { THIS_VIEW; THIS_CHECK; SETTER_VEC3_ARG;
-	
-	CACHE_CAS(_cacheGrav, v);
-	
-	view->_physWorld->setGravity(view->_cacheGrav);
-	
-	// Emit "gravity"
-	Local<Value> argv[2] = { JS_STR("gravity"), value };
-	view->_emit(2, argv);
-	
-}
-
-
-NAN_METHOD(View::update) { THIS_VIEW; THIS_CHECK;
-	
-	LET_FLOAT_ARG(0, dt);
-	
-	if (dt > 0.f) {
-		view->doUpdate(dt);
+		REQ_BOOL_ARG(1, isFile);
+		REQ_UTF8_ARG(2, str);
+		view->load(*str, isFile);
+		
 	} else {
-		view->doUpdate();
+		Nan::ThrowTypeError("NodeQml::load(), Arguments should be (int, [bool,] string)!");
 	}
 	
 }
 
 
-NAN_METHOD(View::hit) { THIS_VIEW; THIS_CHECK;
+NAN_METHOD(View::set) { THIS_VIEW;
 	
-	REQ_VEC3_ARG(0, f);
-	REQ_VEC3_ARG(1, t);
+	REQ_UTF8_ARG(1, obj);
+	REQ_UTF8_ARG(2, prop);
+	REQ_UTF8_ARG(3, json);
 	
-	Local<Value> trace = Trace::instance(view, f, t);
+	view->set(*obj, *prop, *json);
 	
-	RET_VALUE(trace);
 }
 
 
-NAN_METHOD(View::trace) { THIS_VIEW; THIS_CHECK;
+NAN_METHOD(View::get) { THIS_VIEW;
 	
-	REQ_VEC3_ARG(0, f);
-	REQ_VEC3_ARG(1, t);
+	REQ_UTF8_ARG(1, obj);
+	REQ_UTF8_ARG(2, prop);
 	
-	const vector< Local<Value> > &traceList = view->doTrace(f, t);
-	int size = traceList.size();
+	view->get(*obj, *prop);
 	
-	Local<Array> result = Nan::New<Array>(size);
+}
+
+
+NAN_METHOD(View::invoke) { THIS_VIEW;
 	
-	for (int i = 0; i < size; i++) {
-		SET_I(result, i, traceList[i]);
-	}
+	REQ_UTF8_ARG(1, obj);
+	REQ_UTF8_ARG(2, method);
+	REQ_UTF8_ARG(3, json);
 	
-	RET_VALUE(result);
+	view->invoke(*obj, *method, *json);
+	
+}
+
+
+NAN_METHOD(View::libs) { THIS_VIEW;
+	
+	REQ_UTF8_ARG(1, str);
+	
+	view->libs(*str);
 	
 }
 
