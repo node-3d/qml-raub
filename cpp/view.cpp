@@ -80,19 +80,9 @@ NAN_METHOD(View::newCtor) {
 
 View::View() {
 	
+	_qmlui = new QmlUi();
+	
 	_isDestroyed = false;
-	
-	_clock = new btClock();
-	_clock->reset();
-	
-	_physConfig = new btDefaultCollisionConfiguration();
-	_physDispatcher = new btCollisionDispatcher(_physConfig);
-	_physBroadphase = new btDbvtBroadphase();
-	_physSolver = new btSequentialImpulseConstraintSolver();
-	_physWorld = new btDiscreteDynamicsWorld(_physDispatcher, _physBroadphase, _physSolver, _physConfig);
-	
-	_cacheGrav.setValue(0, -10, 0);
-	_physWorld->setGravity(_cacheGrav);
 	
 }
 
@@ -106,27 +96,8 @@ View::~View() {
 
 void View::_destroy() { DES_CHECK;
 	
-	vector<Body*>::iterator it = _bodies.begin();
-	while (it != _bodies.end()) {
-		delete (*it);
-		it++;
-	}
-	_bodies.clear();
-	
-	delete _physWorld;
-	_physWorld = NULL;
-	
-	delete _physSolver;
-	_physSolver = NULL;
-	
-	delete _physBroadphase;
-	_physBroadphase = NULL;
-	
-	delete _physDispatcher;
-	_physDispatcher = NULL;
-	
-	delete _physConfig;
-	_physConfig = NULL;
+	delete _qmlui;
+	_qmlui = NULL;
 	
 	_isDestroyed = true;
 	

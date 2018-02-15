@@ -1,24 +1,12 @@
 'use strict';
 
-const context = require('./qml');
-const View = require('./view');
-
+const context = require('./core');
 
 module.exports = {
 	
 	context,
-	View,
 	
-	init    : context.init,
+	View     : require('./js/View'),
+	Variable : require('./js/Variable'),
 	
-	libs    : View._addLibDir,
-	
-	plugins : context.plugins,
-	
-};
-module.exports = {
-	View  : require('./js/View'),
-	Variable  : require('./js/body'),
-	Joint : require('./js/joint'),
-	Trace : require('./js/trace'),
 };

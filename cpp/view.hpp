@@ -5,6 +5,7 @@
 #include <map>
 
 #include <nan.h>
+#include <qmlui.hpp>
 
 #include "common.hpp"
 
@@ -28,7 +29,19 @@ protected:
 	static NAN_METHOD(update);
 	static NAN_METHOD(hit);
 	static NAN_METHOD(trace);
-	
+// init
+// view
+// close
+// exit
+// resize
+// mouse
+// keyboard
+// load
+// get
+// set
+// invoke
+// libs
+// plugins
 	
 private:
 	
@@ -41,6 +54,8 @@ private:
 	void _destroy();
 	
 	bool _isDestroyed;
+	
+	QmlUi _qmlui;
 	
 };
 

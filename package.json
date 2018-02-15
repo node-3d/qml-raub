@@ -20,7 +20,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "deps-qmlui-raub": "0.0.1",
+    "deps-qmlui-raub": "https://github.com/raub/node-deps-qmlui.git",
     "addon-tools-raub": "0.0.8"
   }
 }
