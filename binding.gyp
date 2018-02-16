@@ -9,7 +9,7 @@
 	'targets': [
 		{
 			'target_name'  : 'qml',
-			'sources'      : [ 'cpp/exports.cpp' ],
+			'sources'      : [ 'cpp/view.cpp' ],
 			'libraries'    : [ '-lqmlui' ],
 			'include_dirs' : [
 				'<!@(node -e "require(\'addon-tools-raub\').include()")',
@@ -43,7 +43,7 @@
 		{
 			'target_name'  : 'make_directory',
 			'type'         : 'none',
-			'dependencies' : ['qmlui'],
+			'dependencies' : ['qml'],
 			'actions'      : [{
 				'action_name' : 'Directory created.',
 				'inputs'      : [],
@@ -59,7 +59,7 @@
 				'action_name' : 'Module copied.',
 				'inputs'      : [],
 				'outputs'     : ['binary'],
-				'action'      : ['<(cp)', 'build/Release/qmlui.node', 'binary/qmlui.node'],
+				'action'      : ['<(cp)', 'build/Release/qml.node', 'binary/qml.node'],
 			}],
 		},
 		{

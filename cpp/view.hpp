@@ -17,7 +17,7 @@
 
 #include <addon-tools.hpp>
 
-#include <qmlui.hpp>
+class QmlUi;
 
 
 class View : public Nan::ObjectWrap {
@@ -25,12 +25,15 @@ class View : public Nan::ObjectWrap {
 public:
 	
 	static void init(v8::Handle<v8::Object> target);
-	
+	static void commonCb(QmlUi *ui, const char *data);
 	
 protected:
 	
 	View(int w, int h);
 	~View();
+	
+	static NAN_METHOD(_init);
+	static NAN_METHOD(plugins);
 	
 	static NAN_METHOD(newCtor);
 	
@@ -48,7 +51,6 @@ protected:
 	
 private:
 	
-	std::map<QmlUi*, View*> View::_uis;
 	static Nan::Persistent<v8::Function> _constructor;
 	
 	Nan::Persistent<v8::Object> _emitter;
@@ -58,7 +60,7 @@ private:
 	
 	bool _isDestroyed;
 	
-	QmlUi _qmlui;
+	QmlUi *_qmlui;
 	
 };
 

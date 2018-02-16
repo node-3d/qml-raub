@@ -1,6 +1,8 @@
 #include <cstdlib>
 #include <iostream>
 
+#include <qmlui.hpp>
+
 #include "view.hpp"
 
 using namespace v8;
@@ -13,17 +15,29 @@ using namespace std;
 #define THIS_CHECK                                                            \
 	if (view->_isDestroyed) return;
 
+#define DES_CHECK                                                             \
+	if (_isDestroyed) return;
+
+
+extern "C" {
+	
+	void init(Handle<Object> target) { View::init(target); }
+	
+	NODE_MODULE(NODE_GYP_MODULE_NAME, init);
+	
+}
+
 
 Nan::Persistent<v8::Function> View::_constructor;
 
-std::map<QmlUi*, View*> View::_uis;
+std::map<QmlUi*, View*> _uis;
 
 
 void View::commonCb(QmlUi *ui, const char *data) { NAN_HS;
 	
 	View *view = _uis[ui];
 	Local<Value> argv = JS_STR(data);
-	view->_emit(view, 1, &argv);
+	view->_emit(1, &argv);
 	
 }
 
@@ -62,8 +76,8 @@ void View::init(Handle<Object> target) {
 	_constructor.Reset(Nan::GetFunction(ctor).ToLocalChecked());
 	Nan::Set(target, JS_STR("View"), Nan::GetFunction(ctor).ToLocalChecked());
 	
-	Nan::SetMethod(ctor, "init", _init);
-	Nan::SetMethod(ctor, "plugins", _init);
+	Nan::SetMethod(ctor, "init", View::_init);
+	Nan::SetMethod(ctor, "plugins", View::plugins);
 	
 }
 
@@ -135,7 +149,7 @@ NAN_METHOD(View::resize) { THIS_VIEW;
 	REQ_INT32_ARG(1, w);
 	REQ_INT32_ARG(2, h);
 	
-	view->resize(w, h);
+	view->_qmlui->resize(w, h);
 	
 }
 
@@ -148,7 +162,7 @@ NAN_METHOD(View::mouse) { THIS_VIEW;
 	REQ_INT32_ARG(4, x);
 	REQ_INT32_ARG(5, y);
 	
-	view->mouse(type, button, buttons, x, y);
+	view->_qmlui->mouse(type, button, buttons, x, y);
 	
 }
 
@@ -159,7 +173,7 @@ NAN_METHOD(View::keyboard) { THIS_VIEW;
 	REQ_INT32_ARG(2, key);
 	REQ_INT32_ARG(3, text);
 	
-	view->keyboard(type, key, text);
+	view->_qmlui->keyboard(type, key, text);
 	
 }
 
@@ -169,13 +183,13 @@ NAN_METHOD(View::load) { THIS_VIEW;
 	if (info[1]->IsString()) {
 		
 		REQ_UTF8_ARG(1, path);
-		view->load(*path, true);
+		view->_qmlui->load(*path, true);
 		
 	} else if (info[1]->IsBoolean() && info[2]->IsString()) {
 		
 		REQ_BOOL_ARG(1, isFile);
 		REQ_UTF8_ARG(2, str);
-		view->load(*str, isFile);
+		view->_qmlui->load(*str, isFile);
 		
 	} else {
 		Nan::ThrowTypeError("NodeQml::load(), Arguments should be (int, [bool,] string)!");
@@ -190,7 +204,7 @@ NAN_METHOD(View::set) { THIS_VIEW;
 	REQ_UTF8_ARG(2, prop);
 	REQ_UTF8_ARG(3, json);
 	
-	view->set(*obj, *prop, *json);
+	view->_qmlui->set(*obj, *prop, *json);
 	
 }
 
@@ -200,7 +214,7 @@ NAN_METHOD(View::get) { THIS_VIEW;
 	REQ_UTF8_ARG(1, obj);
 	REQ_UTF8_ARG(2, prop);
 	
-	view->get(*obj, *prop);
+	view->_qmlui->get(*obj, *prop);
 	
 }
 
@@ -211,7 +225,7 @@ NAN_METHOD(View::invoke) { THIS_VIEW;
 	REQ_UTF8_ARG(2, method);
 	REQ_UTF8_ARG(3, json);
 	
-	view->invoke(*obj, *method, *json);
+	view->_qmlui->invoke(*obj, *method, *json);
 	
 }
 
@@ -220,7 +234,7 @@ NAN_METHOD(View::libs) { THIS_VIEW;
 	
 	REQ_UTF8_ARG(1, str);
 	
-	view->libs(*str);
+	view->_qmlui->libs(*str);
 	
 }
 

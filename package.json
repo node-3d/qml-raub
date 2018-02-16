@@ -19,6 +19,10 @@
     "url": "https://github.com/raub/node-qml.git"
   },
   "license": "MIT",
+  "engines": {
+    "node": ">=8.9.4",
+    "npm": ">=5.6.0"
+  },
   "dependencies": {
     "deps-qmlui-raub": "https://github.com/raub/node-deps-qmlui.git",
     "addon-tools-raub": "0.0.8"
