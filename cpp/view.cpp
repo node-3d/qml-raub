@@ -84,10 +84,13 @@ void View::init(Handle<Object> target) {
 	Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
 	
 	_constructor.Reset(Nan::GetFunction(ctor).ToLocalChecked());
-	Nan::Set(target, JS_STR("View"), Nan::GetFunction(ctor).ToLocalChecked());
 	
-	Nan::SetMethod(ctor, "init", View::_init);
-	Nan::SetMethod(ctor, "plugins", View::plugins);
+	Local<Function> ctorFunc = Nan::GetFunction(ctor).ToLocalChecked();
+	
+	Nan::Set(target, JS_STR("View"), ctorFunc);
+	
+	Nan::SetMethod(ctorFunc, "init", View::_init);
+	Nan::SetMethod(ctorFunc, "plugins", View::plugins);
 	
 }
 
@@ -128,7 +131,7 @@ View::View(int w, int h) {
 	
 	_qmlui = new QmlUi(w, h);
 	
-	uis[_qmlui] = this;
+	_uis[_qmlui] = this;
 	
 	_isDestroyed = false;
 	
@@ -153,7 +156,7 @@ void View::_destroy() { DES_CHECK;
 	Local<Value> argv = JS_STR("destroy");
 	_emit(1, &argv);
 	
-	uis.erase(_qmlui);
+	_uis.erase(_qmlui);
 	
 }
 
