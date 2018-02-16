@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 const util = require('util');
 const EventEmitter = require('events');
 
@@ -7,6 +8,11 @@ const { View } = require('../core');
 
 
 class JsView extends EventEmitter {
+	
+	static init(...args) {
+		View.init(path.dirname(process.mainModule.filename), ...args);
+	}
+	
 	
 	static libs(l) {
 		
@@ -20,11 +26,13 @@ class JsView extends EventEmitter {
 		
 	}
 	
+	
 	static plugins(p) {
 		
 		View.plugins(p);
 		
 	}
+	
 	
 	static __offerIdx() {
 		
