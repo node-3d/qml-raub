@@ -1,18 +1,75 @@
 'use strict';
 
+const util = require('util');
 const EventEmitter = require('events');
 
-const path = require('path');
-
-const qml = require('./qml');
+const { View } = require('../core');
 
 
-class View extends EventEmitter {
+class JsView extends EventEmitter {
 	
-	constructor(opts) {
+	static libs(l) {
+		
+		if ( ! JsView.__libs ) {
+			JsView.__libs = [];
+		}
+		
+		JsView.__libs.push(l);
+		
+		Object.keys(JsView.__instances).forEach(v => v._view.libs(l));
+		
+	}
+	
+	static plugins(p) {
+		
+		View.plugins(p);
+		
+	}
+	
+	static __offerIdx() {
+		
+		View.__index = (View.__index || 0) + 1;
+		return View.__index;
+		
+	}
+	
+	
+	constructor(opts = {}) {
 		
 		super();
+		
 		this.setMaxListeners(0);
+		
+		this.__index = __offerIdx();
+		
+		this._width = opts.width || opts.w || 512;
+		this._height = opts.height || opts.h || 512;
+		
+		this._emitter = {
+			emit: data => {
+				try {
+					const parsed = JSON.parse(data);
+					try {
+						this.emit(parsed.type, parsed.data);
+					} catch (e) {
+						console.error(e);
+					}
+				} catch (e) {
+					console.error("Error: Qml event, bad JSON.", data);
+				}
+			}
+		};
+		
+		this._view = new View(this._emitter, this._width, this._height);
+		
+		View.__libs.forEach(l => this._view.libs(l));
+		
+		
+		if ( ! JsView.__instances ) {
+			JsView.__instances = {};
+		}
+		JsView.__instances[this.__index] = this;
+		
 		
 		this._silent = !! opts.silent;
 		this.on('error', data => {
@@ -21,23 +78,12 @@ class View extends EventEmitter {
 			}
 		});
 		
-		this._destroy();
-		
 		// Expect FBO texture
 		this.on('fbo', data => {
 			this._textureId = data.texture;
 			this.emit('reset', this._textureId);
 		});
 		
-		this.on('ready', () => {
-			
-			this._isReady = true;
-			
-			this._libs.forEach(l => qml.libs(this._index, l));
-			
-			this._loadWhenReady();
-			
-		});
 		
 		this.on('load', e => {
 			
@@ -57,26 +103,6 @@ class View extends EventEmitter {
 		});
 		
 		
-		const emitter = {
-			emit: data => {
-				try {
-					const parsed = JSON.parse(data);
-					try {
-						this.emit(parsed.type, parsed.data);
-					} catch (ex) {
-						console.error(ex.stack);
-					}
-				} catch (ex) {
-					console.error("Error: Qml event, bad JSON.", data);
-				}
-			}
-		};
-		
-		
-		this._index = qml.view(opts.width || 512, opts.height || 512, emitter);
-		
-		View._libs.forEach(l => this.libs(l));
-		
 		if (opts.file || opts.source) {
 			this.load(opts);
 		}
@@ -84,31 +110,77 @@ class View extends EventEmitter {
 	}
 	
 	
-	resize(w, h) {
-		qml.resize(this._index, w, h);
+	get width() { return this._width; }
+	get height() { return this._height; }
+	
+	set width(v) {
+		if (this._width === v) {
+			return;
+		}
+		this._width = v;
+		this._view.resize(this._width, this._height);
+	}
+	set height(v) {
+		if (this._height === v) {
+			return;
+		}
+		this._height = v;
+		this._view.resize(this._width, this._height);
+	}
+	
+	get w() { return this.width; }
+	set w(v) { this.width = v; }
+	get h() { return this.height; }
+	set h(v) { this.height = v; }
+	get wh() { return [this.width, this.height]; }
+	set wh([width, height]) { this.size = { width, height }; }
+	
+	
+	get size() {
+		const size = glfw.getWindowSize(this._window);
+		this._width = size.width;
+		this._height = size.height;
+		return size;
+	}
+	
+	set size({ width, height }) {
+		if (this._width === width && this._height === height) {
+			return;
+		}
+		this._width = width;
+		this._height = height;
+		this._view.resize(this._width, this._height);
+	}
+	
+	
+	destroy(...args) { return this._view.destroy(...args); }
+	
+	[util.inspect.custom]() { return this.toString(); }
+	
+	toString() {
+		return `View { }`
 	}
 	
 	
 	mousedown(e) {
 		this.mbuttons |= (1 << e.button);
-		qml.mouse(this._index, 1, e.button, this.mbuttons, e.x, e.y);
+		this._view.mouse(1, e.button, this.mbuttons, e.x, e.y);
 	}
 	
 	
 	mouseup(e) {
 		this.mbuttons &= ~(1 << e.button);
-		qml.mouse(this._index, 2, e.button, this.mbuttons, e.x, e.y);
+		this._view.mouse(2, e.button, this.mbuttons, e.x, e.y);
 	}
 	
 	
 	mousemove(e) {
-		qml.mouse(this._index, 0, 0, this.mbuttons, e.x, e.y);
+		this._view.mouse(0, 0, this.mbuttons, e.x, e.y);
 	}
 	
 	
 	keydown(e) {
-		qml.keyboard(
-			this._index,
+		this._view.keyboard(
 			1,
 			e.which,
 			e.keyCode > 0 && e.keyCode < 256 ?
@@ -119,8 +191,7 @@ class View extends EventEmitter {
 	
 	
 	keyup(e) {
-		qml.keyboard(
-			this._index,
+		this._view.keyboard(
 			0,
 			e.which,
 			e.keyCode > 0 && e.keyCode < 256 ?
@@ -152,33 +223,17 @@ class View extends EventEmitter {
 		return this._textureId;
 	}
 	
-	
-	libs(directory) {
-		
-		this._libs.push(directory);
-		
-		if ( ! this._isReady ) {
-			return;
-		}
-		
-		qml.libs(this._index, directory);
-		
-	}
-	
-	
 	variable(opts) {
 		
 		if ( ! this._isValid ) {
 			return null;
 		}
 		
-		const v = new Variable(opts);
+		const v = new Variable({ view: this, ...opts });
 		
 		this._variables.push(v);
 		
-		if (this._isReady) {
-			v._initialize();
-		}
+		v._initialize();
 		
 		return v;
 		
@@ -191,18 +246,14 @@ class View extends EventEmitter {
 			return;
 		}
 		
-		if (this._isReady) {
-			this._invoke(name, key, value);
-		} else {
-			this._invokations.push(() => this._invoke(name, key, value));
-		}
+		this._view.invoke(name, key, value);
 		
 	}
 	
 	
 	_loadWhenReady() {
 		
-		if (this._index > -1 && this._isReady && ! this._isLoaded) {
+		if (this._index > -1 && ! this._isLoaded) {
 			
 			if (this._isFile) {
 				
@@ -210,10 +261,10 @@ class View extends EventEmitter {
 					this._source :
 					path.join(path.dirname(process.mainModule.filename), this._source);
 					
-				qml.load(this._index, true, realPath);
+				this._view.load(this._index, true, realPath);
 				
 			} else {
-				qml.load(this._index, false, this._source);
+				this._view.load(this._index, false, this._source);
 			}
 			
 		}
@@ -241,14 +292,12 @@ class View extends EventEmitter {
 		
 		this._unload();
 		
-		this._isReady = false;
 		this._textureId = null;
-		this._libs = [];
 		this.mbuttons = 0;
 		
-		if (View._instances[this._index]) {
-			delete View._instances[this._index];
-			qml.close(this._index);
+		if (View.__instances[this._index]) {
+			delete View.__instances[this._index];
+			this._view.destroy();
 		}
 		
 		this._index = -1;
@@ -262,20 +311,7 @@ class View extends EventEmitter {
 		}
 	}
 	
-};
+}
 
 
-View._instances = {};
-
-View._libs = [];
-
-View._addLibDir = (l) => {
-	
-	View._libs.push(l);
-	
-	Object.keys(View._instances).forEach(w => w.libs(l));
-	
-};
-
-
-module.exports = View;
+module.exports = JsView;

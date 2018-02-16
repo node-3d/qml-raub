@@ -52,11 +52,21 @@ NAN_METHOD(View::_init) {
 	
 }
 
+
 NAN_METHOD(View::plugins) {
 	
 	REQ_UTF8_ARG(0, str);
 	
 	QmlUi::plugins(*str);
+	
+}
+
+
+NAN_METHOD(View::libs) { THIS_VIEW;
+	
+	REQ_UTF8_ARG(1, str);
+	
+	view->_qmlui->libs(*str);
 	
 }
 
@@ -118,6 +128,8 @@ View::View(int w, int h) {
 	
 	_qmlui = new QmlUi(w, h);
 	
+	uis[_qmlui] = this;
+	
 	_isDestroyed = false;
 	
 }
@@ -140,6 +152,8 @@ void View::_destroy() { DES_CHECK;
 	// Emit "destroy"
 	Local<Value> argv = JS_STR("destroy");
 	_emit(1, &argv);
+	
+	uis.erase(_qmlui);
 	
 }
 
@@ -226,15 +240,6 @@ NAN_METHOD(View::invoke) { THIS_VIEW;
 	REQ_UTF8_ARG(3, json);
 	
 	view->_qmlui->invoke(*obj, *method, *json);
-	
-}
-
-
-NAN_METHOD(View::libs) { THIS_VIEW;
-	
-	REQ_UTF8_ARG(1, str);
-	
-	view->_qmlui->libs(*str);
 	
 }
 
