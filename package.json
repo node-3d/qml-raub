@@ -3,7 +3,10 @@
   "version": "0.0.1",
   "description": "QML interoperation addon for Node.js",
   "keywords": [
-    "qml"
+    "qml",
+    "2d",
+    "addon",
+    "binary"
   ],
   "author": "Luis Blanco <raubtierxxx@gmail.com>",
   "maintainers": [
