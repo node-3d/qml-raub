@@ -95,12 +95,12 @@ class JsView extends EventEmitter {
 		
 		this.on('load', e => {
 			
-			if ( ! this._isValid || e.loaded !== this._source) {
+			if (e.loaded !== this._source) {
 				return;
 			}
 			
 			if (e.status !== 'success') {
-				return console.error('Qml Error: could not load:', this._source);
+				return console.error('Qml Error. Could not load:', this._source);
 			}
 			
 			this._isLoaded = true;
@@ -145,10 +145,7 @@ class JsView extends EventEmitter {
 	
 	
 	get size() {
-		const size = glfw.getWindowSize(this._window);
-		this._width = size.width;
-		this._height = size.height;
-		return size;
+		return { width: this.width, height: this.height };
 	}
 	
 	set size({ width, height }) {
@@ -241,7 +238,9 @@ class JsView extends EventEmitter {
 		
 		this._variables.push(v);
 		
-		v._initialize();
+		if (this._isLoaded) {
+			v._initialize();
+		}
 		
 		return v;
 		
@@ -254,27 +253,33 @@ class JsView extends EventEmitter {
 			return;
 		}
 		
-		this._view.invoke(name, key, value);
+		const inv = () => this._view.invoke(name, key, value);
+		
+		if ( ! this._isLoaded ) {
+			return this._variables.push(inv);
+		}
+		
+		inv();
 		
 	}
 	
 	
 	_loadWhenReady() {
 		
-		if (this._index > -1 && ! this._isLoaded) {
+		if (this._isLoaded || this._index === -1) {
+			return;
+		}
+		
+		if (this._isFile) {
 			
-			if (this._isFile) {
+			const realPath = path.isAbsolute(this._source) ?
+				this._source :
+				path.join(path.dirname(process.mainModule.filename), this._source);
 				
-				const realPath = path.isAbsolute(this._source) ?
-					this._source :
-					path.join(path.dirname(process.mainModule.filename), this._source);
-					
-				this._view.load(this._index, true, realPath);
-				
-			} else {
-				this._view.load(this._index, false, this._source);
-			}
+			this._view.load(true, realPath);
 			
+		} else {
+			this._view.load(false, this._source);
 		}
 		
 	}

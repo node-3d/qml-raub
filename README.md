@@ -1,6 +1,6 @@
 # Offscreen QML for Node.js
 
-QML interoperation addon for Node.js. Offers high-order classes for building 2d UIs.
+QML interoperation addon for Node.js. Offers high-order classes for building 2D UI's.
 
 
 ## Install
@@ -24,13 +24,31 @@ There are 2 classes right now, and probably that's it. But many things can be ac
 
 ### class View
 
-Wraps around `btPhysicsWorld` (as if this was relevant). Scene works as a container
-for Bodies. Bodies only interact within the same scene. There can be multiple scenes
-running simultaneously.
+Loads and manages any given QML file.
+
+When the file is loaded and whenever the QML scene is resized a new GL
+Texture (id) is created and reported in an event. Then the texture can
+be placed onto any drawable surface.
+
+For example a screen-sized rectangle with this texture would look as if it is
+the app's UI, which it already almost is. Also some in-scene quads, e.g. a PC
+display in the distant corner of 3d room, can be textured this way.
+
+What is really important, is the dynamic nature of this texture. We can
+propagate mouse and keyboard events to the View, and it will react as any
+normal QML scene. Also there is a loop-back to propagate back any unused
+events. This means a lot for screen-space UI's: we still want the underlying
+app to receive mouse and keyboard events as well.
+
+Therefore, using loop-back implies a change from `source -> app` event
+flow to `source -> ui -> app`. If mouse click hits a QML button, we don't
+want it to also hit an object behind the button. And if some QML input is
+focused, we should be able to type any text without hitting random
+combinations of app's hotkeys.
 
 ```
-const { Scene } = require('bullet-raub');
-const scene = new Scene();
+const { View } = require('qml-raub');
+const view = new View();
 ```
 
 
@@ -39,10 +57,24 @@ Constructor:
 
 
 Properties:
-* `get/set vec3 gravity [0,-10,0]` - free fall acceleration speed for Bodies.
+* `get/set number width|w` - view width.
+* `get/set number height|h` - view height.
+* `get/set [width, height] wh` - view width and height.
+* `get/set {width, height} size` - view width and height.
+* `get number textureId` - current GL texture id.
 
 
 Methods:
+* load({ string ?file, string ?source}) - .
+* variable(opts) - .
+* invoke(name, key, value) - .
+* mousedown(e) - .
+* mouseup(e) - .
+* mousemove(e) - .
+* keydown(e) - .
+* keyup(e) - .
+
+
 * void update( float ?delta ) - advance the scene, optional parameter `delta` is how much time have
 supposedly passed since last update **in seconds**. If not set, a precise internal
 timer is used instead. Therefore it is prefered to call `scene.update()` without arguments.
