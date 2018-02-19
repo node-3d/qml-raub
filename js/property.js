@@ -1,12 +1,12 @@
 'use strict';
 
 
-class Variable {
+class Property {
 	
 	constructor(opts) {
 		
-		if ( ! opts.window ) {
-			throw new Error('Variable requires opts.window.');
+		if ( ! opts.view ) {
+			throw new Error('Variable requires opts.view.');
 		}
 		
 		this._owner = opts.view;
@@ -106,4 +106,4 @@ class Variable {
 	
 };
 
-module.exports = Variable;
+module.exports = Property;

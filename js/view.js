@@ -247,22 +247,6 @@ class JsView extends EventEmitter {
 	}
 	
 	
-	invoke(name, key, value) {
-		
-		if ( ! this._isValid ) {
-			return;
-		}
-		
-		const inv = () => this._view.invoke(name, key, value);
-		
-		if ( ! this._isLoaded ) {
-			return this._variables.push(inv);
-		}
-		
-		inv();
-		
-	}
-	
 	
 	_loadWhenReady() {
 		

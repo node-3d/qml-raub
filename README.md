@@ -18,8 +18,6 @@ Such as MSVS13 for Windows, where **ADMIN PRIVELEGED** `npm i -g windows-build-t
 This library is not a direct mapping of QML API, rather it is more of a simplified
 interpretation for generic purposes.
 
-There are 2 classes right now, and probably that's it. But many things can be achieved.
-
 ---
 
 ### class View
@@ -82,22 +80,12 @@ texture will be created upon `'load'` event. Param opts:
 If both `file` and `source` are passed, the `file` is used. If none of them passed,
 an error will be thrown.
 
-* invoke(name, key, value) - .
-* mousedown(e) - .
-* mouseup(e) - .
-* mousemove(e) - .
-* keydown(e) - .
-* keyup(e) - .
+* mousedown(Event e) - send mousedown event to the QML scene.
+* mouseup(Event e) - send mouseup event to the QML scene.
+* mousemove(Event e) - send mousemove event to the QML scene.
+* keydown(Event e) - send keydown event to the QML scene.
+* keyup(Event e) - send keyup event to the QML scene.
 
-
-* void update( float ?delta ) - advance the scene, optional parameter `delta` is how much time have
-supposedly passed since last update **in seconds**. If not set, a precise internal
-timer is used instead. Therefore it is prefered to call `scene.update()` without arguments.
-* Trace hit( vec3 from, vec3 to ) - conducts a ray trace within the scene and returns a new Trace
-containing the result of the first hit against body, if any.
-* [Trace] trace( vec3 from, vec3 to ) - conducts a ray trace within the scene and returns a
-whole list of hits occuring on its way.
-* void destroy() - destroys the scene and all the contained bodies, `'destroy'` event is emitted.
 
 
 Events:
