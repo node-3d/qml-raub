@@ -228,23 +228,23 @@ class JsView extends EventEmitter {
 		return this._textureId;
 	}
 	
-	variable(opts) {
+	// variable(opts) {
 		
-		if ( ! this._isValid ) {
-			return null;
-		}
+	// 	if ( ! this._isValid ) {
+	// 		return null;
+	// 	}
 		
-		const v = new Variable({ view: this, ...opts });
+	// 	const v = new Variable({ view: this, ...opts });
 		
-		this._variables.push(v);
+	// 	this._variables.push(v);
 		
-		if (this._isLoaded) {
-			v._initialize();
-		}
+	// 	if (this._isLoaded) {
+	// 		v._initialize();
+	// 	}
 		
-		return v;
+	// 	return v;
 		
-	}
+	// }
 	
 	
 	

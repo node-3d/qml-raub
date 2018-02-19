@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports = {
-	View     : require('./js/View'),
-	Variable : require('./js/Variable'),
+	View     : require('./js/view'),
+	Property : require('./js/property'),
+	Method   : require('./js/method'),
 };

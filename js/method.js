@@ -6,7 +6,7 @@ class Method {
 	constructor(opts) {
 		
 		if ( ! opts.view ) {
-			throw new Error('Variable requires opts.view.');
+			throw new Error('Method requires opts.view.');
 		}
 		
 		this._owner = opts.view;
