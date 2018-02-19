@@ -80,6 +80,14 @@ void View::init(Handle<Object> target) {
 	
 	// prototype
 	Nan::SetPrototypeMethod(ctor, "destroy", destroy);
+	Nan::SetPrototypeMethod(ctor, "resize", resize);
+	Nan::SetPrototypeMethod(ctor, "mouse", mouse);
+	Nan::SetPrototypeMethod(ctor, "keyboard", keyboard);
+	Nan::SetPrototypeMethod(ctor, "load", load);
+	Nan::SetPrototypeMethod(ctor, "set", set);
+	Nan::SetPrototypeMethod(ctor, "get", get);
+	Nan::SetPrototypeMethod(ctor, "invoke", invoke);
+	Nan::SetPrototypeMethod(ctor, "libs", libs);
 	
 	Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
 	

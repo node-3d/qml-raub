@@ -46,9 +46,13 @@ class JsView extends EventEmitter {
 		
 		super();
 		
+		if ( ! JsView.__libs ) {
+			JsView.__libs = [];
+		}
+		
 		this.setMaxListeners(0);
 		
-		this.__index = __offerIdx();
+		this.__index = JsView.__offerIdx();
 		
 		this._width = opts.width || opts.w || 512;
 		this._height = opts.height || opts.h || 512;
@@ -70,7 +74,7 @@ class JsView extends EventEmitter {
 		
 		this._view = new View(this._emitter, this._width, this._height);
 		
-		View.__libs.forEach(l => this._view.libs(l));
+		JsView.__libs.forEach(l => this._view.libs(l));
 		
 		
 		if ( ! JsView.__instances ) {
@@ -259,7 +263,7 @@ class JsView extends EventEmitter {
 			const realPath = path.isAbsolute(this._source) ?
 				this._source :
 				path.join(path.dirname(process.mainModule.filename), this._source);
-				
+			console.log('view.js', this._view, this._view.load);
 			this._view.load(true, realPath);
 			
 		} else {

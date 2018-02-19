@@ -54,6 +54,14 @@ describe('Qml', () => {
 			expect(view).to.have.property('textureId');
 		});
 		
+		it('has all properties', () => {
+			const view = new qml.View({ file: 'test.qml' });
+			view.on('load', e => {
+				console.log('test.js', 'LLL', e);
+			});
+		});
+		
+		
 		
 	});
 	
