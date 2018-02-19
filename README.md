@@ -48,12 +48,21 @@ combinations of app's hotkeys.
 
 ```
 const { View } = require('qml-raub');
-const view = new View();
+View.init(HWND, CTX);
+
+const view = new View({ width: 800, height: 600, file: 'ui.qml' });
 ```
 
 
-Constructor:
-* `View()`
+Constructor: `View(?opts)`. Param opts (all optional):
+* `number ?width 512` - QML view scene width.
+* `number ?height 512` - QML view scene height.
+* `boolean ?silent false` - ignore QML errors.
+* `string ?file ''` - a QML file to be loaded.
+* `string ?source ''` - a QML source text to be used instead of a file.
+
+If both `file` and `source` are passed, the `file` is used. If none of them passed
+through the opts, the method `load()` can be used later.
 
 
 Properties:
@@ -65,8 +74,14 @@ Properties:
 
 
 Methods:
-* load({ string ?file, string ?source}) - .
-* variable(opts) - .
+* load(opts) - load a new QML scene. The old one will be discarded, if any. A new
+texture will be created upon `'load'` event. Param opts:
+	* `string ?file` - a QML file to be loaded.
+	* `string ?source` - a QML source text to be used instead of a file.
+
+If both `file` and `source` are passed, the `file` is used. If none of them passed,
+an error will be thrown.
+
 * invoke(name, key, value) - .
 * mousedown(e) - .
 * mouseup(e) - .

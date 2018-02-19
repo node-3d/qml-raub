@@ -3,7 +3,6 @@
 
 class Variable {
 	
-	
 	constructor(opts) {
 		
 		if ( ! opts.window ) {
