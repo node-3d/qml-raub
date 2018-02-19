@@ -54,11 +54,13 @@ describe('Qml', () => {
 			expect(view).to.have.property('textureId');
 		});
 		
-		it('has all properties', () => {
+		it('eventually loads a QML file', function () {
+			this.timeout(50000);
 			const view = new qml.View({ file: 'test.qml' });
-			view.on('load', e => {
+			return new Promise(res => view.on('load', e => {
 				console.log('test.js', 'LLL', e);
-			});
+				res();
+			}));
 		});
 		
 		
