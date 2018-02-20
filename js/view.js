@@ -264,7 +264,7 @@ class JsView extends EventEmitter {
 			const realPath = path.isAbsolute(this._source) ?
 				this._source :
 				`${JsView.__cwd}/${this._source}`;
-			console.log('view.js', this._view, this._view.load);
+				
 			this._view.load(true, realPath);
 			
 		} else {

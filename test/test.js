@@ -10,12 +10,21 @@ const wnd  = new glfw.Window();
 const cc   = wnd.currentContext;
 const hwnd = wnd.platformWindow;
 const ctx  = wnd.platformContext;
-console.log('test.js', hwnd, ctx);
-console.log('test.js', 'INIT', __dirname);
+
 qml.View.init(__dirname, hwnd, ctx);
+
+const loop = () => {
+	const timer = setInterval(glfw.pollEvents, 5);
+	return () => clearInterval(timer);
+};
 
 
 describe('Qml', () => {
+	
+	let l;
+	before(() => { l = loop(); });
+	after(() => { l(); l = null; });
+	
 	
 	it('exports an object', () => {
 		expect(qml).to.be.an('object');
@@ -40,6 +49,7 @@ describe('Qml', () => {
 			expect(new qml.View()).to.be.an('object');
 		});
 		
+		
 		it('has all methods', () => {
 			const view = new qml.View();
 			expect(view).to.respondTo('load');
@@ -53,6 +63,7 @@ describe('Qml', () => {
 			expect(view).to.respondTo('update');
 		});
 		
+		
 		it('has all properties', () => {
 			const view = new qml.View();
 			expect(view).to.have.property('width');
@@ -64,17 +75,20 @@ describe('Qml', () => {
 			expect(view).to.have.property('textureId');
 		});
 		
-		it.only('eventually loads a QML file', async function () {
-			this.timeout(20000);
+		
+		it('eventually loads a QML file', function () {
 			
-			await new Promise(res => setTimeout(res, 10000));
+			this.timeout(2000);
 			
 			const view = new qml.View({ file: 'test.qml' });
+			
 			return new Promise(res => view.on('load', e => {
-				console.log('test.js', 'LLL', e);
+				expect(e.status).to.be.equal('success');
 				res();
 			}));
+			
 		});
+		
 		
 		
 		
