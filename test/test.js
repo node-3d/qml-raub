@@ -2,8 +2,18 @@
 
 const { expect } = require('chai');
 
-const qml = require('qml-raub');
-qml.View.init(0, 0);
+const glfw = require('glfw-raub');
+const qml  = require('qml-raub');
+
+
+const wnd  = new glfw.Window();
+const cc   = wnd.currentContext;
+const hwnd = wnd.platformWindow;
+const ctx  = wnd.platformContext;
+console.log('test.js', hwnd, ctx);
+console.log('test.js', 'INIT', __dirname);
+qml.View.init(__dirname, hwnd, ctx);
+
 
 describe('Qml', () => {
 	
@@ -54,8 +64,11 @@ describe('Qml', () => {
 			expect(view).to.have.property('textureId');
 		});
 		
-		it('eventually loads a QML file', function () {
-			this.timeout(50000);
+		it.only('eventually loads a QML file', async function () {
+			this.timeout(20000);
+			
+			await new Promise(res => setTimeout(res, 10000));
+			
 			const view = new qml.View({ file: 'test.qml' });
 			return new Promise(res => view.on('load', e => {
 				console.log('test.js', 'LLL', e);

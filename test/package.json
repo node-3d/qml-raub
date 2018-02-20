@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "qml-raub": "https://github.com/raub/node-qml.git",
+    "glfw-raub": "0.0.2",
     "chai": "^4.1.2",
     "mocha": "^5.0.0",
     "sinon": "^4.2.2"
