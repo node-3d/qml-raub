@@ -9,8 +9,9 @@ const { View } = require('../core');
 
 class JsView extends EventEmitter {
 	
-	static init(...args) {
-		View.init(path.dirname(process.mainModule.filename), ...args);
+	static init(cwd, ...args) {
+		JsView.__cwd = cwd.replace(/\\/g, '/');
+		View.init(JsView.__cwd, ...args);
 	}
 	
 	
@@ -262,7 +263,7 @@ class JsView extends EventEmitter {
 			
 			const realPath = path.isAbsolute(this._source) ?
 				this._source :
-				path.join(path.dirname(process.mainModule.filename), this._source);
+				`${JsView.__cwd}/${this._source}`;
 			console.log('view.js', this._view, this._view.load);
 			this._view.load(true, realPath);
 			
