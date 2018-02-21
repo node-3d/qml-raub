@@ -9,10 +9,17 @@ class Method {
 			throw new Error('Method requires opts.view.');
 		}
 		
+		if ( ! opts.name ) {
+			throw new Error('Method requires opts.name.');
+		}
+		if ( ! opts.key ) {
+			throw new Error('Method requires opts.key.');
+		}
+		
 		this._owner = opts.view;
 		
-		this._name = opts.name || 'unnamed';
-		this._key  = opts.key  || 'null';
+		this._name = opts.name;
+		this._key  = opts.key;
 		
 		this._queue = [];
 		

@@ -9,10 +9,17 @@ class Property {
 			throw new Error('Variable requires opts.view.');
 		}
 		
+		if ( ! opts.name ) {
+			throw new Error('Variable requires opts.name.');
+		}
+		if ( ! opts.key ) {
+			throw new Error('Variable requires opts.key.');
+		}
+		
 		this._owner = opts.view;
 		
-		this._name  = opts.name  || 'unnamed';
-		this._key   = opts.key   || 'null';
+		this._name  = opts.name;
+		this._key   = opts.key;
 		this._value = opts.value || null;
 		
 		this._getJs = opts.getJs || null;

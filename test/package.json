@@ -6,7 +6,8 @@
   "main": "mocha",
   "scripts": {
     "test": "mocha",
-    "start": "mocha"
+    "start": "mocha",
+    "preinstall": "cd .. && npm i"
   },
   "keywords": [
     "qml",
@@ -27,7 +28,7 @@
     "url": "https://github.com/raub/node-qml.git"
   },
   "dependencies": {
-    "qml-raub": "https://github.com/raub/node-qml.git",
+    "qml-raub": "../",
     "chai": "^4.1.2",
     "mocha": "^5.0.0",
     "sinon": "^4.2.2"

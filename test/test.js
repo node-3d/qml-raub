@@ -24,13 +24,16 @@ describe('Qml', () => {
 		expect(qml).to.be.an('object');
 	});
 	
+	
 	it('contains class View', () => {
 		expect(qml).to.respondTo('View');
 	});
 	
+	
 	it('contains class Property', () => {
 		expect(qml).to.respondTo('Property');
 	});
+	
 	
 	it('contains class Method', () => {
 		expect(qml).to.respondTo('Property');
@@ -40,10 +43,9 @@ describe('Qml', () => {
 	describe('View', () => {
 		
 		it('has all static methods', () => {
-			expect(qml.View).to.have.property('init');
-			expect(qml.View).to.have.property('libs');
-			expect(qml.View).to.have.property('plugins');
-			expect(qml.View).to.have.property('update');
+			['init', 'libs', 'plugins', 'update'].forEach(
+				name => expect(qml.View).to.have.property(name)
+			);
 		});
 		
 		
@@ -54,27 +56,20 @@ describe('Qml', () => {
 		
 		it('has all dynamic methods', () => {
 			const view = new qml.View();
-			expect(view).to.respondTo('load');
-			expect(view).to.respondTo('destroy');
-			expect(view).to.respondTo('toString');
-			expect(view).to.respondTo('mousedown');
-			expect(view).to.respondTo('mouseup');
-			expect(view).to.respondTo('mousemove');
-			expect(view).to.respondTo('keydown');
-			expect(view).to.respondTo('keyup');
-			expect(view).to.respondTo('update');
+			[
+				'load', 'destroy', 'toString', 'mousedown', 'mouseup',
+				'mousemove', 'keydown', 'keyup', 'update',
+			].forEach(
+				name => expect(view).to.respondTo(name)
+			);
 		});
 		
 		
 		it('has all properties', () => {
 			const view = new qml.View();
-			expect(view).to.have.property('width');
-			expect(view).to.have.property('height');
-			expect(view).to.have.property('w');
-			expect(view).to.have.property('h');
-			expect(view).to.have.property('wh');
-			expect(view).to.have.property('size');
-			expect(view).to.have.property('textureId');
+			['width', 'height', 'w', 'h', 'wh', 'size', 'textureId'].forEach(
+				name => expect(view).to.have.property(name)
+			);
 		});
 		
 		
@@ -91,6 +86,7 @@ describe('Qml', () => {
 			
 		});
 		
+		
 		it('eventually creates a texture', function () {
 			
 			this.timeout(20000);
@@ -104,8 +100,62 @@ describe('Qml', () => {
 			
 		});
 		
+	});
+	
+	
+	describe('Property', () => {
+		
+		const view = new qml.View({ file: 'test.qml' });
+		const opts = { view, name: 'obj1', key: 'prop1' };
+		
+		it('can be created', () => {
+			expect(new qml.Property(opts)).to.be.an('object');
+		});
+		
+		
+		it('has all dynamic methods', () => {
+			const prop = new qml.Property(opts);
+			['canSend', 'update'].forEach(
+				name => expect(prop).to.respondTo(name)
+			);
+		});
+		
+		
+		it('has all properties', () => {
+			const prop = new qml.Property(opts);
+			['key', 'name', 'value'].forEach(
+				name => expect(prop).to.have.property(name)
+			);
+		});
 		
 	});
 	
+	
+	describe('Method', () => {
+		
+		const view = new qml.View({ file: 'test.qml' });
+		const opts = { view, name: 'obj1', key: 'method1' };
+		
+		it('can be created', () => {
+			expect(new qml.Method(opts)).to.be.an('object');
+		});
+		
+		
+		it('has all dynamic methods', () => {
+			const prop = new qml.Method(opts);
+			['canSend', 'update'].forEach(
+				name => expect(prop).to.respondTo(name)
+			);
+		});
+		
+		
+		it('has all properties', () => {
+			const prop = new qml.Method(opts);
+			['key', 'name', 'value'].forEach(
+				name => expect(prop).to.have.property(name)
+			);
+		});
+		
+	});
 	
 });
