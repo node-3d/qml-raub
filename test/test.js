@@ -142,17 +142,17 @@ describe('Qml', () => {
 		
 		
 		it('has all dynamic methods', () => {
-			const prop = new qml.Method(opts);
-			['canSend', 'update'].forEach(
-				name => expect(prop).to.respondTo(name)
+			const method = new qml.Method(opts);
+			['call'].forEach(
+				name => expect(method).to.respondTo(name)
 			);
 		});
 		
 		
 		it('has all properties', () => {
-			const prop = new qml.Method(opts);
-			['key', 'name', 'value'].forEach(
-				name => expect(prop).to.have.property(name)
+			const method = new qml.Method(opts);
+			['key', 'name'].forEach(
+				name => expect(method).to.have.property(name)
 			);
 		});
 		
