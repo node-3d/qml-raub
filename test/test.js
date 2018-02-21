@@ -2,17 +2,13 @@
 
 const { expect } = require('chai');
 
-const glfw = require('glfw-raub');
 const qml  = require('qml-raub');
 
 
-const wnd  = new glfw.Window();
+qml.View.init(__dirname, 0, 0);
 
-qml.View.init(__dirname, wnd.platformWindow, wnd.platformContext);
-console.log('test.js', 'qml.View.update', qml.View.update);
 const loop = () => {
 	const timer = setInterval(qml.View.update, 10);
-	// const timer = setInterval(glfw.pollEvents, 10);
 	return () => clearInterval(timer);
 };
 
@@ -44,9 +40,10 @@ describe('Qml', () => {
 	describe('View', () => {
 		
 		it('has all static methods', () => {
-			expect(qml.View).to.respondTo('init');
-			expect(qml.View).to.respondTo('libs');
-			expect(qml.View).to.respondTo('plugins');
+			expect(qml.View).to.have.property('init');
+			expect(qml.View).to.have.property('libs');
+			expect(qml.View).to.have.property('plugins');
+			expect(qml.View).to.have.property('update');
 		});
 		
 		
@@ -94,7 +91,7 @@ describe('Qml', () => {
 			
 		});
 		
-		it.only('eventually creates a texture', function () {
+		it('eventually creates a texture', function () {
 			
 			this.timeout(20000);
 			
