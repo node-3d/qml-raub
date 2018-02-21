@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include <qmlui.hpp>
+#include <qml-ui.hpp>
 
 #include "view.hpp"
 
@@ -33,11 +33,11 @@ Nan::Persistent<v8::Function> View::_constructor;
 std::map<QmlUi*, View*> _uis;
 
 
-void View::commonCb(QmlUi *ui, const char *data) { NAN_HS;
+void View::commonCb(QmlUi *ui, const char *type, const char *json) { NAN_HS;
 	
 	View *view = _uis[ui];
-	Local<Value> argv = JS_STR(data);
-	view->_emit(1, &argv);
+	Local<Value> argv[] = { JS_STR(type), JS_STR(json) };
+	view->_emit(2, argv);
 	
 }
 

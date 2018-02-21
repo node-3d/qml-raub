@@ -7,14 +7,11 @@ const qml  = require('qml-raub');
 
 
 const wnd  = new glfw.Window();
-const cc   = wnd.currentContext;
-const hwnd = wnd.platformWindow;
-const ctx  = wnd.platformContext;
 
-qml.View.init(__dirname, hwnd, ctx);
+qml.View.init(__dirname, wnd.platformWindow, wnd.platformContext);
 
 const loop = () => {
-	const timer = setInterval(glfw.pollEvents, 5);
+	const timer = setInterval(glfw.pollEvents, 10);
 	return () => clearInterval(timer);
 };
 
@@ -30,27 +27,34 @@ describe('Qml', () => {
 		expect(qml).to.be.an('object');
 	});
 	
-	it('exports class View', () => {
+	it('contains class View', () => {
 		expect(qml).to.respondTo('View');
 	});
 	
-	it('exports class Property', () => {
+	it('contains class Property', () => {
 		expect(qml).to.respondTo('Property');
 	});
 	
-	it('exports class Method', () => {
+	it('contains class Method', () => {
 		expect(qml).to.respondTo('Property');
 	});
 	
 	
 	describe('View', () => {
 		
+		it('has all static methods', () => {
+			expect(qml.View).to.respondTo('init');
+			expect(qml.View).to.respondTo('libs');
+			expect(qml.View).to.respondTo('plugins');
+		});
+		
+		
 		it('can be created', () => {
 			expect(new qml.View()).to.be.an('object');
 		});
 		
 		
-		it('has all methods', () => {
+		it('has all dynamic methods', () => {
 			const view = new qml.View();
 			expect(view).to.respondTo('load');
 			expect(view).to.respondTo('destroy');
@@ -78,7 +82,7 @@ describe('Qml', () => {
 		
 		it('eventually loads a QML file', function () {
 			
-			this.timeout(2000);
+			this.timeout(20000);
 			
 			const view = new qml.View({ file: 'test.qml' });
 			
@@ -89,7 +93,18 @@ describe('Qml', () => {
 			
 		});
 		
-		
+		it.only('eventually creates a texture', function () {
+			
+			this.timeout(20000);
+			
+			const view = new qml.View({ file: 'test.qml' });
+			
+			return new Promise(res => view.on('reset', textureId => {
+				expect(textureId).to.exist;
+				res();
+			}));
+			
+		});
 		
 		
 	});

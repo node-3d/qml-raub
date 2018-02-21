@@ -59,11 +59,11 @@ class JsView extends EventEmitter {
 		this._height = opts.height || opts.h || 512;
 		
 		this._emitter = {
-			emit: data => {
+			emit: (type, json) => {
 				try {
-					const parsed = JSON.parse(data);
+					const parsed = JSON.parse(json);
 					try {
-						this.emit(parsed.type, parsed.data);
+						this.emit(type, parsed);
 					} catch (e) {
 						console.error(e);
 					}
@@ -168,7 +168,11 @@ class JsView extends EventEmitter {
 	[util.inspect.custom]() { return this.toString(); }
 	
 	toString() {
-		return `View { }`
+		return `View { ${this._width}x${this._height} ${
+			this._isLoaded ? `loaded ${
+				this._isFile ? `file: ${this._source} ` : '[inline] '
+			}` : ''
+		}}`
 	}
 	
 	
@@ -279,8 +283,6 @@ class JsView extends EventEmitter {
 		this._isLoaded = false;
 		this._isValid  = true;
 		
-		this._file   = null;
-		this._text   = null;
 		this._isFile = null;
 		this._source = null;
 		

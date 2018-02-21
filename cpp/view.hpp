@@ -25,7 +25,7 @@ class View : public Nan::ObjectWrap {
 public:
 	
 	static void init(v8::Handle<v8::Object> target);
-	static void commonCb(QmlUi *ui, const char *data);
+	static void commonCb(QmlUi *ui, const char *type, const char *json);
 	
 protected:
 	
