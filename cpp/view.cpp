@@ -62,6 +62,13 @@ NAN_METHOD(View::plugins) {
 }
 
 
+NAN_METHOD(View::update) {
+	
+	QmlUi::update();
+	
+}
+
+
 NAN_METHOD(View::libs) { THIS_VIEW;
 	
 	REQ_UTF8_ARG(1, str);

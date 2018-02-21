@@ -11,7 +11,8 @@ const wnd  = new glfw.Window();
 qml.View.init(__dirname, wnd.platformWindow, wnd.platformContext);
 
 const loop = () => {
-	const timer = setInterval(glfw.pollEvents, 10);
+	const timer = setInterval(qml.View.update, 10);
+	// const timer = setInterval(glfw.pollEvents, 10);
 	return () => clearInterval(timer);
 };
 

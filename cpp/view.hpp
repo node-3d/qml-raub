@@ -34,6 +34,7 @@ protected:
 	
 	static NAN_METHOD(_init);
 	static NAN_METHOD(plugins);
+	static NAN_METHOD(update);
 	
 	static NAN_METHOD(newCtor);
 	

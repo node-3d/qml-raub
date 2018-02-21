@@ -15,6 +15,11 @@ class JsView extends EventEmitter {
 	}
 	
 	
+	static update() {
+		View.update();
+	}
+	
+	
 	static libs(l) {
 		
 		if ( ! JsView.__libs ) {
