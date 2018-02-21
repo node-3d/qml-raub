@@ -9,7 +9,7 @@ const qml  = require('qml-raub');
 const wnd  = new glfw.Window();
 
 qml.View.init(__dirname, wnd.platformWindow, wnd.platformContext);
-
+console.log('test.js', 'qml.View.update', qml.View.update);
 const loop = () => {
 	const timer = setInterval(qml.View.update, 10);
 	// const timer = setInterval(glfw.pollEvents, 10);

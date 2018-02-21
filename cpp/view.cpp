@@ -106,6 +106,7 @@ void View::init(Handle<Object> target) {
 	
 	Nan::SetMethod(ctorFunc, "init", View::_init);
 	Nan::SetMethod(ctorFunc, "plugins", View::plugins);
+	Nan::SetMethod(ctorFunc, "update", View::update);
 	
 }
 
