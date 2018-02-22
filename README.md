@@ -94,15 +94,28 @@ Events:
 
 ---
 
-### class Variable
+### class Property
 
-Wraps around `btRigidBody` (as if this was relevant). Bodies only interact within the same scene.
-A body can take different shapes, and even change them on flight.
+Access QML data. Both read and write to a QML object is possible. The object should
+have it's `objectName` set, and have a property under a given key. This class can
+be used to:
+* Read some value on demand.
+* Write some value on demand.
+* Establish connection between a given JS value and a QML value.
+
+In the latter case the value will automatically be read and written with each
+`View.update()` call. Also note that both QML side and JS side can influence the
+value. This is important for various control elements that can be altered by both
+UI interactions and programmatic events.
+
 
 ```
-const { Scene, Body } = require('bullet-raub');
-const scene = new Scene();
-const body = new Body({ scene });
+const { View, Property } = require('qml-raub');
+...
+const view = new View({ width: 800, height: 600, file: 'ui.qml' });
+const x1 = new Property({ view, name: 'obj1', key: 'x1' });
+
+x1.value = 10;
 ```
 
 
