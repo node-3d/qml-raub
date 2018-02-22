@@ -120,7 +120,7 @@ x1.value = 10;
 
 
 Constructor:
-* `Body({ Scene scene })`
+* `Property({ View view, string name, string key, value })`
 
 
 Properties:
