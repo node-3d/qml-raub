@@ -108,7 +108,7 @@ In the latter case the value will automatically be read and written with each
 value. This is important for various control elements that can be altered by both
 UI interactions and programmatic events.
 
-
+JS:
 ```
 const { View, Property } = require('qml-raub');
 ...
@@ -117,6 +117,8 @@ const x1 = new Property({ view, name: 'obj1', key: 'x1' });
 
 x1.value = 10;
 ```
+
+
 
 
 Constructor:

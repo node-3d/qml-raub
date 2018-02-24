@@ -58,8 +58,13 @@ class JsView extends EventEmitter {
 		
 		this.setMaxListeners(0);
 		
-		this.__index = JsView.__offerIdx();
+		this._unload();
 		
+		this._textureId = null;
+		this.mbuttons = 0;
+		
+		this.__index = JsView.__offerIdx();
+		console.log('view.js', 'CTOR', this.__index);
 		this._width = opts.width || opts.w || 512;
 		this._height = opts.height || opts.h || 512;
 		
@@ -105,7 +110,11 @@ class JsView extends EventEmitter {
 		
 		this.on('load', e => {
 			
-			if (e.loaded !== this._source) {
+			if (e.source !== this._finalSource) {
+				return;
+			}
+			
+			if (e.status === 'loading') {
 				return;
 			}
 			
@@ -114,7 +123,7 @@ class JsView extends EventEmitter {
 			}
 			
 			this._isLoaded = true;
-			this._variables.forEach(v => v._initialize());
+			this._properties.forEach(v => v._initialize());
 			this._invokations.forEach(i => i());
 			this._invokations = [];
 			
@@ -250,7 +259,7 @@ class JsView extends EventEmitter {
 		
 	// 	const v = new Variable({ view: this, ...opts });
 		
-	// 	this._variables.push(v);
+	// 	this._properties.push(v);
 		
 	// 	if (this._isLoaded) {
 	// 		v._initialize();
@@ -270,13 +279,14 @@ class JsView extends EventEmitter {
 		
 		if (this._isFile) {
 			
-			const realPath = path.isAbsolute(this._source) ?
+			this._finalSource = path.isAbsolute(this._source) ?
 				this._source :
 				`${JsView.__cwd}/${this._source}`;
 				
-			this._view.load(true, realPath);
+			this._view.load(true, this._finalSource);
 			
 		} else {
+			this._finalSource = this._source;
 			this._view.load(false, this._source);
 		}
 		
@@ -290,8 +300,9 @@ class JsView extends EventEmitter {
 		
 		this._isFile = null;
 		this._source = null;
+		this._finalSource = null;
 		
-		this._variables   = [];
+		this._properties   = [];
 		this._invokations = [];
 		
 	}
@@ -316,7 +327,7 @@ class JsView extends EventEmitter {
 	
 	update() {
 		if (this._isLoaded) {
-			this._variables.forEach(v => v.update());
+			this._properties.forEach(v => v.update());
 		}
 	}
 	

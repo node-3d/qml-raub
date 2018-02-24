@@ -5,19 +5,12 @@ Rectangle {
 	color: 'yellow'
 	anchors.fill: parent
 	
-	Text {
+	Item {
+		objectName: 'obj1'
+		property var prop1: 'value1'
+		property var prop2: 'value2'
 		
-		text: qsTr('FIRST!')
-		
-		font.pixelSize: 14
-		font.bold: true
-		color: 'steelblue'
-		
-		anchors.left: parent.left
-		anchors.leftMargin: 24
-		anchors.top: parent.top
-		anchors.topMargin: 24
-		
+		onProp1Changed: cb.call('p1c')
 	}
 	
 }

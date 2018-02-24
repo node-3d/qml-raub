@@ -179,8 +179,8 @@ void View::_destroy() { DES_CHECK;
 
 NAN_METHOD(View::resize) { THIS_VIEW;
 	
-	REQ_INT32_ARG(1, w);
-	REQ_INT32_ARG(2, h);
+	REQ_INT32_ARG(0, w);
+	REQ_INT32_ARG(1, h);
 	
 	view->_qmlui->resize(w, h);
 	
@@ -189,11 +189,11 @@ NAN_METHOD(View::resize) { THIS_VIEW;
 
 NAN_METHOD(View::mouse) { THIS_VIEW;
 	
-	REQ_INT32_ARG(1, type);
-	REQ_INT32_ARG(2, button);
-	REQ_INT32_ARG(3, buttons);
-	REQ_INT32_ARG(4, x);
-	REQ_INT32_ARG(5, y);
+	REQ_INT32_ARG(0, type);
+	REQ_INT32_ARG(1, button);
+	REQ_INT32_ARG(2, buttons);
+	REQ_INT32_ARG(3, x);
+	REQ_INT32_ARG(4, y);
 	
 	view->_qmlui->mouse(type, button, buttons, x, y);
 	
@@ -202,9 +202,9 @@ NAN_METHOD(View::mouse) { THIS_VIEW;
 
 NAN_METHOD(View::keyboard) { THIS_VIEW;
 	
-	REQ_INT32_ARG(1, type);
-	REQ_INT32_ARG(2, key);
-	REQ_INT32_ARG(3, text);
+	REQ_INT32_ARG(0, type);
+	REQ_INT32_ARG(1, key);
+	REQ_INT32_ARG(2, text);
 	
 	view->_qmlui->keyboard(type, key, text);
 	
@@ -213,29 +213,19 @@ NAN_METHOD(View::keyboard) { THIS_VIEW;
 
 NAN_METHOD(View::load) { THIS_VIEW;
 	
-	if (info[1]->IsString()) {
-		
-		REQ_UTF8_ARG(1, path);
-		view->_qmlui->load(*path, true);
-		
-	} else if (info[1]->IsBoolean() && info[2]->IsString()) {
-		
-		REQ_BOOL_ARG(1, isFile);
-		REQ_UTF8_ARG(2, str);
-		view->_qmlui->load(*str, isFile);
-		
-	} else {
-		Nan::ThrowTypeError("NodeQml::load(), Arguments should be (int, [bool,] string)!");
-	}
+	REQ_BOOL_ARG(0, isFile);
+	REQ_UTF8_ARG(1, source);
+	
+	view->_qmlui->load(*source, isFile);
 	
 }
 
 
 NAN_METHOD(View::set) { THIS_VIEW;
 	
-	REQ_UTF8_ARG(1, obj);
-	REQ_UTF8_ARG(2, prop);
-	REQ_UTF8_ARG(3, json);
+	REQ_UTF8_ARG(0, obj);
+	REQ_UTF8_ARG(1, prop);
+	REQ_UTF8_ARG(2, json);
 	
 	view->_qmlui->set(*obj, *prop, *json);
 	
@@ -244,8 +234,8 @@ NAN_METHOD(View::set) { THIS_VIEW;
 
 NAN_METHOD(View::get) { THIS_VIEW;
 	
-	REQ_UTF8_ARG(1, obj);
-	REQ_UTF8_ARG(2, prop);
+	REQ_UTF8_ARG(0, obj);
+	REQ_UTF8_ARG(1, prop);
 	
 	view->_qmlui->get(*obj, *prop);
 	
@@ -254,9 +244,9 @@ NAN_METHOD(View::get) { THIS_VIEW;
 
 NAN_METHOD(View::invoke) { THIS_VIEW;
 	
-	REQ_UTF8_ARG(1, obj);
-	REQ_UTF8_ARG(2, method);
-	REQ_UTF8_ARG(3, json);
+	REQ_UTF8_ARG(0, obj);
+	REQ_UTF8_ARG(1, method);
+	REQ_UTF8_ARG(2, json);
 	
 	view->_qmlui->invoke(*obj, *method, *json);
 	

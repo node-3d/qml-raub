@@ -13,7 +13,9 @@ const loop = () => {
 };
 
 
-describe('Qml', () => {
+describe('Qml', function () {
+	
+	this.timeout(20000);
 	
 	let l;
 	before(() => { l = loop(); });
@@ -73,9 +75,7 @@ describe('Qml', () => {
 		});
 		
 		
-		it('eventually loads a QML file', function () {
-			
-			this.timeout(20000);
+		it('eventually loads a QML file', () => {
 			
 			const view = new qml.View({ file: 'test.qml' });
 			
@@ -87,9 +87,7 @@ describe('Qml', () => {
 		});
 		
 		
-		it('eventually creates a texture', function () {
-			
-			this.timeout(20000);
+		it('eventually creates a texture', () => {
 			
 			const view = new qml.View({ file: 'test.qml' });
 			
@@ -103,7 +101,7 @@ describe('Qml', () => {
 	});
 	
 	
-	describe('Property', () => {
+	describe.only('Property', () => {
 		
 		const view = new qml.View({ file: 'test.qml' });
 		const opts = { view, name: 'obj1', key: 'prop1' };
@@ -126,6 +124,37 @@ describe('Qml', () => {
 			['key', 'name', 'value'].forEach(
 				name => expect(prop).to.have.property(name)
 			);
+		});
+		
+		
+		it.only('eventually reads value from QML', () => {
+			
+			return new Promise(res => {
+				
+				const toJs = val => {
+					expect(val).to.be.equal('value1');
+					res();
+				};
+				const prop = new qml.Property({ ...opts, toJs });
+				
+			});
+			
+		});
+		
+		
+		it.only('eventually writes value to QML', () => {
+			
+			return new Promise(res => {
+				
+				
+				const prop1 = new qml.Property({ ...opts, value: 11 });
+				view.on('p1c', () => {
+					console.log('test.js', 'P!C');
+					res();
+				});
+				
+			});
+			
 		});
 		
 	});

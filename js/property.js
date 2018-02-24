@@ -1,6 +1,9 @@
 'use strict';
 
 
+
+
+
 class Property {
 	
 	constructor(opts) {
@@ -17,13 +20,14 @@ class Property {
 		}
 		
 		this._owner = opts.view;
+		this._owner._properties.push(this);
 		
 		this._name  = opts.name;
 		this._key   = opts.key;
-		this._value = opts.value || null;
+		this._value = opts.value || undefined;
 		
-		this._getJs = opts.getJs || null;
-		this._setJs = opts.setJs || null;
+		this._fromJs = opts.fromJs || null;
+		this._toJs = opts.toJs || null;
 		
 		this._isReady = false;
 		this._isValid = opts.auto === undefined ? true : !! opts.auto;
@@ -37,11 +41,15 @@ class Property {
 			}
 			
 			this._value = data.value;
-			if (this._setJs) {
-				this._setJs(this._value);
+			if (this._toJs) {
+				this._toJs(this._value);
 			}
 			
 		});
+		
+		if (this._owner._isLoaded) {
+			this._initialize();
+		}
 		
 	}
 	
@@ -56,8 +64,8 @@ class Property {
 		this._name  = null;
 		this._key   = null;
 		this._value = null;
-		this._getJs = null;
-		this._setJs = null;
+		this._fromJs = null;
+		this._toJs = null;
 		
 		this._isReady = false;
 		this._isValid = false;
@@ -74,7 +82,7 @@ class Property {
 			if (this._value !== undefined) {
 				this.send();
 			} else {
-				this._owner.get(this._name, this._key);
+				this._owner._view.get(this._name, this._key);
 			}
 			
 		}
@@ -99,15 +107,16 @@ class Property {
 	
 	_send() {
 		if (this.canSend()) {
-			this._owner.set(this._name, this._key, this._value);
+			console.log('property.js', 'SEND', this._value);
+			this._owner._view.set(`${this._name}`, `${this._key}`, JSON.stringify(this._value));
 		}
 	}
 	
 	
 	update() {
-		if (this._isReady && this._getJs) {
+		if (this._isReady && this._fromJs) {
 			// Use getter
-			this.value = this._getJs();
+			this.value = this._fromJs();
 		}
 	}
 	
