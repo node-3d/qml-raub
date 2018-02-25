@@ -61,10 +61,10 @@ class JsView extends EventEmitter {
 		this._unload();
 		
 		this._textureId = null;
-		this.mbuttons = 0;
+		this._mbuttons = 0;
 		
-		this.__index = JsView.__offerIdx();
-		console.log('view.js', 'CTOR', this.__index);
+		this._index = JsView.__offerIdx();
+		
 		this._width = opts.width || opts.w || 512;
 		this._height = opts.height || opts.h || 512;
 		
@@ -91,7 +91,7 @@ class JsView extends EventEmitter {
 		if ( ! JsView.__instances ) {
 			JsView.__instances = {};
 		}
-		JsView.__instances[this.__index] = this;
+		JsView.__instances[this._index] = this;
 		
 		
 		this._silent = !! opts.silent;
@@ -123,12 +123,11 @@ class JsView extends EventEmitter {
 			}
 			
 			this._isLoaded = true;
+			
 			this._properties.forEach(v => v._initialize());
-			this._invokations.forEach(i => i());
-			this._invokations = [];
+			this._methods.forEach(m => m._initialize());
 			
 		});
-		
 		
 		if (opts.file || opts.source) {
 			this.load(opts);
@@ -191,19 +190,19 @@ class JsView extends EventEmitter {
 	
 	
 	mousedown(e) {
-		this.mbuttons |= (1 << e.button);
-		this._view.mouse(1, e.button, this.mbuttons, e.x, e.y);
+		this._mbuttons |= (1 << e.button);
+		this._view.mouse(1, e.button, this._mbuttons, e.x, e.y);
 	}
 	
 	
 	mouseup(e) {
-		this.mbuttons &= ~(1 << e.button);
-		this._view.mouse(2, e.button, this.mbuttons, e.x, e.y);
+		this._mbuttons &= ~(1 << e.button);
+		this._view.mouse(2, e.button, this._mbuttons, e.x, e.y);
 	}
 	
 	
 	mousemove(e) {
-		this._view.mouse(0, 0, this.mbuttons, e.x, e.y);
+		this._view.mouse(0, 0, this._mbuttons, e.x, e.y);
 	}
 	
 	
@@ -251,25 +250,6 @@ class JsView extends EventEmitter {
 		return this._textureId;
 	}
 	
-	// variable(opts) {
-		
-	// 	if ( ! this._isValid ) {
-	// 		return null;
-	// 	}
-		
-	// 	const v = new Variable({ view: this, ...opts });
-		
-	// 	this._properties.push(v);
-		
-	// 	if (this._isLoaded) {
-	// 		v._initialize();
-	// 	}
-		
-	// 	return v;
-		
-	// }
-	
-	
 	
 	_loadWhenReady() {
 		
@@ -296,14 +276,13 @@ class JsView extends EventEmitter {
 	_unload() {
 		
 		this._isLoaded = false;
-		this._isValid  = true;
 		
 		this._isFile = null;
 		this._source = null;
 		this._finalSource = null;
 		
-		this._properties   = [];
-		this._invokations = [];
+		this._properties = [];
+		this._methods    = [];
 		
 	}
 	
@@ -313,7 +292,7 @@ class JsView extends EventEmitter {
 		this._unload();
 		
 		this._textureId = null;
-		this.mbuttons = 0;
+		this._mbuttons = 0;
 		
 		if (View.__instances[this._index]) {
 			delete View.__instances[this._index];

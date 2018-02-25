@@ -107,8 +107,7 @@ class Property {
 	
 	_send() {
 		if (this.canSend()) {
-			console.log('property.js', 'SEND', this._value);
-			this._owner._view.set(`${this._name}`, `${this._key}`, JSON.stringify(this._value));
+			this._owner._view.set(this._name, this._key, JSON.stringify(this._value));
 		}
 	}
 	

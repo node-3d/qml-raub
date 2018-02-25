@@ -9,19 +9,26 @@ class Method {
 			throw new Error('Method requires opts.view.');
 		}
 		
-		if ( ! opts.name ) {
-			throw new Error('Method requires opts.name.');
+		if ( ! (opts.name && typeof opts.name === 'string') ) {
+			throw new Error('Method requires `string opts.name`.');
 		}
-		if ( ! opts.key ) {
-			throw new Error('Method requires opts.key.');
+		if ( ! (opts.key && typeof opts.key === 'string') ) {
+			throw new Error('Method requires `string opts.key`.');
 		}
 		
 		this._owner = opts.view;
+		this._owner._methods.push(this);
 		
 		this._name = opts.name;
 		this._key  = opts.key;
 		
 		this._queue = [];
+		
+		this._isReady = false;
+		
+		if (this._owner._isLoaded) {
+			this._initialize();
+		}
 		
 	}
 	
@@ -33,33 +40,30 @@ class Method {
 	_destroy() {
 		
 		this._owner = null;
-		this._name  = null;
-		this._key   = null;
+		this._name = null;
+		this._key = null;
 		
 		this._isReady = false;
-		this._isValid = false;
 		
 	}
 	
 	
 	_initialize() {
 		
-		if (this._isValid) {
-			
-			this._isReady = true;
-			
-		}
+		this._isReady = true;
+		this._queue.forEach(c => c());
+		this._queue = [];
 		
 	}
 	
 	
 	call(args) {
 		
-		if ( ! this._isValid ) {
-			return;
-		}
-		
-		const inv = () => this._owner._view.invoke(name, key, value);
+		const inv = () => this._owner._view.invoke(
+			this._name,
+			this._key,
+			args === undefined ? '' : JSON.stringify(args)
+		);
 		
 		if ( ! this._isReady ) {
 			return this._queue.push(inv);

@@ -101,7 +101,7 @@ describe('Qml', function () {
 	});
 	
 	
-	describe.only('Property', () => {
+	describe('Property', () => {
 		
 		const view = new qml.View({ file: 'test.qml' });
 		const opts = { view, name: 'obj1', key: 'prop1' };
@@ -127,7 +127,7 @@ describe('Qml', function () {
 		});
 		
 		
-		it.only('eventually reads value from QML', () => {
+		it('eventually reads value from QML', () => {
 			
 			return new Promise(res => {
 				
@@ -142,16 +142,13 @@ describe('Qml', function () {
 		});
 		
 		
-		it.only('eventually writes value to QML', () => {
+		it('eventually writes value to QML', () => {
 			
 			return new Promise(res => {
 				
+				view.on('p1c', res);
 				
 				const prop1 = new qml.Property({ ...opts, value: 11 });
-				view.on('p1c', () => {
-					console.log('test.js', 'P!C');
-					res();
-				});
 				
 			});
 			
@@ -183,6 +180,34 @@ describe('Qml', function () {
 			['key', 'name'].forEach(
 				name => expect(method).to.have.property(name)
 			);
+		});
+		
+		
+		it.only('calls QML method(0)', () => {
+			
+			return new Promise(res => {
+				
+				view.on('m1c', res);
+				
+				const method1 = new qml.Method(opts);
+				method1.call();
+				
+			});
+			
+		});
+		
+		
+		it.only('calls QML method(1)', () => {
+			
+			return new Promise(res => {
+				
+				view.on('m2c', res);
+				
+				const method2 = new qml.Method({ ...opts, key: 'method2' });
+				method2.call(10);
+				
+			});
+			
 		});
 		
 	});
