@@ -27,7 +27,7 @@
     "npm": ">=5.6.0"
   },
   "dependencies": {
-    "deps-qmlui-raub": "0.0.2",
+    "deps-qmlui-raub": "0.0.3",
     "addon-tools-raub": "0.0.8"
   }
 }

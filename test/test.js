@@ -183,7 +183,7 @@ describe('Qml', function () {
 		});
 		
 		
-		it.only('calls QML method(0)', () => {
+		it('calls QML method(0)', () => {
 			
 			return new Promise(res => {
 				
@@ -197,7 +197,7 @@ describe('Qml', function () {
 		});
 		
 		
-		it.only('calls QML method(1)', () => {
+		it('calls QML method(1)', () => {
 			
 			return new Promise(res => {
 				
