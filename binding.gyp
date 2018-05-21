@@ -10,7 +10,7 @@
 	'targets': [
 		{
 			'target_name'  : 'qml',
-			'sources'      : [ 'cpp/view.cpp' ],
+			'sources'      : [ 'cpp/bindings.cpp', 'cpp/view.cpp' ],
 			'libraries'    : [ '-lqmlui' ],
 			'include_dirs' : [
 				'<!@(node -e "require(\'addon-tools-raub\').include()")',
@@ -80,6 +80,7 @@
 					] } ],
 					[ 'OS=="mac"', { 'action' : [
 						'rm',
+						'<(module_root_dir)/build/Release/obj.target/qml/cpp/bindings.o',
 						'<(module_root_dir)/build/Release/obj.target/qml/cpp/qml.o',
 						'<(module_root_dir)/build/Release/qml.node'
 					] } ],
