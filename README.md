@@ -1,6 +1,11 @@
 # Offscreen QML for Node.js
 
-QML interoperation addon for Node.js. Offers high-order classes for building 2D UI's.
+This is a part of [Node3D](https://github.com/node-3d) project.
+
+
+## Synopsis
+
+**QML** interoperation addon for **Node.js**. Offers high-order classes for building 2D UI's.
 
 
 ## Install

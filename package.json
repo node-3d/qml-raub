@@ -1,8 +1,8 @@
 {
 	"author": "Luis Blanco <luisblanco1337@gmail.com>",
 	"name": "qml-raub",
-	"version": "0.0.2",
-	"description": "QML interoperation addon for Node.js",
+	"version": "0.0.3",
+	"description": "QML interoperation for Node.js",
 	"license": "MIT",
 	"main": "index.js",
 	"keywords": [
@@ -28,7 +28,7 @@
 		"url": "https://github.com/node-3d/qml-raub.git"
 	},
 	"dependencies": {
-		"deps-qmlui-raub": "0.0.4",
-		"addon-tools-raub": "0.1.8"
+		"deps-qmlui-raub": "https://github.com/node-3d/deps-qmlui-raub.git",
+		"addon-tools-raub": "^2.0.1"
 	}
 }
