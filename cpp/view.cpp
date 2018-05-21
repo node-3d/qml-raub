@@ -1,9 +1,11 @@
 #include <cstdlib>
-#include <iostream>
 
 #include <qml-ui.hpp>
 
 #include "view.hpp"
+
+
+// ------ Aux macros
 
 using namespace v8;
 using namespace node;
@@ -19,25 +21,49 @@ using namespace std;
 	if (_isDestroyed) return;
 
 
-extern "C" {
+map<QmlUi*, View*> _uis;
+
+
+
+// ------ Constructor and Destructor
+
+View::View(int w, int h) {
 	
-	void init(Handle<Object> target) { View::init(target); }
+	_qmlui = new QmlUi(w, h);
 	
-	NODE_MODULE(NODE_GYP_MODULE_NAME, init);
+	_uis[_qmlui] = this;
+	
+	_isDestroyed = false;
 	
 }
 
 
-Nan::Persistent<v8::Function> View::_constructor;
+View::~View() {
+	
+	_destroy();
+	
+}
 
-std::map<QmlUi*, View*> _uis;
 
+void View::_destroy() { DES_CHECK;
+	
+	delete _qmlui;
+	_qmlui = NULL;
+	
+	_isDestroyed = true;
+	
+	_uis.erase(_qmlui);
+	
+}
+
+
+// ------ Methods and props
 
 void View::commonCb(QmlUi *ui, const char *type, const char *json) { NAN_HS;
 	
 	View *view = _uis[ui];
-	Local<Value> argv[] = { JS_STR(type), JS_STR(json) };
-	view->_emit(2, argv);
+	V8_VAR_VAL argv = JS_STR(json);
+	view->emit(type, 1, &argv);
 	
 }
 
@@ -74,105 +100,6 @@ NAN_METHOD(View::libs) { THIS_VIEW;
 	REQ_UTF8_ARG(1, str);
 	
 	view->_qmlui->libs(*str);
-	
-}
-
-
-void View::init(Handle<Object> target) {
-	
-	Local<FunctionTemplate> ctor = Nan::New<FunctionTemplate>(newCtor);
-	
-	ctor->InstanceTemplate()->SetInternalFieldCount(1);
-	ctor->SetClassName(JS_STR("View"));
-	
-	// prototype
-	Nan::SetPrototypeMethod(ctor, "destroy", destroy);
-	Nan::SetPrototypeMethod(ctor, "resize", resize);
-	Nan::SetPrototypeMethod(ctor, "mouse", mouse);
-	Nan::SetPrototypeMethod(ctor, "keyboard", keyboard);
-	Nan::SetPrototypeMethod(ctor, "load", load);
-	Nan::SetPrototypeMethod(ctor, "set", set);
-	Nan::SetPrototypeMethod(ctor, "get", get);
-	Nan::SetPrototypeMethod(ctor, "invoke", invoke);
-	Nan::SetPrototypeMethod(ctor, "libs", libs);
-	
-	Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
-	
-	_constructor.Reset(Nan::GetFunction(ctor).ToLocalChecked());
-	
-	Local<Function> ctorFunc = Nan::GetFunction(ctor).ToLocalChecked();
-	
-	Nan::Set(target, JS_STR("View"), ctorFunc);
-	
-	Nan::SetMethod(ctorFunc, "init", View::_init);
-	Nan::SetMethod(ctorFunc, "plugins", View::plugins);
-	Nan::SetMethod(ctorFunc, "update", View::update);
-	
-}
-
-
-void View::_emit(int argc, Local<Value> argv[]) {
-	
-	if ( ! Nan::New(_emitter)->Has(JS_STR("emit")) ) {
-		return;
-	}
-	
-	Nan::Callback callback(Nan::New(_emitter)->Get(JS_STR("emit")).As<Function>());
-	
-	if ( ! callback.IsEmpty() ) {
-		callback.Call(argc, argv);
-	}
-	
-}
-
-
-NAN_METHOD(View::newCtor) {
-	
-	CTOR_CHECK("View");
-	
-	REQ_OBJ_ARG(0, emitter);
-	REQ_INT32_ARG(1, w);
-	REQ_INT32_ARG(2, h);
-	
-	View *view = new View(w, h);
-	view->_emitter.Reset(emitter);
-	view->Wrap(info.This());
-	
-	RET_VALUE(info.This());
-	
-}
-
-
-View::View(int w, int h) {
-	
-	_qmlui = new QmlUi(w, h);
-	
-	_uis[_qmlui] = this;
-	
-	_isDestroyed = false;
-	
-}
-
-
-View::~View() {
-	
-	_destroy();
-	
-}
-
-
-void View::_destroy() { DES_CHECK;
-	
-	delete _qmlui;
-	_qmlui = NULL;
-	
-	_isDestroyed = true;
-	
-	// Emit "destroy"
-	Local<Value> argv = JS_STR("destroy");
-	_emit(1, &argv);
-	
-	_uis.erase(_qmlui);
 	
 }
 
@@ -253,8 +180,91 @@ NAN_METHOD(View::invoke) { THIS_VIEW;
 }
 
 
+// ------ System methods and props for ObjectWrap
+
+V8_STORE_FT View::_protoView;
+V8_STORE_FUNC View::_ctorView;
+
+
+void View::init(V8_VAR_OBJ target) {
+	
+	V8_VAR_FT proto = Nan::New<FunctionTemplate>(newCtor);
+	
+	// class View inherits EventEmitter
+	V8_VAR_FT parent = Nan::New(EventEmitter::_protoEventEmitter);
+	proto->Inherit(parent);
+	
+	proto->InstanceTemplate()->SetInternalFieldCount(1);
+	proto->SetClassName(JS_STR("View"));
+	
+	
+	// Accessors
+	
+	V8_VAR_OT obj = proto->PrototypeTemplate();
+	
+	ACCESSOR_R(obj, isDestroyed);
+	
+	
+	// -------- dynamic
+	
+	Nan::SetPrototypeMethod(proto, "destroy", destroy);
+	Nan::SetPrototypeMethod(proto, "resize", resize);
+	Nan::SetPrototypeMethod(proto, "mouse", mouse);
+	Nan::SetPrototypeMethod(proto, "keyboard", keyboard);
+	Nan::SetPrototypeMethod(proto, "load", load);
+	Nan::SetPrototypeMethod(proto, "set", set);
+	Nan::SetPrototypeMethod(proto, "get", get);
+	Nan::SetPrototypeMethod(proto, "invoke", invoke);
+	Nan::SetPrototypeMethod(proto, "libs", libs);
+	
+	// -------- static
+	
+	V8_VAR_FUNC ctor = Nan::GetFunction(proto).ToLocalChecked();
+	
+	_protoView.Reset(proto);
+	_ctorView.Reset(ctor);
+	
+	Nan::Set(target, JS_STR("View"), ctor);
+	
+	Nan::SetMethod(ctor, "init", View::_init);
+	Nan::SetMethod(ctor, "plugins", View::plugins);
+	Nan::SetMethod(ctor, "update", View::update);
+	
+}
+
+
+bool View::isView(V8_VAR_OBJ obj) {
+	return Nan::New(_protoView)->HasInstance(obj);
+}
+
+
+NAN_METHOD(View::newCtor) {
+	
+	CTOR_CHECK("View");
+	
+	REQ_INT32_ARG(0, w);
+	REQ_INT32_ARG(1, h);
+	
+	View *view = new View(w, h);
+	
+	view->Wrap(info.This());
+	RET_VALUE(info.This());
+	
+}
+
+
 NAN_METHOD(View::destroy) { THIS_VIEW; THIS_CHECK;
+	
+	view->emit("destroy");
 	
 	view->_destroy();
 	
 }
+
+
+NAN_GETTER(View::isDestroyedGetter) { THIS_VIEW;
+	
+	RET_VALUE(JS_BOOL(view->_isDestroyed));
+	
+}
+
