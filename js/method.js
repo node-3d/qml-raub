@@ -59,7 +59,7 @@ class Method {
 	
 	call(args) {
 		
-		const inv = () => this._owner._view.invoke(
+		const inv = () => this._owner.invoke(
 			this._name,
 			this._key,
 			args === undefined ? '' : JSON.stringify(args)

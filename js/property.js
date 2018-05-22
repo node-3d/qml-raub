@@ -31,7 +31,7 @@ class Property {
 		
 		this.send = opts.send || this._send;
 		
-		this._owner.on('get', data => {
+		this._owner.on('_qml_get', data => {
 			
 			if ( ! (data.name === this._name && data.key === this._key) ) {
 				return;
@@ -58,8 +58,8 @@ class Property {
 	_destroy() {
 		
 		this._owner = null;
-		this._name  = null;
-		this._key   = null;
+		this._name = null;
+		this._key = null;
 		this._value = null;
 		this._fromJs = null;
 		this._toJs = null;
@@ -79,7 +79,7 @@ class Property {
 			if (this._value !== undefined) {
 				this.send();
 			} else {
-				this._owner._view.get(this._name, this._key);
+				this._owner.get(this._name, this._key);
 			}
 			
 		}
@@ -104,7 +104,7 @@ class Property {
 	
 	_send() {
 		if (this.canSend()) {
-			this._owner._view.set(this._name, this._key, JSON.stringify(this._value));
+			this._owner.set(this._name, this._key, JSON.stringify(this._value));
 		}
 	}
 	

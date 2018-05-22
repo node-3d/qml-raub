@@ -2,43 +2,38 @@
 
 const { expect } = require('chai');
 
-const qml  = require('qml-raub');
+const { View, Property, Method } = require('qml-raub');
 
 
-qml.View.init(__dirname, 0, 0);
+View.init(__dirname, 0, 0);
 
 const loop = () => {
-	const timer = setInterval(qml.View.update, 10);
+	const timer = setInterval(View.update, 10);
 	return () => clearInterval(timer);
 };
 
 
 describe('Qml', function () {
 	
-	this.timeout(20000);
+	this.timeout(10000);
 	
 	let l;
 	before(() => { l = loop(); });
 	after(() => { l(); l = null; });
 	
 	
-	it('exports an object', () => {
-		expect(qml).to.be.an('object');
-	});
-	
-	
 	it('contains class View', () => {
-		expect(qml).to.respondTo('View');
+		expect(View).to.exist;
 	});
 	
 	
 	it('contains class Property', () => {
-		expect(qml).to.respondTo('Property');
+		expect(Property).to.exist;
 	});
 	
 	
 	it('contains class Method', () => {
-		expect(qml).to.respondTo('Property');
+		expect(Property).to.exist;
 	});
 	
 	
@@ -46,18 +41,18 @@ describe('Qml', function () {
 		
 		it('has all static methods', () => {
 			['init', 'libs', 'plugins', 'update'].forEach(
-				name => expect(qml.View).to.have.property(name)
+				name => expect(View).to.have.property(name)
 			);
 		});
 		
 		
 		it('can be created', () => {
-			expect(new qml.View()).to.be.an('object');
+			expect(new View()).to.be.an.instanceOf(View);
 		});
 		
 		
 		it('has all dynamic methods', () => {
-			const view = new qml.View();
+			const view = new View();
 			[
 				'load', 'destroy', 'toString', 'mousedown', 'mouseup',
 				'mousemove', 'keydown', 'keyup', 'update',
@@ -68,7 +63,7 @@ describe('Qml', function () {
 		
 		
 		it('has all properties', () => {
-			const view = new qml.View();
+			const view = new View();
 			['width', 'height', 'w', 'h', 'wh', 'size', 'textureId'].forEach(
 				name => expect(view).to.have.property(name)
 			);
@@ -77,9 +72,9 @@ describe('Qml', function () {
 		
 		it('eventually loads a QML file', () => {
 			
-			const view = new qml.View({ file: 'test.qml' });
+			const view = new View({ file: 'test.qml' });
 			
-			return new Promise(res => view.on('load', e => {
+			return new Promise(res => view.on('_qml_load', e => {
 				expect(e.status).to.be.equal('success');
 				res();
 			}));
@@ -89,7 +84,7 @@ describe('Qml', function () {
 		
 		it('eventually creates a texture', () => {
 			
-			const view = new qml.View({ file: 'test.qml' });
+			const view = new View({ file: 'test.qml' });
 			
 			return new Promise(res => view.on('reset', textureId => {
 				expect(textureId).to.exist;
@@ -103,16 +98,16 @@ describe('Qml', function () {
 	
 	describe('Property', () => {
 		
-		const view = new qml.View({ file: 'test.qml' });
+		const view = new View({ file: 'test.qml' });
 		const opts = { view, name: 'obj1', key: 'prop1' };
 		
 		it('can be created', () => {
-			expect(new qml.Property(opts)).to.be.an('object');
+			expect(new Property(opts)).to.be.an.instanceOf(Property);
 		});
 		
 		
 		it('has all dynamic methods', () => {
-			const prop = new qml.Property(opts);
+			const prop = new Property(opts);
 			['canSend', 'update'].forEach(
 				name => expect(prop).to.respondTo(name)
 			);
@@ -120,7 +115,7 @@ describe('Qml', function () {
 		
 		
 		it('has all properties', () => {
-			const prop = new qml.Property(opts);
+			const prop = new Property(opts);
 			['key', 'name', 'value'].forEach(
 				name => expect(prop).to.have.property(name)
 			);
@@ -135,7 +130,7 @@ describe('Qml', function () {
 					expect(val).to.be.equal('value1');
 					res();
 				};
-				const prop = new qml.Property({ ...opts, toJs });
+				new Property({ ...opts, toJs });
 				
 			});
 			
@@ -148,7 +143,7 @@ describe('Qml', function () {
 				
 				view.on('p1c', res);
 				
-				const prop1 = new qml.Property({ ...opts, value: 11 });
+				new Property({ ...opts, value: 11 });
 				
 			});
 			
@@ -159,16 +154,16 @@ describe('Qml', function () {
 	
 	describe('Method', () => {
 		
-		const view = new qml.View({ file: 'test.qml' });
+		const view = new View({ file: 'test.qml' });
 		const opts = { view, name: 'obj1', key: 'method1' };
 		
 		it('can be created', () => {
-			expect(new qml.Method(opts)).to.be.an('object');
+			expect(new Method(opts)).to.be.an.instanceOf(Method);
 		});
 		
 		
 		it('has all dynamic methods', () => {
-			const method = new qml.Method(opts);
+			const method = new Method(opts);
 			['call'].forEach(
 				name => expect(method).to.respondTo(name)
 			);
@@ -176,7 +171,7 @@ describe('Qml', function () {
 		
 		
 		it('has all properties', () => {
-			const method = new qml.Method(opts);
+			const method = new Method(opts);
 			['key', 'name'].forEach(
 				name => expect(method).to.have.property(name)
 			);
@@ -189,7 +184,7 @@ describe('Qml', function () {
 				
 				view.on('m1c', res);
 				
-				const method1 = new qml.Method(opts);
+				const method1 = new Method(opts);
 				method1.call();
 				
 			});
@@ -203,7 +198,7 @@ describe('Qml', function () {
 				
 				view.on('m2c', res);
 				
-				const method2 = new qml.Method({ ...opts, key: 'method2' });
+				const method2 = new Method({ ...opts, key: 'method2' });
 				method2.call(10);
 				
 			});

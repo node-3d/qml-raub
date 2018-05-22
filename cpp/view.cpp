@@ -66,10 +66,7 @@ void View::commonCb(QmlUi *ui, const char *type, const char *json) { NAN_HS;
 	Nan::Callback converter(Nan::New(_converter));
 	Nan::AsyncResource async("View::commonCb()");
 	V8_VAR_VAL argv = JS_STR(json);
-	consoleLog("DBG 1");
-	consoleLog(1, &argv);
 	V8_VAR_VAL objVal = converter.Call(1, &argv, &async).ToLocalChecked();
-	consoleLog("DBG 2");
 	view->emit(type, 1, &objVal);
 	
 }
@@ -244,7 +241,7 @@ void View::init(V8_VAR_OBJ target) {
 		R"(
 			(json => {
 				try {
-					return JSON.stringify(json);
+					return JSON.parse(json);
 				} catch (e) {
 					console.error(`Error: Qml event, bad JSON.\n${json}`);
 					return null;
@@ -253,7 +250,7 @@ void View::init(V8_VAR_OBJ target) {
 		)"
 	);
 	V8_VAR_FUNC converter = V8_VAR_FUNC::Cast(v8::Script::Compile(code)->Run());
-	_converter.Reset(ctor);
+	_converter.Reset(converter);
 	
 }
 
