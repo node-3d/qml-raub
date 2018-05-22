@@ -2,38 +2,41 @@
 
 const path = require('path');
 const util = require('util');
-const EventEmitter = require('events');
 
 const { View } = require('../core');
 
 
-class JsView extends EventEmitter {
+class JsView extends View {
 	
 	static init(cwd, ...args) {
+		
+		JsView.__inited = true;
+		
 		JsView.__cwd = cwd.replace(/\\/g, '/');
+		
 		View.init(JsView.__cwd, ...args);
-	}
-	
-	
-	static update() {
-		View.update();
+		
 	}
 	
 	
 	static libs(l) {
 		
-		if ( ! JsView.__libs ) {
-			JsView.__libs = [];
+		if ( ! JsView.__inited ) {
+			throw new Error('Not inited. Call View.init(...) first.');
 		}
 		
 		JsView.__libs.push(l);
 		
-		Object.keys(JsView.__instances).forEach(v => v._view.libs(l));
+		Object.entries(JsView.__instances).forEach((k, v) => v.libs(l));
 		
 	}
 	
 	
 	static plugins(p) {
+		
+		if ( ! JsView.__inited ) {
+			throw new Error('Not inited. Call View.init(...) first.');
+		}
 		
 		View.plugins(p);
 		
@@ -42,73 +45,49 @@ class JsView extends EventEmitter {
 	
 	static __offerIdx() {
 		
-		View.__index = (View.__index || 0) + 1;
-		return View.__index;
+		return ++JsView.__index;
 		
 	}
 	
 	
 	constructor(opts = {}) {
 		
-		super();
-		
-		if ( ! JsView.__libs ) {
-			JsView.__libs = [];
+		if ( ! JsView.__inited ) {
+			throw new Error('Not inited. Call View.init(...) first.');
 		}
 		
-		this.setMaxListeners(0);
+		const width = opts.width || opts.w || 512;
+		const height = opts.height || opts.h || 512;
+		
+		super(width, height);
 		
 		this._unload();
 		
 		this._textureId = null;
-		this._mbuttons = 0;
+		
+		this._width = width;
+		this._height = height;
+		
+		JsView.__libs.forEach(l => this.libs(l));
 		
 		this._index = JsView.__offerIdx();
-		
-		this._width = opts.width || opts.w || 512;
-		this._height = opts.height || opts.h || 512;
-		
-		this._emitter = {
-			emit: (type, json) => {
-				try {
-					const parsed = JSON.parse(json);
-					try {
-						this.emit(type, parsed);
-					} catch (e) {
-						console.error(e);
-					}
-				} catch (e) {
-					console.error("Error: Qml event, bad JSON.", data);
-				}
-			}
-		};
-		
-		this._view = new View(this._emitter, this._width, this._height);
-		
-		JsView.__libs.forEach(l => this._view.libs(l));
-		
-		
-		if ( ! JsView.__instances ) {
-			JsView.__instances = {};
-		}
 		JsView.__instances[this._index] = this;
 		
 		
 		this._silent = !! opts.silent;
-		this.on('error', data => {
-			if ( ! this._silent ) {
-				console.error('Qml Error: (' + data.type + ')', data.message);
-			}
+		this.on('_qml_error', data => {
+			console.error(`Qml Error: (${data.type})`, data.message);
+			this.emit('error', new Error(`${data.type}: ${data.message}`));
 		});
 		
 		// Expect FBO texture
-		this.on('fbo', data => {
+		this.on('_qml_fbo', data => {
 			this._textureId = data.texture;
 			this.emit('reset', this._textureId);
 		});
 		
 		
-		this.on('load', e => {
+		this.on('_qml_load', e => {
 			
 			if (e.source !== this._finalSource) {
 				return;
@@ -144,14 +123,14 @@ class JsView extends EventEmitter {
 			return;
 		}
 		this._width = v;
-		this._view.resize(this._width, this._height);
+		this.resize(this._width, this._height);
 	}
 	set height(v) {
 		if (this._height === v) {
 			return;
 		}
 		this._height = v;
-		this._view.resize(this._width, this._height);
+		this.resize(this._width, this._height);
 	}
 	
 	get w() { return this.width; }
@@ -172,11 +151,12 @@ class JsView extends EventEmitter {
 		}
 		this._width = width;
 		this._height = height;
-		this._view.resize(this._width, this._height);
+		this.resize(this._width, this._height);
 	}
 	
-	
-	destroy(...args) { return this._view.destroy(...args); }
+	get textureId() {
+		return this._textureId;
+	}
 	
 	[util.inspect.custom]() { return this.toString(); }
 	
@@ -185,44 +165,44 @@ class JsView extends EventEmitter {
 			this._isLoaded ? `loaded ${
 				this._isFile ? `file: ${this._source} ` : '[inline] '
 			}` : ''
-		}}`
+		}}`;
 	}
 	
 	
 	mousedown(e) {
 		this._mbuttons |= (1 << e.button);
-		this._view.mouse(1, e.button, this._mbuttons, e.x, e.y);
+		this.mouse(1, e.button, this._mbuttons, e.x, e.y);
 	}
 	
 	
 	mouseup(e) {
 		this._mbuttons &= ~(1 << e.button);
-		this._view.mouse(2, e.button, this._mbuttons, e.x, e.y);
+		this.mouse(2, e.button, this._mbuttons, e.x, e.y);
 	}
 	
 	
 	mousemove(e) {
-		this._view.mouse(0, 0, this._mbuttons, e.x, e.y);
+		this.mouse(0, 0, this._mbuttons, e.x, e.y);
 	}
 	
 	
 	keydown(e) {
-		this._view.keyboard(
+		this.keyboard(
 			1,
 			e.which,
-			e.keyCode > 0 && e.keyCode < 256 ?
-				String.fromCharCode(e.keyCode).charCodeAt(0) || 0 :
+			(e.keyCode > 0 && e.keyCode < 256) ?
+				(String.fromCharCode(e.keyCode).charCodeAt(0) || 0) :
 				0
 		);
 	}
 	
 	
 	keyup(e) {
-		this._view.keyboard(
+		this.keyboard(
 			0,
 			e.which,
-			e.keyCode > 0 && e.keyCode < 256 ?
-				String.fromCharCode(e.keyCode).charCodeAt(0) || 0 :
+			(e.keyCode > 0 && e.keyCode < 256) ?
+				(String.fromCharCode(e.keyCode).charCodeAt(0) || 0) :
 				0
 		);
 	}
@@ -246,10 +226,6 @@ class JsView extends EventEmitter {
 		
 	}
 	
-	get textureId() {
-		return this._textureId;
-	}
-	
 	
 	_loadWhenReady() {
 		
@@ -263,11 +239,11 @@ class JsView extends EventEmitter {
 				this._source :
 				`${JsView.__cwd}/${this._source}`;
 				
-			this._view.load(true, this._finalSource);
+			super.load(true, this._finalSource);
 			
 		} else {
 			this._finalSource = this._source;
-			this._view.load(false, this._source);
+			super.load(false, this._source);
 		}
 		
 	}
@@ -282,21 +258,20 @@ class JsView extends EventEmitter {
 		this._finalSource = null;
 		
 		this._properties = [];
-		this._methods    = [];
+		this._methods = [];
 		
 	}
 	
 	
-	_destroy() {
+	destroy() {
 		
 		this._unload();
 		
 		this._textureId = null;
-		this._mbuttons = 0;
 		
 		if (View.__instances[this._index]) {
 			delete View.__instances[this._index];
-			this._view.destroy();
+			super.destroy();
 		}
 		
 		this._index = -1;
@@ -311,6 +286,12 @@ class JsView extends EventEmitter {
 	}
 	
 }
+
+
+JsView.__inited = false;
+JsView.__libs = [];
+JsView.__instances = {};
+JsView.__index = 0;
 
 
 module.exports = JsView;

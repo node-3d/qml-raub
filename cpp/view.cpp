@@ -62,8 +62,15 @@ void View::_destroy() { DES_CHECK;
 void View::commonCb(QmlUi *ui, const char *type, const char *json) { NAN_HS;
 	
 	View *view = _uis[ui];
+	
+	Nan::Callback converter(Nan::New(_converter));
+	Nan::AsyncResource async("View::commonCb()");
 	V8_VAR_VAL argv = JS_STR(json);
-	view->emit(type, 1, &argv);
+	consoleLog("DBG 1");
+	consoleLog(1, &argv);
+	V8_VAR_VAL objVal = converter.Call(1, &argv, &async).ToLocalChecked();
+	consoleLog("DBG 2");
+	view->emit(type, 1, &objVal);
 	
 }
 
@@ -184,6 +191,7 @@ NAN_METHOD(View::invoke) { THIS_VIEW;
 
 V8_STORE_FT View::_protoView;
 V8_STORE_FUNC View::_ctorView;
+V8_STORE_FUNC View::_converter;
 
 
 void View::init(V8_VAR_OBJ target) {
@@ -229,6 +237,23 @@ void View::init(V8_VAR_OBJ target) {
 	Nan::SetMethod(ctor, "init", View::_init);
 	Nan::SetMethod(ctor, "plugins", View::plugins);
 	Nan::SetMethod(ctor, "update", View::update);
+	
+	// ---- helper
+	
+	V8_VAR_STR code = JS_STR(
+		R"(
+			(json => {
+				try {
+					return JSON.stringify(json);
+				} catch (e) {
+					console.error(`Error: Qml event, bad JSON.\n${json}`);
+					return null;
+				}
+			})
+		)"
+	);
+	V8_VAR_FUNC converter = V8_VAR_FUNC::Cast(v8::Script::Compile(code)->Run());
+	_converter.Reset(ctor);
 	
 }
 

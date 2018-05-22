@@ -28,8 +28,9 @@ protected:
 	
 	View(int w, int h);
 	
-	static V8_STORE_FT _protoView; // for inheritance
+	static V8_STORE_FT _protoView;
 	static V8_STORE_FUNC _ctorView;
+	static V8_STORE_FUNC _converter;
 	
 	bool _isDestroyed;
 	

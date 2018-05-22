@@ -20,7 +20,7 @@ class Method {
 		this._owner._methods.push(this);
 		
 		this._name = opts.name;
-		this._key  = opts.key;
+		this._key = opts.key;
 		
 		this._queue = [];
 		
@@ -73,6 +73,6 @@ class Method {
 		
 	}
 	
-};
+}
 
 module.exports = Method;

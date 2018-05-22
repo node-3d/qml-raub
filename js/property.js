@@ -1,9 +1,6 @@
 'use strict';
 
 
-
-
-
 class Property {
 	
 	constructor(opts) {
@@ -22,8 +19,8 @@ class Property {
 		this._owner = opts.view;
 		this._owner._properties.push(this);
 		
-		this._name  = opts.name;
-		this._key   = opts.key;
+		this._name = opts.name;
+		this._key = opts.key;
 		this._value = opts.value || undefined;
 		
 		this._fromJs = opts.fromJs || null;
@@ -119,6 +116,6 @@ class Property {
 		}
 	}
 	
-};
+}
 
 module.exports = Property;
