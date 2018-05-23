@@ -1,7 +1,7 @@
 'use strict';
 
 
-class Method {
+class Bound {
 	
 	constructor(opts) {
 		
@@ -12,18 +12,14 @@ class Method {
 		if ( ! (opts.name && typeof opts.name === 'string') ) {
 			throw new Error('Method requires `string opts.name`.');
 		}
+		
 		if ( ! (opts.key && typeof opts.key === 'string') ) {
 			throw new Error('Method requires `string opts.key`.');
 		}
 		
 		this._owner = opts.view;
-		this._owner._methods.push(this);
-		
 		this._name = opts.name;
 		this._key = opts.key;
-		
-		this._queue = [];
-		
 		this._isReady = false;
 		
 		if (this._owner._isLoaded) {

@@ -51,11 +51,28 @@ class Property {
 	}
 	
 	
-	get key() { return this._key; }
 	get name() { return this._name; }
 	
+	get key() { return this._key; }
 	
-	_destroy() {
+	get value() { return this._value; }
+	set value(v) {
+		if (this._value === v) {
+			return;
+		}
+		this._value = v;
+		this.send();
+	}
+	
+	
+	destroy() {
+		
+		const idx = this._owner._properties.indexOf(this);
+		if (idx > -1) {
+			this._owner._properties.splice(idx, 1);
+		}
+		
+		this._owner.on('_qml_get', data => {
 		
 		this._owner = null;
 		this._name = null;
@@ -84,16 +101,6 @@ class Property {
 			
 		}
 		
-	}
-	
-	
-	get value() { return this._value; }
-	set value(v) {
-		if (this._value === v) {
-			return;
-		}
-		this._value = v;
-		this.send();
 	}
 	
 	

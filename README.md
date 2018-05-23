@@ -6,7 +6,8 @@ This is a part of [Node3D](https://github.com/node-3d) project.
 ## Synopsis
 
 **QML** interoperation addon for **Node.js**. Offers high-order classes for building 2D UI's.
-
+This library is not a direct mapping of QML API, rather it is more of a simplified
+interpretation for generic purposes.
 
 ## Install
 
@@ -14,16 +15,14 @@ This is a part of [Node3D](https://github.com/node-3d) project.
 npm i -s qml-raub
 ```
 
-Note: as this is a compiled addon, compilation tools must be in place on your system.
-Such as MSVS13 for Windows, where **ADMIN PRIVELEGED** `npm i -g windows-build-tools` most probably helps.
+> Note: compilation tools must be in place on your system.
+For Windows, use **ADMIN PRIVELEGED** command line:
+\`npm i -g windows-build-tools\`.
+Also **Windows** needs **vcredist 2013** to be installed.
 
 
 ## Usage
 
-This library is not a direct mapping of QML API, rather it is more of a simplified
-interpretation for generic purposes.
-
----
 
 ### class View
 
@@ -85,11 +84,11 @@ texture will be created upon `'load'` event. Param opts:
 If both `file` and `source` are passed, the `file` is used. If none of them passed,
 an error will be thrown.
 
-* mousedown(Event e) - send mousedown event to the QML scene.
-* mouseup(Event e) - send mouseup event to the QML scene.
-* mousemove(Event e) - send mousemove event to the QML scene.
-* keydown(Event e) - send keydown event to the QML scene.
-* keyup(Event e) - send keyup event to the QML scene.
+* `mousedown(Event e)` - send mousedown event to the QML scene.
+* `mouseup(Event e)` - send mouseup event to the QML scene.
+* `mousemove(Event e)` - send mousemove event to the QML scene.
+* `keydown(Event e)` - send keydown event to the QML scene.
+* `keyup(Event e)` - send keyup event to the QML scene.
 
 
 
@@ -123,60 +122,78 @@ const x1 = new Property({ view, name: 'obj1', key: 'x1' });
 x1.value = 10;
 ```
 
-
-
+> Note: The value is transmitted as JSON, so it can't be too special.
 
 Constructor:
-* `Property({ View view, string name, string key, value })`
+
+* `Property({ view, name, key, ?value, ?fromJs, ?toJs, ?auto, ?send })`
+	* `View view` - a view, where the property resides.
+	* `string name` - the name of an object within QML scene.
+	* `string key` - property key.
+	* `any ?value undefined` - initial value to be set.
+	* `function ?fromJs` - the callback to retrieve JS values before sending them to QML.
+	* `function ?toJs` - the callback to 
+	* `bool ?auto true` - if this property should be updated automatically, it is default.
+	* `function ?send undefined` - an optional callback to replace the default value sender.
 
 
 Properties:
-* `get/set string type 'box'` - defines body shape.  NOTE: set is expensive. One of:
-	* `'box'` - `btBoxShape`
-	* `'ball'` - `btSphereShape`
-	* `'roll'` - `btCylinderShape`
-	* `'caps'` - `btCapsuleShape`
-	* `'plane'` - `btStaticPlaneShape`
-	* WIP: `'map'` - `btHeightfieldTerrainShape`
-	* WIP: `'mesh'` - `btBvhTriangleMeshShape`
-* `get/set vec3 pos [0,0,0]` - body position. NOTE: set is expensive.
-* `get/set vec3 rot [0,0,0]` - body rotation, Euler angles - DEGREES. NOTE: get/set is a bit expensive.
-* `get/set vec3 vell [0,0,0]` - linear velosity.
-* `get/set vec3 vela [0,0,0]` - angular velocity.
-* `get/set vec3 size [1,1,1]` - size in three dimensions. NOTE: set is expensive.
-* `get/set vec3 factl [1,1,1]` - linear movement axis-multipliers. May be you want a 2D
-scene with a locked z-axis, then just set it [1,1,0].
-* `get/set vec3 facta [1,1,1]` - angular movement axis-multipliers. May be you want to
-create a controlled dynamic character capsule which does not tilt , then just set it [0,0,0].
-* `get/set {} map null` - WIP
-* `get/set {} mesh null` - WIP
-* `get/set number mass 0.0` - body mass, if 0 - body is **static**. NOTE: set is expensive.
-* `get/set number rest 0.0` - restitution, bounciness.
-* `get/set number dampl 0.1` - something like air friction and how much it is applied to
-the linear velocity.
-* `get/set number dampa 0.1` - something like air friction and how much it is applied to
-the angular velocity.
-* `get/set number frict 0.5` - surface friction on contact points between two bodies.
-* `get/set boolean sleepy true` - if this body tends to "fall asleep" when not moving for
-a while. This is a good way to optimize calculation and throughput of the scene. Only
-set it to `false` for specific body if its sleepiness causes issues.
+
+* `get string name` - the name of an object within QML scene.
+* `get string key` - property key.
+* `get/set any value undefined` - current property value.
 
 
 Methods:
-* void destroy() - destroys the body, `'destroy'` event is emitted.
+* void destroy() - prevents further updates, erases the value.
+* void canSend() - if the value can be sent to QML right now.
+* void update() - send the value to QML.
 
 
-Events:
-* `'destroy'` - emitted when the body is destroyed.
-* `'update' { vec3 pos, quat quat, vec3 vell, vec3 vela }` - emitted for every non-sleeping
-Body per every `scene.update()` call. Instead of `rot` value it caries a raw quaternion.
-However you can get the newest `body.rot` yourself. It is done to minimize calculation,
-because rotation is internally quaternion and requires conversion to Euler-angles. Also
-visualization frameworks tend to treat quaternions way better then angles, and the main
-use case of this event is to update visualization.
+---
+
+### class Method
+
+Call QML method. The QML object should have it's `objectName` set,
+and have a method (function) under a given key. This class can
+be used to store the credentials of a QML method for multiple calls.
+
+In the latter case the value will automatically be read and written with each
+`View.update()` call. Also note that both QML side and JS side can influence the
+value. This is important for various control elements that can be altered by both
+UI interactions and programmatic events.
+
+JS:
 ```
-body.on('update', ({ pos, quat }) => {
-	mesh.position.set(pos.x, pos.y, pos.z);
-	mesh.quaternion.set(quat.x, quat.y, quat.z, quat.w);
-});
+const { View, Method } = require('qml-raub');
+...
+const view = new View({ width: 800, height: 600, file: 'ui.qml' });
+const f1 = new Method({ view, name: 'obj1', key: 'x1' });
+
+f1();
 ```
+
+Constructor:
+
+* `Property({ view, name, key, ?value, ?fromJs, ?toJs, ?auto, ?send })`
+	* `View view` - a view, where the property resides.
+	* `string name` - the name of an object within QML scene.
+	* `string key` - property key.
+	* `any ?value undefined` - initial value to be set.
+	* `function ?fromJs` - the callback to retrieve JS values before sending them to QML.
+	* `function ?toJs` - the callback to 
+	* `bool ?auto true` - if this property should be updated automatically, it is default.
+	* `function ?send undefined` - an optional callback to replace the default value sender.
+
+
+Properties:
+
+* `get string name` - the name of an object within QML scene.
+* `get string key` - property key.
+* `get/set any value undefined` - current property value.
+
+
+Methods:
+* void destroy() - prevents further updates, erases the value.
+* void canSend() - if the value can be sent to QML right now.
+* void update() - send the value to QML.
