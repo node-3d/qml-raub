@@ -110,6 +110,9 @@ class JsView extends View {
 			
 		});
 		
+		this.on('_qml_mouse', e => this.emit(e.type, e));
+		this.on('_qml_key', e => this.emit(e.type, e));
+		
 		if (opts.file || opts.source) {
 			this.load(opts);
 		}
