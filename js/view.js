@@ -65,6 +65,8 @@ class JsView extends View {
 		
 		this._textureId = null;
 		
+		this._mbuttons = 0;
+		
 		this._width = width;
 		this._height = height;
 		

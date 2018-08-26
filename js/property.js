@@ -31,7 +31,7 @@ class Property {
 		
 		this.send = opts.send || this._send;
 		
-		this._owner.on('_qml_get', data => {
+		this._receiverCb = data => {
 			
 			if ( ! (data.name === this._name && data.key === this._key) ) {
 				return;
@@ -42,7 +42,9 @@ class Property {
 				this._toJs(this._value);
 			}
 			
-		});
+		};
+		
+		this._owner.on('_qml_get', this._receiverCb);
 		
 		if (this._owner._isLoaded) {
 			this._initialize();
@@ -72,7 +74,8 @@ class Property {
 			this._owner._properties.splice(idx, 1);
 		}
 		
-		this._owner.on('_qml_get', data => {
+		this._owner.off('_qml_get', this._receiverCb);
+		this._receiverCb = null;
 		
 		this._owner = null;
 		this._name = null;
