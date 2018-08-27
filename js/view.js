@@ -65,6 +65,8 @@ class JsView extends View {
 		
 		this._textureId = null;
 		
+		this._mbuttons = 0;
+		
 		this._width = width;
 		this._height = height;
 		
@@ -107,6 +109,9 @@ class JsView extends View {
 			this._methods.forEach(m => m._initialize());
 			
 		});
+		
+		this.on('_qml_mouse', e => this.emit(e.type, e));
+		this.on('_qml_key', e => this.emit(e.type, e));
 		
 		if (opts.file || opts.source) {
 			this.load(opts);
