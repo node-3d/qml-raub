@@ -101,7 +101,7 @@ NAN_METHOD(View::update) {
 
 NAN_METHOD(View::libs) { THIS_VIEW;
 	
-	REQ_UTF8_ARG(1, str);
+	REQ_UTF8_ARG(0, str);
 	
 	view->_qmlui->libs(*str);
 	
