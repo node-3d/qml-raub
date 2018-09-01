@@ -2,18 +2,18 @@
 
 This is a part of [Node3D](https://github.com/node-3d) project.
 
+![NPM](https://nodei.co/npm/qml-raub.png?compact=true)
+
+![Build Status](https://api.travis-ci.org/node-3d/qml-raub.svg?branch=master)
+
+> npm i -s qml-raub
+
 
 ## Synopsis
 
 **QML** interoperation addon for **Node.js**. Offers high-order classes for building 2D UI's.
 This library is not a direct mapping of QML API, rather it is more of a simplified
 interpretation for generic purposes.
-
-## Install
-
-```
-npm i -s qml-raub
-```
 
 > Note: compilation tools must be in place on your system.
 For Windows, use **ADMIN PRIVELEGED** command line:
