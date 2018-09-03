@@ -72,16 +72,10 @@
 				'inputs'      : [],
 				'outputs'     : ['cpp'],
 				'conditions'  : [
-					[ 'OS=="linux"', { 'action' : [
-						'rm',
-						'<(module_root_dir)/build/Release/obj.target/qml/cpp/qml.o',
-						'<(module_root_dir)/build/Release/obj.target/qml.node',
-						'<(module_root_dir)/build/Release/qml.node'
-					] } ],
-					[ 'OS=="mac"', { 'action' : [
+					[ 'OS=="linux" or OS=="mac"', { 'action' : [
 						'rm',
 						'<(module_root_dir)/build/Release/obj.target/qml/cpp/bindings.o',
-						'<(module_root_dir)/build/Release/obj.target/qml/cpp/qml.o',
+						'<(module_root_dir)/build/Release/obj.target/qml/cpp/view.o',
 						'<(module_root_dir)/build/Release/qml.node'
 					] } ],
 					[ 'OS=="win"', { 'action' : [
