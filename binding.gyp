@@ -6,6 +6,9 @@
 		'binary'         : '<!(node -e "require(\'addon-tools-raub\').bin()")',
 		'qmlui_include'  : '<!(node -e "require(\'deps-qmlui-raub\').include()")',
 		'qmlui_bin'      : '<!(node -e "require(\'deps-qmlui-raub\').bin()")',
+		'qt_core_bin'    : '<!(node -e "require(\'deps-qt-qml-raub\').core.bin()")',
+		'qt_gui_bin'     : '<!(node -e "require(\'deps-qt-qml-raub\').gui.bin()")',
+		'qt_qml_bin'     : '<!(node -e "require(\'deps-qt-qml-raub\').bin()")',
 	},
 	'targets': [
 		{
@@ -20,7 +23,9 @@
 			'conditions'   : [
 				[
 					'OS=="linux" or OS=="mac"', {
-						'libraries': ['-Wl,-rpath,<(qmlui_bin)'],
+						'libraries': [
+							'-Wl,-rpath,<(qmlui_bin),<(qt_core_bin),<(qt_gui_bin),<(qt_core_gui)',
+						],
 					}
 				],
 				[
