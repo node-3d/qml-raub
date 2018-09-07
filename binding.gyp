@@ -40,6 +40,7 @@
 							'<(qt_gui_bin)/libQt5Gui.so.5',
 							'<(qt_gui_bin)/libQt5OpenGL.so.5',
 							'<(qt_gui_bin)/libQt5Widgets.so.5',
+							'<(qt_gui_bin)/libQt5XcbQpa.so.5',
 							'<(qt_qml_bin)/libQt5Qml.so.5',
 							'<(qt_qml_bin)/libQt5Quick.so.5',
 							'<(qt_qml_bin)/libQt5QuickControls2.so.5',
