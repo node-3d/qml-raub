@@ -30,6 +30,7 @@
 							'-Wl,-rpath <(qt_qml_bin)',
 							'<(qt_core_bin)/libQt5Core.so.5',
 							'<(qt_core_bin)/libQt5Network.so.5',
+							'<(qt_core_bin)/libicui18n.so.56',
 							'<(qt_gui_bin)/libQt5Gui.so.5',
 							'<(qt_gui_bin)/libQt5OpenGL.so.5',
 							'<(qt_gui_bin)/libQt5Widgets.so.5',
