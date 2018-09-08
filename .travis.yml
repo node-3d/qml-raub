@@ -34,12 +34,11 @@ install:
 
 
 before_script:
-  - "export DISPLAY=:99.0"
+  - "export DISPLAY=:99"
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
 
 
 script:
-  - Xvfb :1 +extension GLX
   - cd test && npm test
   - cd ..
