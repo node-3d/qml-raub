@@ -28,7 +28,6 @@ before_install:
 
 
 install:
-  - apt-get install -y mesa-utils
   - npm i --clang=1
   - cd test && npm i --clang=1
   - cd ..
@@ -41,6 +40,5 @@ before_script:
 
 
 script:
-  - glxinfo
   - cd test && npm test
   - cd ..
