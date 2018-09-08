@@ -40,5 +40,6 @@ before_script:
 
 
 script:
+  - Xvfb :1 +extension GLX
   - cd test && npm test
   - cd ..
