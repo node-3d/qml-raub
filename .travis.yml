@@ -32,6 +32,6 @@ install:
 
 
 script:
-  - ldd node_modules/deps-qt-gui-raub/bin-linux64/plugins/platform/libqxcb.so
+  - LD_LIBRARY_PATH=node_modules/deps-qt-core-raub/bin-linux64:node_modules/deps-qt-gui-raub/bin-linux64:node_modules/deps-qt-qml-raub/bin-linux64:node_modules/deps-qmlui-raub/bin-linux64 ldd node_modules/deps-qt-gui-raub/bin-linux64/plugins/platform/libqxcb.so
   - cd test && npm test
   - cd ..
