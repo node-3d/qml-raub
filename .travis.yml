@@ -24,15 +24,16 @@ before_install:
   - npm conf set strict-ssl false
   - npm install -g npm@6.4.0
   - export DISPLAY=:99
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x24 +extension GLX"
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x24"
 
 
 install:
+  - cd test
   - npm i --clang=1
-  - cd test && npm i --clang=1
   - cd ..
 
 
 script:
-  - cd test && npm test
+  - cd test
+  - npm test
   - cd ..
