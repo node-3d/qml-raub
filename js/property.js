@@ -21,7 +21,7 @@ class Property {
 		
 		this._name = opts.name;
 		this._key = opts.key;
-		this._value = opts.value || undefined;
+		this._value = opts.value;
 		
 		this._fromJs = opts.fromJs || null;
 		this._toJs = opts.toJs || null;
