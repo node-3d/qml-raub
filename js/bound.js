@@ -71,4 +71,4 @@ class Bound {
 	
 }
 
-module.exports = Method;
+module.exports = Bound;
