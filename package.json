@@ -10,11 +10,15 @@
 		"qml",
 		"gui",
 		"qtquick",
-		"graphics"
+		"graphics",
+		"c++",
+		"bindings",
+		"native",
+		"gyp"
 	],
 	"engines": {
-		"node": ">=8.11.4",
-		"npm": ">=6.3.0"
+		"node": ">=10.13.0",
+		"npm": ">=6.4.1"
 	},
 	"maintainers": [
 		{
@@ -29,6 +33,6 @@
 	},
 	"dependencies": {
 		"deps-qmlui-raub": "https://github.com/node-3d/deps-qmlui-raub.git",
-		"addon-tools-raub": "4.0.0"
+		"addon-tools-raub": "4.1.0"
 	}
 }
