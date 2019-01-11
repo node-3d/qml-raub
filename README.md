@@ -2,9 +2,10 @@
 
 This is a part of [Node3D](https://github.com/node-3d) project.
 
-![NPM](https://nodei.co/npm/qml-raub.png?compact=true)
+[![NPM](https://nodei.co/npm/qml-raub.png?compact=true)](https://www.npmjs.com/package/qml-raub)
 
-![Build Status](https://api.travis-ci.org/node-3d/qml-raub.svg?branch=master)
+[![Build Status](https://api.travis-ci.com/node-3d/qml-raub.svg?branch=master)](https://travis-ci.com/node-3d/qml-raub)
+[![CodeFactor](https://www.codefactor.io/repository/github/node-3d/qml-raub/badge)](https://www.codefactor.io/repository/github/node-3d/qml-raub)
 
 > npm i -s qml-raub
 
