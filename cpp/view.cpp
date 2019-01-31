@@ -135,7 +135,7 @@ NAN_METHOD(View::keyboard) { THIS_VIEW;
 	
 	REQ_INT32_ARG(0, type);
 	REQ_INT32_ARG(1, key);
-	REQ_INT32_ARG(2, text);
+	REQ_UINT32_ARG(2, text);
 	
 	view->_qmlui->keyboard(type, key, text);
 	

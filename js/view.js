@@ -192,24 +192,12 @@ class JsView extends View {
 	
 	
 	keydown(e) {
-		this.keyboard(
-			1,
-			e.which,
-			(e.keyCode > 0 && e.keyCode < 256) ?
-				(String.fromCharCode(e.keyCode).charCodeAt(0) || 0) :
-				0
-		);
+		this.keyboard(1, e.which, e.charCode);
 	}
 	
 	
 	keyup(e) {
-		this.keyboard(
-			0,
-			e.which,
-			(e.keyCode > 0 && e.keyCode < 256) ?
-				(String.fromCharCode(e.keyCode).charCodeAt(0) || 0) :
-				0
-		);
+		this.keyboard(0, e.which, e.charCode);
 	}
 	
 	
