@@ -83,8 +83,7 @@ NAN_METHOD(View::_init) {
 	REQ_OFFS_ARG(2, ctx);
 	
 	// Preload the libs with OUR @RPATH, not some junk builtin rpaths
-	// TODO: Unsure if macx
-	#ifdef __linux__
+	#ifndef WIN32
 	dlopen("libicui18n.so.56", RTLD_LAZY);
 	dlopen("libicuuc.so.56", RTLD_LAZY);
 	dlopen("libicudata.so.56", RTLD_LAZY);
