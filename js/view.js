@@ -65,8 +65,6 @@ class JsView extends View {
 		
 		this._textureId = null;
 		
-		this._mbuttons = 0;
-		
 		this._width = width;
 		this._height = height;
 		
@@ -175,21 +173,22 @@ class JsView extends View {
 	
 	
 	mousedown(e) {
-		this._mbuttons |= (1 << e.button);
-		this.mouse(1, e.button, this._mbuttons, e.x, e.y);
+		this.mouse(1, e.button, e.buttons, e.x, e.y);
 	}
 	
 	
 	mouseup(e) {
-		this._mbuttons &= ~(1 << e.button);
-		this.mouse(2, e.button, this._mbuttons, e.x, e.y);
+		this.mouse(2, e.button, e.buttons, e.x, e.y);
 	}
 	
 	
 	mousemove(e) {
-		this.mouse(0, 0, this._mbuttons, e.x, e.y);
+		this.mouse(0, 0, e.buttons, e.x, e.y);
 	}
 	
+	wheel(e) {
+		this.mouse(3, e.wheelDelta, e.buttons, e.x, e.y);
+	}
 	
 	keydown(e) {
 		this.keyboard(1, e.which, e.charCode);

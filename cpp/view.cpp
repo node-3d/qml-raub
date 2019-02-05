@@ -4,6 +4,10 @@
 
 #include "view.hpp"
 
+#ifndef WIN32
+	#include <dlfcn.h>
+#endif
+
 
 // ------ Aux macros
 
@@ -77,6 +81,29 @@ NAN_METHOD(View::_init) {
 	REQ_UTF8_ARG(0, cwdOwn);
 	REQ_OFFS_ARG(1, wnd);
 	REQ_OFFS_ARG(2, ctx);
+	
+	// Preload the libs with OUR @RPATH, not some junk builtin rpaths
+	// TODO: Unsure if macx
+	#ifdef __linux__
+	dlopen("libicui18n.so.56", RTLD_LAZY);
+	dlopen("libicuuc.so.56", RTLD_LAZY);
+	dlopen("libicudata.so.56", RTLD_LAZY);
+	dlopen("libicuio.so.56", RTLD_LAZY);
+	dlopen("libicule.so.56", RTLD_LAZY);
+	dlopen("libicutu.so.56", RTLD_LAZY);
+	dlopen("libQt5Core.so.5", RTLD_LAZY);
+	dlopen("libQt5Network.so.5", RTLD_LAZY);
+	dlopen("libQt5DBus.so.5", RTLD_LAZY);
+	dlopen("libQt5Gui.so.5", RTLD_LAZY);
+	dlopen("libQt5OpenGL.so.5", RTLD_LAZY);
+	dlopen("libQt5Widgets.so.5", RTLD_LAZY);
+	dlopen("libQt5XcbQpa.so.5", RTLD_LAZY);
+	dlopen("libQt5Qml.so.5", RTLD_LAZY);
+	dlopen("libQt5Quick.so.5", RTLD_LAZY);
+	dlopen("libQt5QuickControls2.so.5", RTLD_LAZY);
+	dlopen("libQt5QuickTemplates2.so.5", RTLD_LAZY);
+	dlopen("libQt5QuickWidgets.so.5", RTLD_LAZY);
+	#endif
 	
 	QmlUi::init(*cwdOwn, wnd, ctx, commonCb);
 	
