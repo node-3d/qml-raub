@@ -50,6 +50,46 @@
 					}
 				],
 				[
+					'OS=="linux"', {
+						'libraries': [
+							'<(qt_core_bin)/libicui18n.so.56',
+							'<(qt_core_bin)/libicuuc.so.56',
+							'<(qt_core_bin)/libicudata.so.56',
+							'<(qt_core_bin)/libicuio.so.56',
+							'<(qt_core_bin)/libicule.so.56',
+							'<(qt_core_bin)/libicutu.so.56',
+							'<(qt_core_bin)/libQt5Core.so.5',
+							'<(qt_core_bin)/libQt5Network.so.5',
+							'<(qt_core_bin)/libQt5DBus.so.5',
+							'<(qt_gui_bin)/libQt5Gui.so.5',
+							'<(qt_gui_bin)/libQt5OpenGL.so.5',
+							'<(qt_gui_bin)/libQt5Widgets.so.5',
+							'<(qt_gui_bin)/libQt5XcbQpa.so.5',
+							'<(qt_qml_bin)/libQt5Qml.so.5',
+							'<(qt_qml_bin)/libQt5Quick.so.5',
+							'<(qt_qml_bin)/libQt5QuickControls2.so.5',
+							'<(qt_qml_bin)/libQt5QuickTemplates2.so.5',
+							'<(qt_qml_bin)/libQt5QuickWidgets.so.5',
+						],
+					}
+				],
+				[
+					'OS=="mac"', {
+						'libraries': [
+							'<(qt_core_bin)/Qt5Core',
+							'<(qt_core_bin)/Qt5Network',
+							'<(qt_core_bin)/Qt5DBus',
+							'<(qt_gui_bin)/Qt5Gui',
+							'<(qt_gui_bin)/Qt5Widgets',
+							'<(qt_qml_bin)/Qt5Qml',
+							'<(qt_qml_bin)/Qt5Quick',
+							'<(qt_qml_bin)/Qt5QuickControls2',
+							'<(qt_qml_bin)/Qt5QuickTemplates2',
+							'<(qt_qml_bin)/Qt5QuickWidgets',
+						],
+					}
+				],
+				[
 					'OS=="win"',
 					{
 						'msvs_settings' : {
