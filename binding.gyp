@@ -55,16 +55,16 @@
 				[
 					'OS=="mac"', {
 						'libraries': [
-							'<(qt_core_bin)/Qt5Core',
-							'<(qt_core_bin)/Qt5Network',
-							'<(qt_core_bin)/Qt5DBus',
-							'<(qt_gui_bin)/Qt5Gui',
-							'<(qt_gui_bin)/Qt5Widgets',
-							'<(qt_qml_bin)/Qt5Qml',
-							'<(qt_qml_bin)/Qt5Quick',
-							'<(qt_qml_bin)/Qt5QuickControls2',
-							'<(qt_qml_bin)/Qt5QuickTemplates2',
-							'<(qt_qml_bin)/Qt5QuickWidgets',
+							'<(qt_core_bin)/QtCore',
+							'<(qt_core_bin)/QtNetwork',
+							'<(qt_core_bin)/QtDBus',
+							'<(qt_gui_bin)/QtGui',
+							'<(qt_gui_bin)/QtWidgets',
+							'<(qt_qml_bin)/QtQml',
+							'<(qt_qml_bin)/QtQuick',
+							'<(qt_qml_bin)/QtQuickControls2',
+							'<(qt_qml_bin)/QtQuickTemplates2',
+							'<(qt_qml_bin)/QtQuickWidgets',
 						],
 					}
 				],
