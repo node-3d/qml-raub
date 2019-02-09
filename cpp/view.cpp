@@ -83,7 +83,7 @@ NAN_METHOD(View::_init) {
 	REQ_OFFS_ARG(2, ctx);
 	
 	// Preload the libs with OUR @RPATH, not some junk builtin rpaths
-	#ifndef WIN32
+	#ifdef __linux__
 	dlopen("libicui18n.so.56", RTLD_LAZY);
 	dlopen("libicuuc.so.56", RTLD_LAZY);
 	dlopen("libicudata.so.56", RTLD_LAZY);
@@ -102,6 +102,17 @@ NAN_METHOD(View::_init) {
 	dlopen("libQt5QuickControls2.so.5", RTLD_LAZY);
 	dlopen("libQt5QuickTemplates2.so.5", RTLD_LAZY);
 	dlopen("libQt5QuickWidgets.so.5", RTLD_LAZY);
+	#elif __APPLE__
+	dlopen("QtCore", RTLD_LAZY);
+	dlopen("QtNetwork", RTLD_LAZY);
+	dlopen("QtDBus", RTLD_LAZY);
+	dlopen("QtGui", RTLD_LAZY);
+	dlopen("QtWidgets", RTLD_LAZY);
+	dlopen("QtQml", RTLD_LAZY);
+	dlopen("QtQuick", RTLD_LAZY);
+	dlopen("QtQuickControls2", RTLD_LAZY);
+	dlopen("QtQuickTemplates2", RTLD_LAZY);
+	dlopen("QtQuickWidgets", RTLD_LAZY);
 	#endif
 	
 	QmlUi::init(*cwdOwn, wnd, ctx, commonCb);
