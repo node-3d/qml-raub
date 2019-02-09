@@ -33,7 +33,6 @@
 	},
 	"dependencies": {
 		"deps-qmlui-raub": "https://github.com/node-3d/deps-qmlui-raub.git",
-		"deps-qt-qml-raub": "https://github.com/node-3d/deps-qt-qml-raub.git",
 		"addon-tools-raub": "4.2.0"
 	}
 }

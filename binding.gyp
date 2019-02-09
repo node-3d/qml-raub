@@ -4,11 +4,11 @@
 		'cp'             : '<!(node -e "require(\'addon-tools-raub\').cp()")',
 		'mkdir'          : '<!(node -e "require(\'addon-tools-raub\').mkdir()")',
 		'binary'         : '<!(node -e "require(\'addon-tools-raub\').bin()")',
+		'qt_core_bin'    : '<!(node -e "require(\'deps-qmlui-raub\').core.bin()")',
+		'qt_gui_bin'     : '<!(node -e "require(\'deps-qmlui-raub\').gui.bin()")',
+		'qt_qml_bin'     : '<!(node -e "require(\'deps-qmlui-raub\').qml.bin()")',
 		'qmlui_include'  : '<!(node -e "require(\'deps-qmlui-raub\').include()")',
 		'qmlui_bin'      : '<!(node -e "require(\'deps-qmlui-raub\').bin()")',
-		'qt_core_bin'    : '<!(node -e "require(\'deps-qt-qml-raub\').core.bin()")',
-		'qt_gui_bin'     : '<!(node -e "require(\'deps-qt-qml-raub\').gui.bin()")',
-		'qt_qml_bin'     : '<!(node -e "require(\'deps-qt-qml-raub\').bin()")',
 	},
 	'targets': [
 		{
