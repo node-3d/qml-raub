@@ -23,7 +23,7 @@
 				[
 					'OS=="linux" or OS=="mac"', {
 						'libraries': [
-							'-Wl,-rpath,<(qmlui_bin):<(qt_qml_bin):<(qt_gui_bin):<(qt_core_bin)',
+							'-Wl,-rpath,<(qmlui_bin),<(qt_qml_bin),<(qt_gui_bin),<(qt_core_bin)',
 						],
 					}
 				],
