@@ -16,7 +16,7 @@ matrix:
   - name: "MacOS"
     os: osx
     script:
-      - LD_DEBUG=libs node test
+      - LD_DEBUG=libs DYLD_PRINT_LIBRARIES=1 node test
       # - echo OK.
   - name: "Windows"
     os: windows

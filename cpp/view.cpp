@@ -286,7 +286,14 @@ void View::init(V8_VAR_OBJ target) {
 			})
 		)"
 	);
-	V8_VAR_FUNC converter = V8_VAR_FUNC::Cast(v8::Script::Compile(code)->Run());
+	
+	v8::Local<v8::Value> converterAsValue = v8::Script::Compile(
+		Nan::GetCurrentContext(), code
+	).ToLocalChecked()->Run(
+		Nan::GetCurrentContext()
+	).ToLocalChecked();
+	
+	V8_VAR_FUNC converter = V8_VAR_FUNC::Cast(converterAsValue);
 	_converter.Reset(converter);
 	
 }
