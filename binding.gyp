@@ -14,7 +14,6 @@
 		{
 			'target_name'  : 'qml',
 			'sources'      : [ 'cpp/bindings.cpp', 'cpp/view.cpp' ],
-			'libraries'    : [ '-lqmlui' ],
 			'include_dirs' : [
 				'<!@(node -e "require(\'addon-tools-raub\').include()")',
 				'<(qmlui_include)',
@@ -31,6 +30,7 @@
 				[
 					'OS=="linux"', {
 						'libraries': [
+							'<(qmlui_bin)/libqmlui.so',
 							'<(qt_core_bin)/libicui18n.so.56',
 							'<(qt_core_bin)/libicuuc.so.56',
 							'<(qt_core_bin)/libicudata.so.56',
@@ -55,6 +55,7 @@
 				[
 					'OS=="mac"', {
 						'libraries': [
+							'<(qmlui_bin)/libqmlui.dylib',
 							'<(qt_core_bin)/QtCore',
 							'<(qt_core_bin)/QtNetwork',
 							'<(qt_core_bin)/QtDBus',
@@ -69,8 +70,8 @@
 					}
 				],
 				[
-					'OS=="win"',
-					{
+					'OS=="win"', {
+						'libraries'     : [ '-lqmlui' ],
 						'msvs_settings' : {
 							'VCCLCompilerTool' : {
 								'AdditionalOptions' : [
