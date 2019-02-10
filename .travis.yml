@@ -15,9 +15,12 @@ matrix:
       - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x24"
   - name: "MacOS"
     os: osx
+    env:
+      - OSXBUILD=true
     script:
       - otool -L /Users/travis/build/node-3d/qml-raub/bin-mac64/qml.node
       - otool -L /Users/travis/build/node-3d/qml-raub/node_modules/deps-qmlui-raub/bin-mac64/libqmlui.dylib
+      - otool -L /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/plugins/platforms/libqcocoa.dylib
       - chmod +x ../unsign
       # - codesign --remove-signature
       # - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuick
@@ -62,3 +65,27 @@ matrix:
 install:
   - cd test
   - npm i
+
+
+deploy:
+  on:
+    all_branches: true
+    condition: $OSXBUILD = true
+  provider: releases
+  name: "Binary for OSX"
+  body: $TRAVIS_COMMIT_MESSAGE
+  api_key: $GITHUB_TOKEN
+  skip_cleanup: true
+  overwrite: true
+  draft: true
+  file:
+    - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQml
+    - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuick
+    - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickControls2
+    - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickTemplates2
+    - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickWidgets
+    - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtGui
+    - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtWidgets
+    - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtCore
+    - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtNetwork
+    - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtDBus
