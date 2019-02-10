@@ -21,16 +21,16 @@ matrix:
       - chmod +x ./unsign
       # - codesign --remove-signature
       # - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuick
-      - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQml
-      - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuick
-      - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickControls2
-      - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickTemplates2
-      - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickWidgets
-      - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtGui
-      - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtWidgets
-      - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtCore
-      - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtNetwork
-      - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtDBus
+      - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQml
+      - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuick
+      - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickControls2
+      - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickTemplates2
+      - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickWidgets
+      - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtGui
+      - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtWidgets
+      - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtCore
+      - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtNetwork
+      - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtDBus
       - LD_DEBUG=libs DYLD_PRINT_LIBRARIES=1 node test
       # - echo OK.
   - name: "Windows"
