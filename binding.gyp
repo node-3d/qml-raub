@@ -59,16 +59,6 @@
 					'OS=="mac"', {
 						'libraries': [
 							'<(qmlui_bin)/libqmlui.dylib',
-							'<(qt_core_bin)/QtCore',
-							'<(qt_core_bin)/QtNetwork',
-							'<(qt_core_bin)/QtDBus',
-							'<(qt_gui_bin)/QtGui',
-							'<(qt_gui_bin)/QtWidgets',
-							'<(qt_qml_bin)/QtQml',
-							'<(qt_qml_bin)/QtQuick',
-							'<(qt_qml_bin)/QtQuickControls2',
-							'<(qt_qml_bin)/QtQuickTemplates2',
-							'<(qt_qml_bin)/QtQuickWidgets',
 						],
 					}
 				],
