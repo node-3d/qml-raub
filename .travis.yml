@@ -16,6 +16,7 @@ matrix:
   - name: "MacOS"
     os: osx
     script:
+      - otool -L /Users/travis/build/node-3d/qml-raub/bin-mac64/qml.node
       - LD_DEBUG=libs DYLD_PRINT_LIBRARIES=1 node test
       # - echo OK.
   - name: "Windows"
