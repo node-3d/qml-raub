@@ -18,6 +18,19 @@ matrix:
     script:
       - otool -L /Users/travis/build/node-3d/qml-raub/bin-mac64/qml.node
       - otool -L /Users/travis/build/node-3d/qml-raub/node_modules/deps-qmlui-raub/bin-mac64/libqmlui.dylib
+      - chmod +x ./unsign
+      - codesign --remove-signature
+      # - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuick
+      - codesign --remove-signature /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQml
+      - codesign --remove-signature /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuick
+      - codesign --remove-signature /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickControls2
+      - codesign --remove-signature /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickTemplates2
+      - codesign --remove-signature /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickWidgets
+      - codesign --remove-signature /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtGui
+      - codesign --remove-signature /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtWidgets
+      - codesign --remove-signature /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtCore
+      - codesign --remove-signature /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtNetwork
+      - codesign --remove-signature /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtDBus
       - LD_DEBUG=libs DYLD_PRINT_LIBRARIES=1 node test
       # - echo OK.
   - name: "Windows"
