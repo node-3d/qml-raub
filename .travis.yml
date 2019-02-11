@@ -20,8 +20,9 @@ matrix:
     script:
       # - otool -L /Users/travis/build/node-3d/qml-raub/bin-mac64/qml.node
       # - otool -L /Users/travis/build/node-3d/qml-raub/node_modules/deps-qmlui-raub/bin-mac64/libqmlui.dylib
-      - otool -L /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/plugins/platforms/libqcocoa.dylib
-      - otool -L /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport.framework/Versions/5/QtPrintSupport
+      - otool -L /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/plugins/platforms/libqcocoa.dylib
+      - otool -l /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/plugins/platforms/libqcocoa.dylib
+      # - otool -L /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport.framework/Versions/5/QtPrintSupport
       # - chmod +x ../unsign
       # # - codesign --remove-signature
       # # - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuick
