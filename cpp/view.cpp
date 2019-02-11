@@ -106,6 +106,7 @@ NAN_METHOD(View::_init) {
 	dlopen("QtCore", RTLD_LAZY);
 	dlopen("QtNetwork", RTLD_LAZY);
 	dlopen("QtDBus", RTLD_LAZY);
+	dlopen("QtPrintSupport", RTLD_LAZY);
 	dlopen("QtGui", RTLD_LAZY);
 	dlopen("QtWidgets", RTLD_LAZY);
 	dlopen("QtQml", RTLD_LAZY);
