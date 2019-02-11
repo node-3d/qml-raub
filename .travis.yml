@@ -57,8 +57,8 @@ matrix:
       # - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport
       # - rm /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport
       # - mv /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport.unsigned /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport
-      - QT_DEBUG_PLUGINS=1 DYLD_PRINT_LIBRARIES=1 node test
-      # - echo OK.
+      - QT_DEBUG_PLUGINS=1 node test || echo bleat
+      - echo Hi.
   - name: "Windows"
     os: windows
     script:
