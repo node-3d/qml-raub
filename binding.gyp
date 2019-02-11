@@ -21,22 +21,43 @@
 			'library_dirs' : [ '<(qmlui_bin)' ],
 			'conditions'   : [
 				[
-					'OS=="linux"', {
-						'libraries': [
-							'-Wl,-rpath,<(qmlui_bin):<(qt_qml_bin):<(qt_gui_bin):<(qt_core_bin)',
-							'<(qmlui_bin)/libqmlui.so',
-						],
-					}
-				],
-				[
-					'OS=="mac"', {
+					'OS=="linux" or OS=="mac"', {
 						'libraries': [
 							'-Wl,-rpath,<(qmlui_bin)',
 							'-Wl,-rpath,<(qt_core_bin)',
 							'-Wl,-rpath,<(qt_gui_bin)',
 							'-Wl,-rpath,<(qt_qml_bin)',
-							'<(qmlui_bin)/libqmlui.dylib',
 						],
+					}
+				],
+				[
+					'OS=="linux"', {
+						'libraries': [
+							'<(qmlui_bin)/libqmlui.so',
+							'<(qt_core_bin)/libicui18n.so.56',
+							'<(qt_core_bin)/libicuuc.so.56',
+							'<(qt_core_bin)/libicudata.so.56',
+							'<(qt_core_bin)/libicuio.so.56',
+							'<(qt_core_bin)/libicule.so.56',
+							'<(qt_core_bin)/libicutu.so.56',
+							'<(qt_core_bin)/libQt5Core.so.5',
+							'<(qt_core_bin)/libQt5Network.so.5',
+							'<(qt_core_bin)/libQt5DBus.so.5',
+							'<(qt_gui_bin)/libQt5Gui.so.5',
+							'<(qt_gui_bin)/libQt5OpenGL.so.5',
+							'<(qt_gui_bin)/libQt5Widgets.so.5',
+							'<(qt_gui_bin)/libQt5XcbQpa.so.5',
+							'<(qt_qml_bin)/libQt5Qml.so.5',
+							'<(qt_qml_bin)/libQt5Quick.so.5',
+							'<(qt_qml_bin)/libQt5QuickControls2.so.5',
+							'<(qt_qml_bin)/libQt5QuickTemplates2.so.5',
+							'<(qt_qml_bin)/libQt5QuickWidgets.so.5',
+						],
+					}
+				],
+				[
+					'OS=="mac"', {
+						'libraries': ['<(qmlui_bin)/libqmlui.dylib'],
 					}
 				],
 				[
