@@ -21,18 +21,9 @@
 			'library_dirs' : [ '<(qmlui_bin)' ],
 			'conditions'   : [
 				[
-					'OS=="linux" or OS=="mac"', {
-						'libraries': [
-							'-Wl,-rpath,<(qmlui_bin)',
-							'-Wl,-rpath,<(qt_core_bin)',
-							'-Wl,-rpath,<(qt_gui_bin)',
-							'-Wl,-rpath,<(qt_qml_bin)',
-						],
-					}
-				],
-				[
 					'OS=="linux"', {
 						'libraries': [
+							'-Wl,-rpath,<(qmlui_bin):<(qt_qml_bin):<(qt_gui_bin):<(qt_core_bin)',
 							'<(qmlui_bin)/libqmlui.so',
 						],
 					}
@@ -40,6 +31,10 @@
 				[
 					'OS=="mac"', {
 						'libraries': [
+							'-Wl,-rpath,<(qmlui_bin)',
+							'-Wl,-rpath,<(qt_core_bin)',
+							'-Wl,-rpath,<(qt_gui_bin)',
+							'-Wl,-rpath,<(qt_qml_bin)',
 							'<(qmlui_bin)/libqmlui.dylib',
 						],
 					}
