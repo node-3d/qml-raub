@@ -18,54 +18,9 @@ matrix:
     env:
       - OSXBUILD=true
     script:
-      # - otool -L /Users/travis/build/node-3d/qml-raub/bin-mac64/qml.node
-      # - otool -L /Users/travis/build/node-3d/qml-raub/node_modules/deps-qmlui-raub/bin-mac64/libqmlui.dylib
-      # - otool -L /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/plugins/platforms/libqcocoa.dylib
-      
-      
       - install_name_tool -add_rpath /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64 /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/plugins/platforms/libqcocoa.dylib
       - install_name_tool -add_rpath /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64 /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/plugins/platforms/libqcocoa.dylib
-      # - otool -l /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/plugins/platforms/libqcocoa.dylib
-      # - otool -L /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport.framework/Versions/5/QtPrintSupport
-      # - chmod +x ../unsign
-      # # - codesign --remove-signature
-      # # - ./unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuick
-      # - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQml
-      # - rm /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQml
-      # - mv /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQml.unsigned /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQml
-      # - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuick
-      # - rm /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuick
-      # - mv /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuick.unsigned /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuick
-      # - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickControls2
-      # - rm /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickControls2
-      # - mv /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickControls2.unsigned /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickControls2
-      # - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickTemplates2
-      # - rm /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickTemplates2
-      # - mv /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickTemplates2.unsigned /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickTemplates2
-      # - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickWidgets
-      # - rm /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickWidgets
-      # - mv /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickWidgets.unsigned /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickWidgets
-      # - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtGui
-      # - rm /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtGui
-      # - mv /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtGui.unsigned /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtGui
-      # - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtWidgets
-      # - rm /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtWidgets
-      # - mv /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtWidgets.unsigned /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtWidgets
-      # - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtCore
-      # - rm /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtCore
-      # - mv /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtCore.unsigned /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtCore
-      # - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtNetwork
-      # - rm /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtNetwork
-      # - mv /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtNetwork.unsigned /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtNetwork
-      # - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtDBus
-      # - rm /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtDBus
-      # - mv /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtDBus.unsigned /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtDBus
-      # - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport
-      # - rm /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport
-      # - mv /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport.unsigned /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport
-      - QML_IMPORT_TRACE=1 npm test
-      - sleep 3
-      - echo Hi.
+      - npm test
   # - name: "Windows"
   #   os: windows
   #   script:
@@ -77,26 +32,16 @@ install:
   - npm i
 
 
-# deploy:
-#   on:
-#     all_branches: true
-#     condition: $OSXBUILD = true
-#   provider: releases
-#   name: "Binary for OSX"
-#   body: $TRAVIS_COMMIT_MESSAGE
-#   api_key: $GITHUB_TOKEN
-#   skip_cleanup: true
-#   overwrite: true
-#   draft: true
-#   file:
-#     - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQml
-#     - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuick
-#     - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickControls2
-#     - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickTemplates2
-#     - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-qml-raub/bin-mac64/QtQuickWidgets
-#     - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtGui
-#     - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/QtWidgets
-#     - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtCore
-#     - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtNetwork
-#     - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtDBus
-#     - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport
+deploy:
+  on:
+    all_branches: true
+    condition: $OSXBUILD = true
+  provider: releases
+  name: "Binary for OSX"
+  body: $TRAVIS_COMMIT_MESSAGE
+  api_key: $GITHUB_TOKEN
+  skip_cleanup: true
+  overwrite: true
+  draft: true
+  file:
+    - /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-gui-raub/bin-mac64/plugins/platforms/libqcocoa.dylib

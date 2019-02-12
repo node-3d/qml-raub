@@ -11,6 +11,6 @@ const core = require(`./${binPath}/qml`);
 core.View.plugins(`${depUi.core.binPath}/plugins`);
 core.View.plugins(`${depUi.gui.binPath}/plugins`);
 core.View.plugins(`${depUi.qml.binPath}/plugins`);
-console.log('core.js QML', `${depUi.qml.binPath}/plugins`);
+
 
 module.exports = core;
