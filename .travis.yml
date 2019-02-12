@@ -6,13 +6,13 @@ node_js:
 
 matrix:
   include:
-  - name: "Linux"
-    os: linux
-    dist: xenial
-    sudo: false
-    before_install:
-      - export DISPLAY=:99
-      - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x24"
+  # - name: "Linux"
+  #   os: linux
+  #   dist: xenial
+  #   sudo: false
+  #   before_install:
+  #     - export DISPLAY=:99
+  #     - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x24"
   - name: "MacOS"
     os: osx
     env:
@@ -63,13 +63,13 @@ matrix:
       # - ../unsign /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport
       # - rm /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport
       # - mv /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport.unsigned /Users/travis/build/node-3d/qml-raub/node_modules/deps-qt-core-raub/bin-mac64/QtPrintSupport
-      - npm test
+      - QML_IMPORT_TRACE=1 npm test
       - sleep 3
       - echo Hi.
-  - name: "Windows"
-    os: windows
-    script:
-      - echo OK.
+  # - name: "Windows"
+  #   os: windows
+  #   script:
+  #     - echo OK.
 
 
 install:
