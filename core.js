@@ -1,20 +1,16 @@
 'use strict';
 
-// Add deps dll dirs
-require('deps-qmlui-raub');
-
-const depCore = require('deps-qt-core-raub');
-const depGui  = require('deps-qt-gui-raub');
-const depQml  = require('deps-qt-qml-raub');
-
 const { binPath } = require('addon-tools-raub');
+
+// Get deps dll dirs
+const depUi = require('deps-qmlui-raub');
 
 const core = require(`./${binPath}/qml`);
 
 
-core.View.plugins(`${depCore.binPath}/plugins`);
-core.View.plugins(`${depGui.binPath}/plugins`);
-core.View.plugins(`${depQml.binPath}/plugins`);
-
+core.View.plugins(`${depUi.core.binPath}/plugins`);
+core.View.plugins(`${depUi.gui.binPath}/plugins`);
+core.View.plugins(`${depUi.qml.binPath}/plugins`);
+console.log('core.js QML', `${depUi.qml.binPath}/plugins`);
 
 module.exports = core;
