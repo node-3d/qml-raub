@@ -19,8 +19,8 @@ matrix:
       - OSXBUILD=true
   - name: "Windows"
     os: windows
-    # script:
-    #   - echo OK.
+    script:
+      - echo OK.
 
 
 install:
