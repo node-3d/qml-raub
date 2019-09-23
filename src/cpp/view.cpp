@@ -1,19 +1,19 @@
 #include <cstdlib>
 
+#ifndef __linux__
+	#include <dlfcn.h>
+#endif
+
 #include <qml-ui.hpp>
 
 #include "view.hpp"
 
-#ifndef WIN32
-	#include <dlfcn.h>
-#endif
-
-
-// ------ Aux macros
-
 using namespace v8;
 using namespace node;
 using namespace std;
+
+
+// ------ Aux macros
 
 #define THIS_VIEW                                                             \
 	View *view = ObjectWrap::Unwrap<View>(info.This());

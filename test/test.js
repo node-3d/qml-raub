@@ -2,7 +2,7 @@
 
 const { expect } = require('chai');
 
-const { View, Property, Method } = require('qml-raub');
+const { View, Property, Method } = require('..');
 
 
 View.init(__dirname, 0, 0);

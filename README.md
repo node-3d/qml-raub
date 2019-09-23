@@ -7,7 +7,7 @@ This is a part of [Node3D](https://github.com/node-3d) project.
 [![Build Status](https://api.travis-ci.com/node-3d/qml-raub.svg?branch=master)](https://travis-ci.com/node-3d/qml-raub)
 [![CodeFactor](https://www.codefactor.io/repository/github/node-3d/qml-raub/badge)](https://www.codefactor.io/repository/github/node-3d/qml-raub)
 
-> npm i -s qml-raub
+> npm i qml-raub
 
 
 ## Synopsis
@@ -16,10 +16,9 @@ This is a part of [Node3D](https://github.com/node-3d) project.
 This library is not a direct mapping of QML API, rather it is more of a simplified
 interpretation for generic purposes.
 
-> Note: compilation tools must be in place on your system.
-For Windows, use **ADMIN PRIVELEGED** command line:
-\`npm i -g windows-build-tools\`.
-Also **Windows** needs **vcredist 2013** to be installed.
+> Note: this **addon uses N-API**, and therefore is ABI-compatible across different
+Node.js versions. Addon binaries are precompiled and **there is no compilation**
+step during the `npm i` command.
 
 
 ## Usage
@@ -27,7 +26,7 @@ Also **Windows** needs **vcredist 2013** to be installed.
 
 ### class View
 
-Loads and manages any given QML file.
+Loads and manages a QML file.
 
 When the file is loaded and whenever the QML scene is resized a new GL
 Texture (id) is created and reported in an event. Then the texture can
