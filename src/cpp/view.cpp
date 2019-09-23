@@ -2,30 +2,50 @@
 	#include <dlfcn.h>
 #endif
 
+#include <map>
 #include <qml-ui.hpp>
 
 #include "view.hpp"
 
 
-// ------ Aux macros
-
-#define THIS_VIEW                                                             \
-	View *view = ObjectWrap::Unwrap<View>(info.This());
-
-#define THIS_CHECK                                                            \
-	if (view->_isDestroyed) return;
-
-#define DES_CHECK                                                             \
-	if (_isDestroyed) return;
+std::map<QmlUi*, View*> _uis;
 
 
-map<QmlUi*, View*> _uis;
+IMPLEMENT_ES5_CLASS(View);
+
+void View::initClass(Napi::Env env, Napi::Object exports) {
+	
+	Napi::Function ctor = wrap(env);
+	
+	JS_ASSIGN_GETTER(isDestroyed);
+	
+	JS_ASSIGN_METHOD(destroy);
+	JS_ASSIGN_METHOD(init); // make static
+	JS_ASSIGN_METHOD(plugins); // make static
+	JS_ASSIGN_METHOD(update); // make static
+	JS_ASSIGN_METHOD(resize);
+	JS_ASSIGN_METHOD(mouse);
+	JS_ASSIGN_METHOD(keyboard);
+	JS_ASSIGN_METHOD(load);
+	JS_ASSIGN_METHOD(set);
+	JS_ASSIGN_METHOD(get);
+	JS_ASSIGN_METHOD(invoke);
+	JS_ASSIGN_METHOD(libs);
+	
+	exports.Set("View", ctor);
+	
+}
 
 
-
-// ------ Constructor and Destructor
-
-View::View(int w, int h) {
+View::View(const Napi::CallbackInfo &info):
+_asyncCtx(info.Env(), "View::commonCb()") { NAPI_ENV;
+	
+	_that.Reset(info.This().As<Napi::Object>());
+	
+	super(info);
+	
+	REQ_INT32_ARG(0, w);
+	REQ_INT32_ARG(1, h);
 	
 	_qmlui = new QmlUi(w, h);
 	
@@ -37,9 +57,7 @@ View::View(int w, int h) {
 
 
 View::~View() {
-	
 	_destroy();
-	
 }
 
 
@@ -55,26 +73,28 @@ void View::_destroy() { DES_CHECK;
 }
 
 
-// ------ Methods and props
 
-void View::commonCb(QmlUi *ui, const char *type, const char *json) { NAN_HS;
+void View::commonCb(QmlUi *ui, const char *type, const char *json) {
 	
 	View *view = _uis[ui];
+	Napi::Env env = view->_that.Env();
+	STATE_ENV; NAPI_HS;
 	
-	Nan::Callback converter(Nan::New(_converter));
-	Nan::AsyncResource async("View::commonCb()");
-	V8_VAR_VAL argv = JS_STR(json);
-	V8_VAR_VAL objVal = converter.Call(1, &argv, &async).ToLocalChecked();
-	view->emit(type, 1, &objVal);
+	napi_value argv = JS_STR(json);
+	Napi::Value objVal = thatEmit.MakeCallback(view->_that.Value(), 1, &argv, view->_asyncCtx);
+	eventEmitAsync(view->_that.Value(), name, 1, &objVal, view->_asyncCtx);
 	
 }
 
 
-NAN_METHOD(View::_init) {
+JS_IMPLEMENT_METHOD(View::init) {
 	
-	REQ_UTF8_ARG(0, cwdOwn);
+	REQ_STR_ARG(0, cwdOwn);
 	REQ_OFFS_ARG(1, wnd);
 	REQ_OFFS_ARG(2, ctx);
+	REQ_FUN_ARG(3, converter);
+	
+	_converter.Reset(converter, 1);
 	
 	// Preload the libs with OUR @RPATH, not some junk builtin rpaths
 	#ifdef __linux__
@@ -100,45 +120,48 @@ NAN_METHOD(View::_init) {
 	
 	QmlUi::init(*cwdOwn, wnd, ctx, commonCb);
 	
+	RET_UNDEFINED;
+	
 }
 
 
-NAN_METHOD(View::plugins) {
-	
-	REQ_UTF8_ARG(0, str);
-	
+JS_IMPLEMENT_METHOD(View::plugins) {
+	REQ_STR_ARG(0, str);
 	QmlUi::plugins(*str);
-	
+	RET_UNDEFINED;
 }
 
 
-NAN_METHOD(View::update) {
+JS_IMPLEMENT_METHOD(View::update) {
 	
 	QmlUi::update();
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(View::libs) { THIS_VIEW;
+JS_IMPLEMENT_METHOD(View::libs) { THIS_VIEW;
 	
-	REQ_UTF8_ARG(0, str);
+	REQ_STR_ARG(0, str);
 	
 	view->_qmlui->libs(*str);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(View::resize) { THIS_VIEW;
+JS_IMPLEMENT_METHOD(View::resize) { THIS_VIEW;
 	
 	REQ_INT32_ARG(0, w);
 	REQ_INT32_ARG(1, h);
 	
 	view->_qmlui->resize(w, h);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(View::mouse) { THIS_VIEW;
+JS_IMPLEMENT_METHOD(View::mouse) { THIS_VIEW;
 	
 	REQ_INT32_ARG(0, type);
 	REQ_INT32_ARG(1, button);
@@ -147,172 +170,81 @@ NAN_METHOD(View::mouse) { THIS_VIEW;
 	REQ_INT32_ARG(4, y);
 	
 	view->_qmlui->mouse(type, button, buttons, x, y);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(View::keyboard) { THIS_VIEW;
+JS_IMPLEMENT_METHOD(View::keyboard) { THIS_VIEW;
 	
 	REQ_INT32_ARG(0, type);
 	REQ_INT32_ARG(1, key);
 	REQ_UINT32_ARG(2, text);
 	
 	view->_qmlui->keyboard(type, key, text);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(View::load) { THIS_VIEW;
+JS_IMPLEMENT_METHOD(View::load) { THIS_VIEW;
 	
 	REQ_BOOL_ARG(0, isFile);
-	REQ_UTF8_ARG(1, source);
+	REQ_STR_ARG(1, source);
 	
 	view->_qmlui->load(*source, isFile);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(View::set) { THIS_VIEW;
+JS_IMPLEMENT_METHOD(View::set) { THIS_VIEW;
 	
-	REQ_UTF8_ARG(0, obj);
-	REQ_UTF8_ARG(1, prop);
-	REQ_UTF8_ARG(2, json);
+	REQ_STR_ARG(0, obj);
+	REQ_STR_ARG(1, prop);
+	REQ_STR_ARG(2, json);
 	
 	view->_qmlui->set(*obj, *prop, *json);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(View::get) { THIS_VIEW;
+JS_IMPLEMENT_METHOD(View::get) { THIS_VIEW;
 	
-	REQ_UTF8_ARG(0, obj);
-	REQ_UTF8_ARG(1, prop);
+	REQ_STR_ARG(0, obj);
+	REQ_STR_ARG(1, prop);
 	
 	view->_qmlui->get(*obj, *prop);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(View::invoke) { THIS_VIEW;
+JS_IMPLEMENT_METHOD(View::invoke) { THIS_VIEW;
 	
-	REQ_UTF8_ARG(0, obj);
-	REQ_UTF8_ARG(1, method);
-	REQ_UTF8_ARG(2, json);
+	REQ_STR_ARG(0, obj);
+	REQ_STR_ARG(1, method);
+	REQ_STR_ARG(2, json);
 	
 	view->_qmlui->invoke(*obj, *method, *json);
+	RET_UNDEFINED;
 	
 }
 
 
-// ------ System methods and props for ObjectWrap
-
-V8_STORE_FT View::_protoView;
-V8_STORE_FUNC View::_ctorView;
-V8_STORE_FUNC View::_converter;
-
-
-void View::init(V8_VAR_OBJ target) {
-	
-	V8_VAR_FT proto = Nan::New<FunctionTemplate>(newCtor);
-	
-	// class View inherits EventEmitter
-	V8_VAR_FT parent = Nan::New(EventEmitter::_protoEventEmitter);
-	proto->Inherit(parent);
-	
-	proto->InstanceTemplate()->SetInternalFieldCount(1);
-	proto->SetClassName(JS_STR("View"));
-	
-	
-	// Accessors
-	
-	V8_VAR_OT obj = proto->PrototypeTemplate();
-	
-	ACCESSOR_R(obj, isDestroyed);
-	
-	
-	// -------- dynamic
-	
-	Nan::SetPrototypeMethod(proto, "destroy", destroy);
-	Nan::SetPrototypeMethod(proto, "resize", resize);
-	Nan::SetPrototypeMethod(proto, "mouse", mouse);
-	Nan::SetPrototypeMethod(proto, "keyboard", keyboard);
-	Nan::SetPrototypeMethod(proto, "load", load);
-	Nan::SetPrototypeMethod(proto, "set", set);
-	Nan::SetPrototypeMethod(proto, "get", get);
-	Nan::SetPrototypeMethod(proto, "invoke", invoke);
-	Nan::SetPrototypeMethod(proto, "libs", libs);
-	
-	// -------- static
-	
-	V8_VAR_FUNC ctor = Nan::GetFunction(proto).ToLocalChecked();
-	
-	_protoView.Reset(proto);
-	_ctorView.Reset(ctor);
-	
-	Nan::Set(target, JS_STR("View"), ctor);
-	
-	Nan::SetMethod(ctor, "init", View::_init);
-	Nan::SetMethod(ctor, "plugins", View::plugins);
-	Nan::SetMethod(ctor, "update", View::update);
-	
-	// ---- helper
-	
-	V8_VAR_STR code = JS_STR(
-		R"(
-			(json => {
-				try {
-					return JSON.parse(json);
-				} catch (e) {
-					console.error(`Error: Qml event, bad JSON.\n${json}`);
-					return null;
-				}
-			})
-		)"
-	);
-	
-	v8::Local<v8::Value> converterAsValue = v8::Script::Compile(
-		Nan::GetCurrentContext(), code
-	).ToLocalChecked()->Run(
-		Nan::GetCurrentContext()
-	).ToLocalChecked();
-	
-	V8_VAR_FUNC converter = V8_VAR_FUNC::Cast(converterAsValue);
-	_converter.Reset(converter);
-	
-}
-
-
-bool View::isView(V8_VAR_OBJ obj) {
-	return Nan::New(_protoView)->HasInstance(obj);
-}
-
-
-NAN_METHOD(View::newCtor) {
-	
-	CTOR_CHECK("View");
-	
-	REQ_INT32_ARG(0, w);
-	REQ_INT32_ARG(1, h);
-	
-	View *view = new View(w, h);
-	
-	view->Wrap(info.This());
-	RET_VALUE(info.This());
-	
-}
-
-
-NAN_METHOD(View::destroy) { THIS_VIEW; THIS_CHECK;
+JS_IMPLEMENT_METHOD(View::destroy) { THIS_VIEW; THIS_CHECK;
 	
 	view->emit("destroy");
 	
 	view->_destroy();
+	RET_UNDEFINED;
 	
 }
 
 
 NAN_GETTER(View::isDestroyedGetter) { THIS_VIEW;
 	
-	RET_VALUE(JS_BOOL(view->_isDestroyed));
+	RET_BOOL(view->_isDestroyed);
 	
 }

@@ -1,59 +1,44 @@
 #ifndef _VIEW_HPP_
 #define _VIEW_HPP_
 
-
-#include <map>
-
-#include <event-emitter.hpp>
+#include <addon-tools.hpp>
 
 
 class QmlUi;
 
-
-class View : public EventEmitter {
+class View {
+DECLARE_ES5_CLASS(View, View);
 	
 public:
-	
-	static void init(V8_VAR_OBJ target);
-	static bool isView(V8_VAR_OBJ obj);
-	
-	static void commonCb(QmlUi *ui, const char *type, const char *json);
+	static void initClass(Napi::Env env, Napi::Object exports);
 	
 	~View();
+	explicit View(const Napi::CallbackInfo &info);
 	
 	void _destroy();
 	
 	
-protected:
-	
-	View(int w, int h);
-	
-	static V8_STORE_FT _protoView;
-	static V8_STORE_FUNC _ctorView;
-	static V8_STORE_FUNC _converter;
-	
+private:
+	Napi::AsyncContext _asyncCtx;
+	Napi::ObjectReference _that;
 	bool _isDestroyed;
-	
 	QmlUi *_qmlui;
 	
+	void commonCb(QmlUi *ui, const char *type, const char *json);
 	
-private:
-	
-	static NAN_METHOD(newCtor);
-	static NAN_METHOD(destroy);
-	static NAN_GETTER(isDestroyedGetter);
-	
-	static NAN_METHOD(_init);
-	static NAN_METHOD(plugins);
-	static NAN_METHOD(update);
-	static NAN_METHOD(resize);
-	static NAN_METHOD(mouse);
-	static NAN_METHOD(keyboard);
-	static NAN_METHOD(load);
-	static NAN_METHOD(set);
-	static NAN_METHOD(get);
-	static NAN_METHOD(invoke);
-	static NAN_METHOD(libs);
+	JS_DECLARE_GETTER(View, isDestroyed);
+	JS_DECLARE_METHOD(View, destroy);
+	JS_DECLARE_METHOD(View, init);
+	JS_DECLARE_METHOD(View, plugins);
+	JS_DECLARE_METHOD(View, update);
+	JS_DECLARE_METHOD(View, resize);
+	JS_DECLARE_METHOD(View, mouse);
+	JS_DECLARE_METHOD(View, keyboard);
+	JS_DECLARE_METHOD(View, load);
+	JS_DECLARE_METHOD(View, set);
+	JS_DECLARE_METHOD(View, get);
+	JS_DECLARE_METHOD(View, invoke);
+	JS_DECLARE_METHOD(View, libs);
 	
 };
 

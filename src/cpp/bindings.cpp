@@ -3,7 +3,7 @@
 
 Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	
-	View::init(target);
+	View::initClass(env, exports);
 	
 	return exports;
 	
