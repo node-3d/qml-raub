@@ -1,23 +1,13 @@
-#include <cstdlib>
-
-#include <event-emitter.hpp>
-
 #include "view.hpp"
 
 
-extern "C" {
-
-
-void init(V8_VAR_OBJ target) {
-	
-	EventEmitter::init(target);
+Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	
 	View::init(target);
+	
+	return exports;
 	
 }
 
 
-NODE_MODULE(qml, init);
-
-
-} // extern "C"
+NODE_API_MODULE(qml, initModule)

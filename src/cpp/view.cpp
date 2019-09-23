@@ -1,16 +1,10 @@
-#include <cstdlib>
-
-#ifndef __linux__
+#ifdef __linux__
 	#include <dlfcn.h>
 #endif
 
 #include <qml-ui.hpp>
 
 #include "view.hpp"
-
-using namespace v8;
-using namespace node;
-using namespace std;
 
 
 // ------ Aux macros
@@ -322,4 +316,3 @@ NAN_GETTER(View::isDestroyedGetter) { THIS_VIEW;
 	RET_VALUE(JS_BOOL(view->_isDestroyed));
 	
 }
-
