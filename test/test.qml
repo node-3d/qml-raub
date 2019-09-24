@@ -18,7 +18,6 @@ Rectangle {
 		}
 		
 		function method2(x) {
-			console.log('QML!', 'm2c', x);
 			cb.call('m2c', x);
 		}
 		
