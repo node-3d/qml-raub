@@ -21,16 +21,18 @@ public:
 private:
 	Napi::AsyncContext _asyncCtx;
 	Napi::ObjectReference _that;
+	static Napi::FunctionReference _converter;
 	bool _isDestroyed;
 	QmlUi *_qmlui;
 	
-	void commonCb(QmlUi *ui, const char *type, const char *json);
+	static void commonCb(QmlUi *ui, const char *type, const char *json);
+	
+	static JS_METHOD(init);
+	static JS_METHOD(plugins);
+	static JS_METHOD(update);
 	
 	JS_DECLARE_GETTER(View, isDestroyed);
 	JS_DECLARE_METHOD(View, destroy);
-	JS_DECLARE_METHOD(View, init);
-	JS_DECLARE_METHOD(View, plugins);
-	JS_DECLARE_METHOD(View, update);
 	JS_DECLARE_METHOD(View, resize);
 	JS_DECLARE_METHOD(View, mouse);
 	JS_DECLARE_METHOD(View, keyboard);
