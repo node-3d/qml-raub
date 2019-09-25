@@ -3,7 +3,7 @@
 		'rm'             : '<!(node -p "require(\'addon-tools-raub\').rm")',
 		'cp'             : '<!(node -p "require(\'addon-tools-raub\').cp")',
 		'mkdir'          : '<!(node -p "require(\'addon-tools-raub\').mkdir")',
-		'binary'         : '<!(node -p "require(\'addon-tools-raub\').bin")',
+		'bin'            : '<!(node -p "require(\'addon-tools-raub\').bin")',
 		'qt_core_bin'    : '<!(node -p "require(\'deps-qmlui-raub\').core.bin")',
 		'qt_gui_bin'     : '<!(node -p "require(\'deps-qmlui-raub\').gui.bin")',
 		'qt_qml_bin'     : '<!(node -p "require(\'deps-qmlui-raub\').qml.bin")',
