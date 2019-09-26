@@ -81,7 +81,7 @@
 							]
 						},
 						'VCLinkerTool' : {
-							'AdditionalOptions' : ['/RELEASE','/OPT:REF','/OPT:ICF','/LTCG']
+							'AdditionalOptions' : ['/DEBUG:NONE'],
 						},
 					},
 				}],
