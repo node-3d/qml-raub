@@ -23,6 +23,26 @@ step during the `npm i` command.
 
 ## Usage
 
+```
+const { View } = require('qml-raub');
+View.init(HWND, CTX);
+```
+
+The first thing to do is to initialize the QML renderer. Pass the native window handles
+to the static `init` method. A shared GL context is created based on these handles.
+QML necessarily has a dedicated GL context because of the renderer-specific requirements.
+The produced QML-containing textures are available to the main application as if
+its own resources.
+
+If using the [glfw-raub](https://github.com/node-3d/glfw-raub) module for platform
+window management, an example obtaining of HWND and CTX would be as follows:
+
+```
+// window - is returned by glfw.createWindow(...) call
+const HWND = glfw.platformWindow(window);
+const CTX = glfw.platformContext(window);
+```
+
 
 ### class View
 
@@ -49,9 +69,6 @@ focused, we should be able to type any text without hitting random
 combinations of app's hotkeys.
 
 ```
-const { View } = require('qml-raub');
-View.init(HWND, CTX);
-
 const view = new View({ width: 800, height: 600, file: 'ui.qml' });
 ```
 
