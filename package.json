@@ -35,7 +35,7 @@
 		"README.md"
 	],
 	"config": {
-		"install": "v2.0.0"
+		"install": "v2.0.1"
 	},
 	"scripts": {
 		"postinstall": "node install"
