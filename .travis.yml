@@ -17,7 +17,6 @@ matrix:
       before_install:
         - export DISPLAY=:99
         - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x24"
-        - export LD_DEBUG=libs
         - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/travis/build/node-3d/qml-raub/ci
     - name: "OSX Test"
       os: osx
