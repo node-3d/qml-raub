@@ -114,6 +114,7 @@ JS_METHOD(View::init) {
 	REQ_FUN_ARG(3, converter);
 	
 	_converter.Reset(converter, 1);
+	_converter.SuppressDestruct();
 	
 	// Preload the libs with OUR @RPATH, not some junk builtin rpaths
 	#ifdef __linux__
