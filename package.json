@@ -50,6 +50,7 @@
 	},
 	"dependencies": {
 		"deps-qmlui-raub": "https://github.com/node-3d/deps-qmlui-raub.git",
-		"addon-tools-raub": "https://github.com/node-3d/addon-tools-raub.git"
+		"addon-tools-raub": "https://github.com/node-3d/addon-tools-raub.git",
+		"segfault-raub": "https://github.com/node-3d/segfault-raub.git"
 	}
 }

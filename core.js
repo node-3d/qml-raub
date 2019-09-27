@@ -1,6 +1,8 @@
 'use strict';
 // process.env.QT_DEBUG_PLUGINS = '1';
 
+require('segfault-raub');
+
 const { bin } = require('addon-tools-raub');
 
 // Get deps dll dirs
