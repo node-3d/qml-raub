@@ -55,6 +55,7 @@
 						'<(qt_qml_bin)/libQt5QuickTemplates2.so.5',
 						'<(qt_qml_bin)/libQt5QuickWidgets.so.5',
 					],
+					'defines': ['__linux__'],
 				}],
 				
 				['OS=="mac"', {
@@ -70,9 +71,15 @@
 						'-Wl,-rpath,@loader_path/../../deps-qt-qml-raub/bin-osx',
 						'-Wl,-rpath,@loader_path/../../deps-qmlui-raub/bin-osx',
 					],
+					'defines': ['__APPLE__'],
 				}],
 				
 				['OS=="win"', {
+					'defines' : [
+						'WIN32_LEAN_AND_MEAN',
+						'VC_EXTRALEAN',
+						'_WIN32',
+					],
 					'libraries'     : [ '-lqmlui' ],
 					'msvs_settings' : {
 						'VCCLCompilerTool' : {
@@ -81,7 +88,7 @@
 							]
 						},
 						'VCLinkerTool' : {
-							'AdditionalOptions' : ['/DEBUG:NONE'],
+							'AdditionalOptions' : ['/RELEASE','/OPT:REF','/OPT:ICF','/LTCG'],
 						},
 					},
 				}],

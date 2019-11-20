@@ -49,8 +49,11 @@ _asyncCtx(info.Env(), "View::commonCb()") { NAPI_ENV;
 	
 	super(info);
 	
-	REQ_INT32_ARG(0, w);
-	REQ_INT32_ARG(1, h);
+	if (info.Length() < 2 || ! info[0].IsNumber() || ! info[1].IsNumber()) {
+		JS_THROW("Arguments 0 and 1 must be of type `Int32`");
+	}
+	int w = info[0].ToNumber().Int32Value();
+	int h = info[1].ToNumber().Int32Value();
 	
 	_qmlui = new QmlUi(w, h);
 	
