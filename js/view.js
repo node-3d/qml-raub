@@ -63,8 +63,7 @@ function JsView(opts = {}) {
 		
 		this._isLoaded = true;
 		
-		this._properties.forEach(v => v._initialize());
-		this._methods.forEach(m => m._initialize());
+		this.emit('load')
 		
 	});
 	
