@@ -40,7 +40,7 @@ describe('Qml', function () {
 	describe('View', () => {
 		
 		it('has all static methods', () => {
-			['init', 'libs', 'plugins', 'update'].forEach(
+			['init', 'libs', 'plugins', 'update', 'styles'].forEach(
 				name => expect(View).to.have.property(name)
 			);
 		});

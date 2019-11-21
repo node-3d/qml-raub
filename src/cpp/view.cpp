@@ -148,14 +148,18 @@ JS_METHOD(View::init) {
 }
 
 
-JS_METHOD(View::plugins) {
-	
-	Napi::Env env = info.Env();
-	
+JS_METHOD(View::plugins) { NAPI_ENV;
 	REQ_STR_ARG(0, str);
 	QmlUi::plugins(str.c_str());
 	RET_UNDEFINED;
-	
+}
+
+
+JS_METHOD(View::styles) { NAPI_ENV;
+	REQ_STR_ARG(0, name);
+	LET_STR_ARG(1, def);
+	QmlUi::styles(name.c_str(), def.size() ? def.c_str() : nullptr);
+	RET_UNDEFINED;
 }
 
 

@@ -1,5 +1,5 @@
-#ifndef _VIEW_HPP_
-#define _VIEW_HPP_
+#ifndef VIEW_HPP
+#define VIEW_HPP
 
 #include <addon-tools.hpp>
 
@@ -30,6 +30,7 @@ private:
 	static JS_METHOD(init);
 	static JS_METHOD(plugins);
 	static JS_METHOD(update);
+	static JS_METHOD(styles);
 	
 	JS_DECLARE_GETTER(View, isDestroyed);
 	JS_DECLARE_METHOD(View, destroy);
@@ -45,4 +46,4 @@ private:
 };
 
 
-#endif // _VIEW_HPP_
+#endif // VIEW_HPP
