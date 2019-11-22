@@ -16,14 +16,14 @@ class Property {
 			throw new Error('Property requires `opts.key`.');
 		}
 		
-		const { view, name, key } = opts;
+		const { view, name, key, value } = opts;
 		this.opts = { view, name, key };
 		
-		if (opts.value) {
+		if (value) {
 			if (view.isLoaded) {
-				view.set(name, key, v);
+				view.set(name, key, value);
 			} else {
-				view.once('load', () => view.set(name, key, v));
+				view.once('load', () => view.set(name, key, value));
 			}
 		}
 		

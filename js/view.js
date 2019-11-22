@@ -65,7 +65,7 @@ function JsView(opts = {}) {
 		
 		this._isLoaded = true;
 		
-		this.emit('load')
+		this.emit('load');
 		
 	});
 	
