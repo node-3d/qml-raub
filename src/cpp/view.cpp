@@ -155,10 +155,10 @@ JS_METHOD(View::plugins) { NAPI_ENV;
 }
 
 
-JS_METHOD(View::styles) { NAPI_ENV;
+JS_METHOD(View::style) { NAPI_ENV;
 	REQ_STR_ARG(0, name);
 	LET_STR_ARG(1, def);
-	QmlUi::styles(name.c_str(), def.size() ? def.c_str() : nullptr);
+	QmlUi::style(name.c_str(), def.size() ? def.c_str() : nullptr);
 	RET_UNDEFINED;
 }
 
@@ -248,8 +248,8 @@ JS_IMPLEMENT_METHOD(View, get) { THIS_CHECK;
 	REQ_STR_ARG(0, obj);
 	REQ_STR_ARG(1, prop);
 	
-	_qmlui->get(obj.c_str(), prop.c_str());
-	RET_UNDEFINED;
+	std::string result = _qmlui->get(obj.c_str(), prop.c_str());
+	RET_STR(result);
 	
 }
 
@@ -260,8 +260,8 @@ JS_IMPLEMENT_METHOD(View, invoke) { THIS_CHECK;
 	REQ_STR_ARG(1, method);
 	REQ_STR_ARG(2, json);
 	
-	_qmlui->invoke(obj.c_str(), method.c_str(), json.c_str());
-	RET_UNDEFINED;
+	std::string result = _qmlui->invoke(obj.c_str(), method.c_str(), json.c_str());
+	RET_STR(result);
 	
 }
 

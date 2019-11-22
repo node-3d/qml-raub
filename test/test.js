@@ -15,7 +15,7 @@ const loop = () => {
 
 describe('Qml', function () {
 	
-	this.timeout(10000);
+	this.timeout(4000);
 	
 	let l;
 	before(() => { l = loop(); });
@@ -33,14 +33,14 @@ describe('Qml', function () {
 	
 	
 	it('contains class Method', () => {
-		expect(Property).to.exist;
+		expect(Method).to.exist;
 	});
 	
 	
 	describe('View', () => {
 		
 		it('has all static methods', () => {
-			['init', 'libs', 'plugins', 'update', 'styles'].forEach(
+			['init', 'libs', 'plugins', 'style', 'update'].forEach(
 				name => expect(View).to.have.property(name)
 			);
 		});
@@ -55,7 +55,7 @@ describe('Qml', function () {
 			const view = new View();
 			[
 				'load', 'destroy', 'toString', 'mousedown', 'mouseup',
-				'mousemove', 'keydown', 'keyup', 'update',
+				'mousemove', 'keydown', 'keyup',
 			].forEach(
 				name => expect(view).to.respondTo(name)
 			);
@@ -64,33 +64,34 @@ describe('Qml', function () {
 		
 		it('has all properties', () => {
 			const view = new View();
-			['width', 'height', 'w', 'h', 'wh', 'size', 'textureId'].forEach(
+			[
+				'width', 'height',
+				'w', 'h',
+				'wh',
+				'size',
+				'textureId',
+				'isLoaded',
+			].forEach(
 				name => expect(view).to.have.property(name)
 			);
 		});
 		
 		
-		it('eventually loads a QML file', () => {
-			
+		it('eventually loads a QML file', async () => {
 			const view = new View({ file: 'test.qml' });
-			
-			return new Promise(res => view.on('_qml_load', e => {
-				expect(e.status).to.be.equal('success');
-				res();
-			}));
-			
+			const loaded = await new Promise(
+				res => view.on('load', () => res(true))
+			);
+			expect(loaded).to.be.equal(true);
 		});
 		
 		
 		it('eventually creates a texture', () => {
-			
 			const view = new View({ file: 'test.qml' });
-			
 			return new Promise(res => view.on('reset', textureId => {
 				expect(textureId).to.exist;
 				res();
 			}));
-			
 		});
 		
 	});
@@ -98,55 +99,48 @@ describe('Qml', function () {
 	
 	describe('Property', () => {
 		
-		const view = new View({ file: 'test.qml' });
+		const view = new View({ file: 'test.qml', silent: true });
 		const opts = { view, name: 'obj1', key: 'prop1' };
+		view.on('error', () => {});
 		
 		it('can be created', () => {
 			expect(new Property(opts)).to.be.an.instanceOf(Property);
 		});
 		
 		
-		it('has all dynamic methods', () => {
-			const prop = new Property(opts);
-			['canSend', 'update'].forEach(
-				name => expect(prop).to.respondTo(name)
-			);
-		});
-		
-		
 		it('has all properties', () => {
 			const prop = new Property(opts);
-			['key', 'name', 'value'].forEach(
+			['opts', 'value'].forEach(
 				name => expect(prop).to.have.property(name)
 			);
 		});
 		
 		
-		it('eventually reads value from QML', () => {
-			
-			return new Promise(res => {
-				
-				const toJs = val => {
-					expect(val).to.be.equal('value1');
-					res();
-				};
-				new Property({ ...opts, toJs });
-				
-			});
-			
+		it('reads a value from QML', () => {
+			const prop = new Property(opts);
+			expect(prop.value).to.be.equal('value1');
 		});
 		
 		
-		it('eventually writes value to QML', () => {
-			
-			return new Promise(res => {
-				
-				view.on('p1c', res);
-				
-				new Property({ ...opts, value: 11 });
-				
+		it('changes a QML value', async () => {
+			const prop = new Property(opts);
+			const changed = await new Promise(res => {
+				view.on('p1c', () => res(true));
+				prop.value = 11;
 			});
-			
+			expect(changed).to.be.equal(true);
+		});
+		
+		
+		it('reads non-existent object\'s property as null', () => {
+			const prop = new Property({ ...opts, name: 'awdaldaklwd23' });
+			expect(prop.value).to.be.equal(null);
+		});
+		
+		
+		it('reads non-existent property as null', () => {
+			const prop = new Property({ ...opts, key: 'awdaldaklwd23' });
+			expect(prop.value).to.be.equal(null);
 		});
 		
 	});
@@ -154,55 +148,51 @@ describe('Qml', function () {
 	
 	describe('Method', () => {
 		
-		const view = new View({ file: 'test.qml' });
+		const view = new View({ file: 'test.qml', silent: true });
 		const opts = { view, name: 'obj1', key: 'method1' };
+		view.on('error', () => {});
 		
 		it('can be created', () => {
-			expect(new Method(opts)).to.be.an.instanceOf(Method);
+			expect(new Method(opts)).to.be.a('function');
 		});
-		
-		
-		it('has all dynamic methods', () => {
-			const method = new Method(opts);
-			['call'].forEach(
-				name => expect(method).to.respondTo(name)
-			);
-		});
-		
 		
 		it('has all properties', () => {
 			const method = new Method(opts);
-			['key', 'name'].forEach(
+			['opts'].forEach(
 				name => expect(method).to.have.property(name)
 			);
 		});
 		
 		
-		it('calls QML method(0)', () => {
-			
-			return new Promise(res => {
-				
-				view.on('m1c', res);
-				
-				const method1 = new Method(opts);
-				method1.call();
-				
+		it('calls QML method1', async () => {
+			const method1 = new Method(opts);
+			const called = await new Promise(res => {
+				view.on('m1c', () => res(true));
+				method1();
 			});
-			
+			expect(called).to.be.equal(true);
 		});
 		
 		
-		it('calls QML method(1)', () => {
-			
-			return new Promise(res => {
-				
-				view.on('m2c', res);
-				
-				const method2 = new Method({ ...opts, key: 'method2' });
-				method2.call(10);
-				
+		it('calls QML method2', async () => {
+			const method2 = new Method({ ...opts, key: 'method2' });
+			const called = await new Promise(res => {
+				view.on('m2c', () => res(true));
+				method2(10);
 			});
-			
+			expect(called).to.be.equal(true);
+		});
+		
+		
+		it('calls non-existent object\'s method, and gets null', () => {
+			const method = new Method({ ...opts, name: 'awdaldaklwd23' });
+			expect(method()).to.be.equal(null);
+		});
+		
+		
+		it('calls non-existent method, and gets null', () => {
+			const method = new Method({ ...opts, key: 'awdaldaklwd23' });
+			expect(method()).to.be.equal(null);
 		});
 		
 	});

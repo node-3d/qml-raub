@@ -36,7 +36,9 @@ function JsView(opts = {}) {
 	
 	this._silent = !! opts.silent;
 	this.on('_qml_error', data => {
-		console.error(`Qml Error: (${data.type})`, data.message);
+		if ( ! this._silent ) {
+			console.error(`Qml Error: (${data.type})`, data.message);
+		}
 		this.emit('error', new Error(`${data.type}: ${data.message}`));
 	});
 	
@@ -77,26 +79,20 @@ function JsView(opts = {}) {
 }
 
 
+const parseJsonSafe = json => {
+	try {
+		return JSON.parse(json)[0];
+	} catch (e) {
+		console.error(`Error: Qml event, bad JSON.\n${json}`);
+		return null;
+	}
+};
+
+
 JsView.init = (cwd, wnd, ctx) => {
-	
 	JsView.__inited = true;
-	
 	JsView.__cwd = cwd.replace(/\\/g, '/');
-	
-	View.init(
-		JsView.__cwd,
-		wnd,
-		ctx,
-		json => {
-			try {
-				return JSON.parse(json)[0];
-			} catch (e) {
-				console.error(`Error: Qml event, bad JSON.\n${json}`);
-				return null;
-			}
-		}
-	);
-	
+	View.init(JsView.__cwd, wnd, ctx, parseJsonSafe);
 };
 
 
@@ -125,13 +121,10 @@ JsView.plugins = p => {
 
 
 JsView.update = View.update;
+JsView.style = View.style;
 
 
-JsView.__offerIdx = () => {
-	
-	return ++JsView.__index;
-	
-};
+JsView.__offerIdx = () => (++JsView.__index);
 
 
 JsView.__inited = false;
@@ -141,6 +134,8 @@ JsView.__index = 0;
 
 
 JsView.prototype = {
+	
+	get isLoaded() { return this._isLoaded; },
 	
 	get width() { return this._width; },
 	get height() { return this._height; },
@@ -273,9 +268,6 @@ JsView.prototype = {
 		this._source = null;
 		this._finalSource = null;
 		
-		this._properties = [];
-		this._methods = [];
-		
 	},
 	
 	
@@ -295,10 +287,18 @@ JsView.prototype = {
 	},
 	
 	
-	update() {
-		if (this._isLoaded) {
-			this._properties.forEach(v => v.update());
-		}
+	invoke(name, key, args) {
+		return parseJsonSafe(super.invoke(name, key, JSON.stringify(args)));
+	},
+	
+	
+	set(name, key, value) {
+		super.set(name, key, `[${JSON.stringify(value)}]`);
+	},
+	
+	
+	get(name, key) {
+		return parseJsonSafe(super.get(name, key));
 	},
 	
 };

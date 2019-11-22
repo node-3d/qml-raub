@@ -30,7 +30,7 @@ private:
 	static JS_METHOD(init);
 	static JS_METHOD(plugins);
 	static JS_METHOD(update);
-	static JS_METHOD(styles);
+	static JS_METHOD(style);
 	
 	JS_DECLARE_GETTER(View, isDestroyed);
 	JS_DECLARE_METHOD(View, destroy);

@@ -20,9 +20,10 @@ class Method {
 		
 		const callee = (...args) => {
 			if (view.isLoaded) {
-				view.invoke(name, key, ...args);
+				return view.invoke(name, key, args);
 			} else {
-				view.once('load', () => view.invoke(name, key, ...args));
+				view.once('load', () => view.invoke(name, key, args));
+				return null;
 			}
 		};
 		
