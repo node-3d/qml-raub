@@ -6,7 +6,7 @@
 		"build": "node-gyp rebuild && node -e \"require('addon-tools-raub/cpbin')('qml')\""
 	},
 	"dependencies": {
-		"addon-tools-raub": "https://github.com/node-3d/addon-tools-raub",
-		"deps-qmlui-raub": "https://github.com/node-3d/deps-qmlui-raub"
+		"addon-tools-raub": "5.0.0",
+		"deps-qmlui-raub": "2.0.0"
 	}
 }
