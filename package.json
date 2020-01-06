@@ -1,7 +1,7 @@
 {
 	"author": "Luis Blanco <luisblanco1337@gmail.com>",
 	"name": "qml-raub",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"description": "QML interoperation for Node.js",
 	"license": "MIT",
 	"main": "index.js",
@@ -51,6 +51,6 @@
 	"dependencies": {
 		"deps-qmlui-raub": "2.0.0",
 		"addon-tools-raub": "5.0.0",
-		"segfault-raub": "1.0.0"
+		"segfault-raub": "1.1.0"
 	}
 }
