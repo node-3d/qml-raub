@@ -21,8 +21,8 @@ matrix:
     - name: "OSX Test"
       os: osx
       if: NOT commit_message =~ /^:hammer:/
-      script:
-        - echo OK.
+      # script:
+      #   - echo OK.
     - name: "Linux Build"
       os: linux
       dist: xenial
