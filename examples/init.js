@@ -2,4 +2,4 @@
 
 const qml = require('../.');
 
-qml.View.init(0, 0);
+qml.View.init(process.cwd(), 0, 0);
