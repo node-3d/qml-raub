@@ -11,9 +11,13 @@ This is a part of [Node3D](https://github.com/node-3d) project.
 npm i -s qml-raub
 ```
 
-**QML** interoperation addon for **Node.js**. Offers high-order classes for
-building 2D UI's. This library is not a direct mapping of **QML** API, rather it
-is more of a simplified interpretation for generic purposes.
+**QML** interoperation addon for **Node.js**.
+**QML** is a declarative language that allows user interfaces to be described
+in terms of their visual components and how they interact and relate with one another.
+See [Qt Documentation](https://doc.qt.io/qt-5/qmlapplications.html)
+for additional details on QML features and syntax.
+
+![Example](examples/screenshot.png)
 
 > Note: this **addon uses N-API**, and therefore is ABI-compatible across different
 Node.js versions. Addon binaries are precompiled and **there is no compilation**

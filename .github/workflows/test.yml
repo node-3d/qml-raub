@@ -43,8 +43,6 @@ jobs:
         if: matrix.os == 'ubuntu-20.04'
         uses: coactions/setup-xvfb@v1
         with:
-          run: npm run test-ci
-
-      - name: Run Unit Tests
-        if: matrix.os != 'windows-2022' && matrix.os != 'ubuntu-20.04'
-        run: npm run test-ci
+          run: |
+            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/ci
+            npm run test-ci
