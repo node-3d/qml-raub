@@ -15,8 +15,7 @@ public:
 	~View();
 	explicit View(const Napi::CallbackInfo &info);
 	
-	void _destroy();
-	
+	void _destroyImpl();
 	
 private:
 	Napi::AsyncContext _asyncCtx;
@@ -27,22 +26,21 @@ private:
 	
 	static void commonCb(QmlUi *ui, const char *type, const char *json);
 	
-	static JS_METHOD(init);
-	static JS_METHOD(plugins);
+	static JS_METHOD(_init);
+	static JS_METHOD(_plugins);
+	static JS_METHOD(_style);
 	static JS_METHOD(update);
-	static JS_METHOD(style);
 	
 	JS_DECLARE_GETTER(View, isDestroyed);
-	JS_DECLARE_METHOD(View, destroy);
-	JS_DECLARE_METHOD(View, resize);
-	JS_DECLARE_METHOD(View, mouse);
-	JS_DECLARE_METHOD(View, keyboard);
-	JS_DECLARE_METHOD(View, load);
-	JS_DECLARE_METHOD(View, set);
-	JS_DECLARE_METHOD(View, get);
-	JS_DECLARE_METHOD(View, invoke);
-	JS_DECLARE_METHOD(View, libs);
-	
+	JS_DECLARE_METHOD(View, _destroy);
+	JS_DECLARE_METHOD(View, _resize);
+	JS_DECLARE_METHOD(View, _mouse);
+	JS_DECLARE_METHOD(View, _keyboard);
+	JS_DECLARE_METHOD(View, _load);
+	JS_DECLARE_METHOD(View, _set);
+	JS_DECLARE_METHOD(View, _get);
+	JS_DECLARE_METHOD(View, _invoke);
+	JS_DECLARE_METHOD(View, _libs);
 };
 
 

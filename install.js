@@ -1,9 +1,9 @@
 'use strict';
 
-const install = require('addon-tools-raub/install');
+const { install } = require('addon-tools-raub');
 
 
 const prefix = 'https://github.com/node-3d/qml-raub/releases/download';
-const tag    = process.env.npm_package_config_install;
+const tag = '3.0.0';
 
 install(`${prefix}/${tag}`);

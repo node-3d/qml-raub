@@ -3,18 +3,14 @@
 
 require('segfault-raub');
 
-const { bin } = require('addon-tools-raub');
-
-// Get deps dll dirs
+const { getBin } = require('addon-tools-raub');
 const depUi = require('deps-qmlui-raub');
 
-const core = require(`./${bin}/qml`);
+const core = require(`./${getBin()}/qml`);
 
-
-core.View.plugins(`${depUi.core.bin}/plugins`);
-core.View.plugins(`${depUi.gui.bin}/plugins`);
-core.View.plugins(`${depUi.qml.bin}/plugins`);
-core.View.plugins(`${process.cwd()}/plugins`);
-
+core.View._plugins(`${depUi.core.bin}/plugins`);
+core.View._plugins(`${depUi.gui.bin}/plugins`);
+core.View._plugins(`${depUi.qml.bin}/plugins`);
+core.View._plugins(`${process.cwd()}/plugins`);
 
 module.exports = core;

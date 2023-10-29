@@ -2,15 +2,14 @@
 
 This is a part of [Node3D](https://github.com/node-3d) project.
 
-[![NPM](https://nodei.co/npm/qml-raub.png?compact=true)](https://www.npmjs.com/package/qml-raub)
+[![NPM](https://badge.fury.io/js/qml-raub.svg)](https://badge.fury.io/js/qml-raub)
+[![ESLint](https://github.com/node-3d/qml-raub/actions/workflows/eslint.yml/badge.svg)](https://github.com/node-3d/qml-raub/actions/workflows/eslint.yml)
+[![Test](https://github.com/node-3d/qml-raub/actions/workflows/test.yml/badge.svg)](https://github.com/node-3d/qml-raub/actions/workflows/test.yml)
+[![Cpplint](https://github.com/node-3d/qml-raub/actions/workflows/cpplint.yml/badge.svg)](https://github.com/node-3d/qml-raub/actions/workflows/cpplint.yml)
 
-[![Build Status](https://api.travis-ci.com/node-3d/qml-raub.svg?branch=master)](https://travis-ci.com/node-3d/qml-raub)
-[![CodeFactor](https://www.codefactor.io/repository/github/node-3d/qml-raub/badge)](https://www.codefactor.io/repository/github/node-3d/qml-raub)
-
-> npm i qml-raub
-
-
-## Synopsis
+```console
+npm i -s qml-raub
+```
 
 **QML** interoperation addon for **Node.js**. Offers high-order classes for
 building 2D UI's. This library is not a direct mapping of **QML** API, rather it
@@ -20,8 +19,6 @@ is more of a simplified interpretation for generic purposes.
 Node.js versions. Addon binaries are precompiled and **there is no compilation**
 step during the `npm i` command.
 
-
-## Usage
 
 ```
 const { View } = require('qml-raub');

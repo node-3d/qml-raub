@@ -1,7 +1,7 @@
 {
 	"author": "Luis Blanco <luisblanco1337@gmail.com>",
 	"name": "qml-raub",
-	"version": "2.0.1",
+	"version": "3.0.0",
 	"description": "QML interoperation for Node.js",
 	"license": "MIT",
 	"main": "index.js",
@@ -19,38 +19,44 @@
 		"qt-qml",
 		"binary",
 		"library",
-		"dll",
-		"lib",
-		"dylib",
-		"so",
 		"c++"
 	],
 	"files": [
 		"js",
 		"core.js",
 		"index.js",
+		"index.d.ts",
 		"install.js",
 		"LICENSE",
 		"package.json",
 		"README.md"
 	],
-	"config": {
-		"install": "v2.0.0"
+	"engines": {
+		"node": ">=18.16.0",
+		"npm": ">=9.5.1"
 	},
 	"scripts": {
-		"postinstall": "node install"
-	},
-	"engines": {
-		"node": ">=12.13.0",
-		"npm": ">=6.12.0"
+		"postinstall": "node install",
+		"eslint": "eslint .",
+		"build": "cd src && node-gyp rebuild -j max --silent && node -e \"require('addon-tools-raub').cpbin('qml')\" && cd ..",
+		"build-only": "cd src && node-gyp build -j max --silent && node -e \"require('addon-tools-raub').cpbin('qml')\" && cd ..",
+		"test": "node --test --watch .",
+		"test-ci": "node --test"
 	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/node-3d/qml-raub.git"
 	},
 	"dependencies": {
-		"deps-qmlui-raub": "2.0.0",
-		"addon-tools-raub": "5.0.0",
-		"segfault-raub": "1.1.0"
+		"addon-tools-raub": "^7.4.0",
+		"deps-qmlui-raub": "^3.0.0",
+		"segfault-raub": "^2.1.2"
+	},
+	"devDependencies": {
+		"@types/node": "^20.8.3",
+		"eslint": "^8.51.0",
+		"eslint-plugin-node": "^11.1.0",
+		"node-addon-api": "^7.0.0",
+		"typescript": "^5.2.2"
 	}
 }

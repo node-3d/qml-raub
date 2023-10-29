@@ -2,17 +2,15 @@
 
 
 class Method {
-	
 	constructor(opts) {
-		
-		if ( ! opts.view ) {
+		if (!opts.view) {
 			throw new Error('Method requires opts.view.');
 		}
 		
-		if ( ! (opts.name && typeof opts.name === 'string') ) {
+		if (!(opts.name && typeof opts.name === 'string')) {
 			throw new Error('Method requires `string opts.name`.');
 		}
-		if ( ! (opts.key && typeof opts.key === 'string') ) {
+		if (!(opts.key && typeof opts.key === 'string')) {
 			throw new Error('Method requires `string opts.key`.');
 		}
 		
@@ -30,9 +28,7 @@ class Method {
 		callee.opts = { view, name, key };
 		
 		return callee;
-		
 	}
-	
 }
 
 module.exports = Method;
