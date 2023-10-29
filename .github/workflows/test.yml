@@ -39,10 +39,13 @@ jobs:
       - name: Build Current Binary
         run: npm run build
 
+      - name: Set Env
+        run: |
+          echo "$GITHUB_WORKSPACE/ci"
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/ci
+
       - name: Run Unit Tests - Linux
         if: matrix.os == 'ubuntu-20.04'
         uses: coactions/setup-xvfb@v1
         with:
-          run: |
-            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/ci
-            npm run test-ci
+          run: npm run test-ci

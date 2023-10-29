@@ -18,13 +18,7 @@ const release = () => document.makeCurrent();
 View.init(process.cwd(), document.platformWindow, document.platformContext);
 release();
 
-document.show();
-
-const ui = new View({
-	width: document.w,
-	height: document.h,
-	file: `${__dirname}/qml/gui.qml`,
-});
+const ui = new View({ width: document.w, height: document.h, file: 'qml/gui.qml' });
 
 document.on('mousedown', ui.mousedown.bind(ui));
 document.on('mouseup', ui.mouseup.bind(ui));

@@ -99,7 +99,16 @@ declare module "qml-raub" {
 		/** Send "keyup" event into the QML scene. */
 		keyup(e: TKeyEvent): void;
 		
-		/** Load a new QML scene from file or source text. */
+		/**
+		 * Load a new QML scene from file or source text.
+		 *
+		 * @param opts either `{ file: string }` or `{ source: string }`.
+		 *
+		 * @description
+		 *
+		 * Can load QML from `file` (by path), or directly from `source` string.
+		 * The old scene will be discarded, if any. A new texture will be created.
+		 */
 		load(opts: TOptsLoad): void;
 		
 		/** Unload the current QML scene. */
@@ -114,7 +123,36 @@ declare module "qml-raub" {
 		/** Get property value from an object in QML scene. */
 		get(name: string, key: string): unknown;
 		
-		/** Initialize the QML engine. */
+		/**
+		 * Initialize the QML engine.
+		 *
+		 * @param cwd base directory for QML file resolution. Usually, `process.cwd()`.
+		 * @param wnd platform window handle (e.g. HWND on Windows).
+		 * @param ctx the OpenGL context to which the QML render texture will be made available.
+		 *
+		 * @see [OpenGL context](https://www.khronos.org/opengl/wiki/OpenGL_Context).
+		 *
+		 * @description
+		 * QML has a dedicated OpenGL context because of the renderer-specific requirements.
+		 * The QML render textures are available to the main application's OpenGL context as well.
+		 *
+		 * With [glfw-raub](https://github.com/node-3d/glfw-raub), `hwnd` and `ctx` can
+		 * be obtained with helpers:
+		 *
+		 * ```
+		 * // window - is returned by glfw.createWindow(...) call
+		 * const hwnd = glfw.platformWindow(window);
+		 * const ctx = glfw.platformContext(window);
+		 * ```
+		 *
+		 * or
+		 *
+		 * ```
+		 * // window - is an instance of glfw.Window
+		 * const hwnd = window.platformWindow;
+		 * const ctx = window.platformContext;
+		 * ```
+		 */
 		static init(cwd: string, wnd: number, ctx: number): void;
 		
 		/** Register a QML "library" directory. */
@@ -159,7 +197,13 @@ declare module "qml-raub" {
 		value?: T;
 	}>;
 	
-	export class Property<T> {
+	/**
+	 * QML Property interoperation helper.
+	 *
+	 * Automates reading and writing QML objects. A QML object should
+	 * have `objectName` and the target property. The value must be serializable.
+	 */
+	export class Property<T = any> {
 		constructor(opts: TOptsProperty<T>);
 		
 		get value(): T | null;
@@ -179,5 +223,11 @@ declare module "qml-raub" {
 		new(opts: TOptsMethod): (...args: unknown[]) => unknown;
 	}
 	
+	/**
+	 * QML Method interoperation helper.
+	 *
+	 * Automates reading and writing QML objects. A QML object should
+	 * have `objectName` and the target property. The value must be serializable.
+	 */
 	export const Method: TNewableMethod;
 }
