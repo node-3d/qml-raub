@@ -2,7 +2,7 @@
 
 import Img from 'image-raub';
 import gl from 'webgl-raub';
-import { Document } from 'glfw-raub';
+import glfw, { Document, platformDevice } from 'glfw-raub';
 import { View } from 'qml-raub';
 
 
@@ -13,40 +13,47 @@ const icon = new Img(__dirname + '/qml.png');
 icon.on('load', () => { document.icon = (icon as unknown as typeof document.icon); });
 document.title = 'QML';
 
+console.log('p', document.platformContext, document.platformWindow, document.platformDevice);
+
 const release = () => document.makeCurrent();
 
-View.init(process.cwd(), document.platformWindow, document.platformContext);
+release();
+View.init(process.cwd(), document.platformWindow, document.platformContext, document.platformDevice);
+
+// const ui = new View({ width: document.w, height: document.h, file: 'qml/gui.qml' });
 release();
 
-const ui = new View({ width: document.w, height: document.h, file: 'qml/gui.qml' });
+// document.on('mousedown', ui.mousedown.bind(ui));
+// document.on('mouseup', ui.mouseup.bind(ui));
+// document.on('mousemove', ui.mousemove.bind(ui));
+// document.on('keydown', ui.keydown.bind(ui));
+// document.on('keyup', ui.keyup.bind(ui));
+// document.on('wheel', ui.wheel.bind(ui));
 
-document.on('mousedown', ui.mousedown.bind(ui));
-document.on('mouseup', ui.mouseup.bind(ui));
-document.on('mousemove', ui.mousemove.bind(ui));
-document.on('keydown', ui.keydown.bind(ui));
-document.on('keyup', ui.keyup.bind(ui));
-document.on('wheel', ui.wheel.bind(ui));
+// document.on('resize', ({width, height}) => ui.wh = [width, height]);
 
-document.on('resize', ({width, height}) => ui.wh = [width, height]);
+// ui.on('mousedown', e => console.log('[>mousedown]', e));
+// ui.on('mouseup', e => console.log('[>mouseup]', e));
+// // ui.on('mousemove', e => console.log('[mousemove]', e));
+// ui.on('keydown', e => console.log('[>keydown]', e));
+// ui.on('keyup', e => console.log('[>keyup]', e));
+// ui.on('wheel', e => console.log('[>wheel]', e));
 
-ui.on('mousedown', e => console.log('[>mousedown]', e));
-ui.on('mouseup', e => console.log('[>mouseup]', e));
-// ui.on('mousemove', e => console.log('[mousemove]', e));
-ui.on('keydown', e => console.log('[>keydown]', e));
-ui.on('keyup', e => console.log('[>keyup]', e));
-ui.on('wheel', e => console.log('[>wheel]', e));
+// ui.on('ohai', data => {
+// 	console.log('RECV', data);
+// 	ui.set('myButton1', 'text', `${Date.now()}`);
+// 	ui.invoke('myButton1', 'func', [{ uid: 'dwad2312414', value: 17 }]);
+// });
 
-ui.on('ohai', data => {
-	console.log('RECV', data);
-	ui.set('myButton1', 'text', `${Date.now()}`);
-	ui.invoke('myButton1', 'func', [{ uid: 'dwad2312414', value: 17 }]);
-});
-
-let texture = new gl.WebGLTexture(ui.textureId || 0);
-ui.on('reset', (texId) => {
-	release();
-	texture = new gl.WebGLTexture(texId || 0);
-});
+let texture = gl.createTexture();
+// let texture = ui.textureId === null ? gl.createTexture() : new gl.WebGLTexture(ui.textureId);
+// console.log('tid0', ui.textureId);
+// // let texture = new gl.WebGLTexture(ui.textureId || 0);
+// ui.on('reset', (texId) => {
+// 	console.log('tid0', texId);
+// 	release();
+// 	texture = texId ? new gl.WebGLTexture(texId) : gl.createTexture();
+// });
 
 const requestAnimFrame = document.requestAnimationFrame;
 
@@ -74,12 +81,12 @@ const shaders = {
 		}
 	`,
 	'shader-fs' : `
-		precision mediump float;
 		uniform sampler2D tex;
 		uniform vec2 size;
 		void main() {
 			vec2 uv = gl_FragCoord.xy / size.xy;
-			gl_FragColor = texture2D(tex, uv);
+			// gl_FragColor = texture2D(tex, uv);
+			gl_FragColor = (vec4(1.0, 0.0, 0.0, 1.0) + texture2D(tex, uv)) * 0.5;
 		}
 	`,
 } as const;
@@ -185,19 +192,28 @@ const drawScene = () => {
 
 
 const tick = () => {
-	View.update();
+	setTimeout(tick, 16);
+	
+	// View.update();
 	release();
+	
 	drawScene();
-	requestAnimFrame(tick);
-};
+	// (glfw.testScene as (w: number, h: number) => void)(document.width, document.height);
+	document.swapBuffers();
 
+	glfw.pollEvents();
+
+	
+	
+	// requestAnimFrame(tick);
+};
 
 const start = () => {
 	initShaders();
 	initBuffers();
 	
-	gl.clearColor(0.0, 0.0, 0.0, 1.0);
-	gl.enable(gl.DEPTH_TEST);
+	// gl.clearColor(0.0, 1.0, 0.0, 1.0);
+	// gl.enable(gl.DEPTH_TEST);
 	
 	tick();
 };

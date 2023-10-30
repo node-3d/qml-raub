@@ -1,7 +1,7 @@
 'use strict';
 
-const path = require('path');
-const { inspect, inherits } = require('util');
+const path = require('node:path');
+const { inspect, inherits } = require('node:util');
 const Emitter = require('events');
 
 const { View } = require('../core');
@@ -236,10 +236,12 @@ class JsView extends View {
 		return parseJsonSafe(this._get(name, key));
 	}
 	
-	static init(cwd, wnd, ctx) {
+	static init(cwd, wnd, ctx, device = 0) {
 		inited = true;
 		qmlCwd = cwd.replace(/\\/g, '/');
-		View._init(qmlCwd, wnd, ctx, parseJsonSafe);
+		
+		View._plugins(`${qmlCwd}/plugins`);
+		View._init(qmlCwd, wnd, ctx, device, parseJsonSafe);
 	}
 	
 	static libs(l) {

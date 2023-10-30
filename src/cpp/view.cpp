@@ -1,7 +1,3 @@
-#ifdef __linux__
-	#include <dlfcn.h>
-#endif
-
 #include <map>
 #include <qml-ui.hpp>
 
@@ -104,34 +100,13 @@ JS_METHOD(View::_init) { NAPI_ENV;
 	REQ_STR_ARG(0, cwdOwn);
 	REQ_OFFS_ARG(1, wnd);
 	REQ_OFFS_ARG(2, ctx);
-	REQ_FUN_ARG(3, converter);
+	REQ_OFFS_ARG(3, device);
+	REQ_FUN_ARG(4, converter);
 	
 	_converter.Reset(converter, 1);
 	_converter.SuppressDestruct();
 	
-	// Preload the libs with OUR @RPATH, not some junk builtin rpaths
-	#ifdef __linux__
-	dlopen("libicui18n.so.56", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libicuuc.so.56", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libicudata.so.56", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libicuio.so.56", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libicule.so.56", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libicutu.so.56", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt5Core.so.5", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt5Network.so.5", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt5DBus.so.5", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt5Gui.so.5", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt5OpenGL.so.5", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt5Widgets.so.5", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt5XcbQpa.so.5", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt5Qml.so.5", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt5Quick.so.5", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt5QuickControls2.so.5", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt5QuickTemplates2.so.5", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt5QuickWidgets.so.5", RTLD_NOW | RTLD_GLOBAL);
-	#endif
-	
-	QmlUi::init(cwdOwn.c_str(), wnd, ctx, commonCb);
+	QmlUi::init2(cwdOwn.c_str(), wnd, ctx, device, commonCb);
 	
 	RET_UNDEFINED;
 }

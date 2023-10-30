@@ -129,6 +129,7 @@ declare module "qml-raub" {
 		 * @param cwd base directory for QML file resolution. Usually, `process.cwd()`.
 		 * @param wnd platform window handle (e.g. HWND on Windows).
 		 * @param ctx the OpenGL context to which the QML render texture will be made available.
+		 * @param device optional system display device, used only on Linux.
 		 *
 		 * @see [OpenGL context](https://www.khronos.org/opengl/wiki/OpenGL_Context).
 		 *
@@ -143,6 +144,7 @@ declare module "qml-raub" {
 		 * // window - is returned by glfw.createWindow(...) call
 		 * const hwnd = glfw.platformWindow(window);
 		 * const ctx = glfw.platformContext(window);
+		 * const device = glfw.platformDevice();
 		 * ```
 		 *
 		 * or
@@ -151,9 +153,10 @@ declare module "qml-raub" {
 		 * // window - is an instance of glfw.Window
 		 * const hwnd = window.platformWindow;
 		 * const ctx = window.platformContext;
+		 * const device = window.platformDevice;
 		 * ```
 		 */
-		static init(cwd: string, wnd: number, ctx: number): void;
+		static init(cwd: string, wnd: number, ctx: number, device?: number): void;
 		
 		/** Register a QML "library" directory. */
 		static libs(l: string): void;
@@ -207,7 +210,7 @@ declare module "qml-raub" {
 		constructor(opts: TOptsProperty<T>);
 		
 		get value(): T | null;
-		set value(v: T);
+		set value(v: T | null);
 	}
 	
 	export type TOptsMethod = Readonly<{
