@@ -20,7 +20,7 @@ const release = () => document.makeCurrent();
 release();
 View.init(process.cwd(), document.platformWindow, document.platformContext, document.platformDevice);
 
-// const ui = new View({ width: document.w, height: document.h, file: 'qml/gui.qml' });
+const ui = new View({ width: document.w, height: document.h, file: 'qml/gui.qml' });
 release();
 
 // document.on('mousedown', ui.mousedown.bind(ui));
@@ -45,15 +45,15 @@ release();
 // 	ui.invoke('myButton1', 'func', [{ uid: 'dwad2312414', value: 17 }]);
 // });
 
-let texture = gl.createTexture();
-// let texture = ui.textureId === null ? gl.createTexture() : new gl.WebGLTexture(ui.textureId);
-// console.log('tid0', ui.textureId);
-// // let texture = new gl.WebGLTexture(ui.textureId || 0);
-// ui.on('reset', (texId) => {
-// 	console.log('tid0', texId);
-// 	release();
-// 	texture = texId ? new gl.WebGLTexture(texId) : gl.createTexture();
-// });
+// let texture = gl.createTexture();
+let texture = ui.textureId === null ? gl.createTexture() : new gl.WebGLTexture(ui.textureId);
+console.log('tid0', ui.textureId);
+// let texture = new gl.WebGLTexture(ui.textureId || 0);
+ui.on('reset', (texId: number) => {
+	console.log('tid1', texId);
+	release();
+	texture = texId ? new gl.WebGLTexture(texId) : gl.createTexture();
+});
 
 const requestAnimFrame = document.requestAnimationFrame;
 
