@@ -43,6 +43,4 @@ jobs:
         if: matrix.os == 'ubuntu-20.04'
         run: |
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/ci
-          export LD_DEBUG=libs
-          export QT_DEBUG_PLUGINS=1
           xvfb-run --auto-servernum npm run test-ci
