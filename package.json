@@ -49,7 +49,7 @@
 	},
 	"dependencies": {
 		"addon-tools-raub": "^7.4.0",
-		"deps-qmlui-raub": "^3.1.0",
+		"deps-qmlui-raub": "^3.1.1",
 		"segfault-raub": "^2.1.2"
 	},
 	"devDependencies": {
