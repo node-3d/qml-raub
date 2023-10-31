@@ -44,6 +44,7 @@ jobs:
           echo "$GITHUB_WORKSPACE/ci"
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/ci
           export LD_DEBUG=libs
+          export QT_DEBUG_PLUGINS=1
 
       - name: Run Unit Tests - Linux
         if: matrix.os == 'ubuntu-20.04'
