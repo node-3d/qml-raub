@@ -1,5 +1,5 @@
 'use strict';
-// process.env.QT_DEBUG_PLUGINS = '1';
+process.env.QT_DEBUG_PLUGINS = '1';
 
 require('segfault-raub');
 const { getBin } = require('addon-tools-raub');
