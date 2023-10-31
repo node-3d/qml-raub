@@ -25,25 +25,21 @@ step during the `npm i` command.
 
 ```
 const { View } = require('qml-raub');
-View.init(process.cwd(), HWND, CTX);
+View.init(process.cwd(), hwnd, ctx, device);
 
 const ui = new View({ width, height, file: 'gui.qml' });
 ```
 
 The QML engine must be initialized first. Then, new View instances can be created.
-See [TypeScript defenitions](/index.d.ts) for more details.
+See [TypeScript declarations](/index.d.ts) for more details.
 
-QML views can process input events, as per Qt documentation. We can
-propagate mouse and keyboard events to the View, and it will react as any
-normal QML scene. Also there is a loop-back to propagate back any unused
-events. This means a lot for screen-space UI's: we still want the underlying
-app to receive mouse and keyboard events as well.
+QML views can process input events. Mouse and keyboard events can be sent to a view.
+Unhandled (unused) events are re-emitted by the view.
 
-Using loop-back implies a change from `source -> app` event
-flow to `source -> ui -> app`. If mouse click hits a QML button, we don't
-want it to also hit an object behind the button. And if some QML input is
-focused, we should be able to type any text without hitting random
-combinations of app's hotkeys.
+Changing the event flow from `window -> app` to `window -> ui -> app` allows blocking
+the handled events. For example, when a QML button is pressed, a 3D scene
+behind the button won't receive any mouse event. Or when a QML input is
+focused, the app's hotkeys won't be triggered by typing text.
 
 
 ### class View
@@ -62,7 +58,7 @@ display in the distant corner of 3d room, can be textured this way.
 const ui = new View({ width, height, file: 'gui.qml' });
 ```
 
-See [TypeScript defenitions](/index.d.ts) for more details.
+See [TypeScript declarations](/index.d.ts) for more details.
 
 Events:
 * `'destroy'` - emitted when the scene is destroyed.
@@ -85,7 +81,7 @@ const x1 = new Property({ view, name: 'obj1', key: 'x1' });
 x1.value = 10;
 ```
 
-See [TypeScript defenitions](/index.d.ts) for more details.
+See [TypeScript declarations](/index.d.ts) for more details.
 
 ---
 
