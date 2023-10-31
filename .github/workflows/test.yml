@@ -48,4 +48,4 @@ jobs:
         if: matrix.os == 'ubuntu-20.04'
         uses: coactions/setup-xvfb@v1
         with:
-          run: npm run test-ci
+          run:  LD_DEBUG=libs npm run test-ci
