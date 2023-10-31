@@ -12,10 +12,8 @@ npm i -s qml-raub
 ```
 
 **QML** interoperation addon for **Node.js**.
-**QML** is a declarative language that allows user interfaces to be described
-in terms of their visual components and how they interact and relate with one another.
 See [Qt Documentation](https://doc.qt.io/qt-5/qmlapplications.html)
-for additional details on QML features and syntax.
+for QML features and syntax.
 
 ![Example](examples/screenshot.png)
 
@@ -31,20 +29,21 @@ const ui = new View({ width, height, file: 'gui.qml' });
 ```
 
 The QML engine must be initialized first. Then, new View instances can be created.
-See [TypeScript declarations](/index.d.ts) for more details.
+
+* See [TypeScript declarations](/index.d.ts) for more details.
+* See [example](/examples/main.ts) for a complete setup.
 
 QML views can process input events. Mouse and keyboard events can be sent to a view.
 Unhandled (unused) events are re-emitted by the view.
-
 Changing the event flow from `window -> app` to `window -> ui -> app` allows blocking
 the handled events. For example, when a QML button is pressed, a 3D scene
 behind the button won't receive any mouse event. Or when a QML input is
 focused, the app's hotkeys won't be triggered by typing text.
 
 
-### class View
+## View
 
-Loads and manages a QML file.
+Main class that loads and manages a QML file.
 
 When the file is loaded and whenever the QML scene is resized a new GL
 **Texture** (id) is created and reported in an event (type 'reset').
@@ -71,9 +70,9 @@ be generated from QML side.
 
 ---
 
-### class Property
+## Property
 
-Helper to access QML data. Automates reading and writing QML objects. A QML object should
+Helper class to access QML data. Automates reading and writing QML objects. A QML object should
 have `objectName` and the target property. The value must be serializable.
 
 ```
@@ -85,9 +84,9 @@ See [TypeScript declarations](/index.d.ts) for more details.
 
 ---
 
-### class Method
+## Method
 
-Helper to call a QML method. A QML object should have `objectName`
+Helper class to call a QML method. A QML object should have `objectName`
 and the target method.
 
 ```
