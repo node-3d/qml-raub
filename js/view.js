@@ -52,21 +52,21 @@ class JsView extends View {
 		viewInstances[this._index] = this;
 		
 		this._silent = !! opts.silent;
-		this.on('_qml_error', (data) => {
+		this.on('_qml_error', (data) => setImmediate(() => {
 			if (!this._silent) {
 				console.error(`Qml Error: (${data.type})`, data.message);
 			}
 			this.emit('error', new Error(`${data.type}: ${data.message}`));
-		});
+		}));
 		
 		// Expect FBO texture
-		this.on('_qml_fbo', (data) => {
+		this.on('_qml_fbo', (data) => setImmediate(() => {
 			this._textureId = data.texture;
 			this.emit('reset', this._textureId);
-		});
+		}));
 		
 		
-		this.on('_qml_load', (e) => {
+		this.on('_qml_load', (e) => setImmediate(() => {
 			if (e.source !== this._finalSource) {
 				return;
 			}
@@ -82,10 +82,10 @@ class JsView extends View {
 			this._isLoaded = true;
 			
 			this.emit('load');
-		});
+		}));
 		
-		this.on('_qml_mouse', (e) => this.emit(e.type, e));
-		this.on('_qml_key', (e) => this.emit(e.type, e));
+		this.on('_qml_mouse', (e) => setImmediate(() => this.emit(e.type, e)));
+		this.on('_qml_key', (e) => setImmediate(() => this.emit(e.type, e)));
 		
 		if (opts.file || opts.source) {
 			this.load(opts);
