@@ -2,20 +2,34 @@
 
 const path = require('node:path');
 const { inspect, inherits } = require('node:util');
-const Emitter = require('events');
+const Emitter = require('node:events');
 
 const { View } = require('../core');
 
 
+function ReEmitter() {}
+ReEmitter.prototype = {
+	emit(type, data) {
+		if (this.__interceptor) {
+			this.__interceptor(type, data);
+		}
+		return super.emit(type, data);
+	}
+};
+
+inherits(ReEmitter, Emitter);
+inherits(View, ReEmitter);
+
+
 let inited = false;
-
 let nextIndex = 0;
-const takeIndex = () => (++nextIndex);
-
 const globalLibs = [];
 const viewInstances = {};
-
+let queueLoading = [];
+let emptyFunction = () => null;
 let qmlCwd = process.cwd().replace(/\\/g, '/');
+
+const takeIndex = () => (++nextIndex);
 
 const parseJsonSafe = (json) => {
 	try {
@@ -26,47 +40,104 @@ const parseJsonSafe = (json) => {
 	}
 };
 
-inherits(View, Emitter);
-
-class JsView extends View {
+class JsView extends Emitter {
 	constructor(opts = {}) {
 		if (!inited) {
 			throw new Error('Not inited. Call View.init(...) first.');
 		}
 		
-		const width = opts.width || 512;
-		const height = opts.height || 512;
-		
-		super(width, height);
-		
-		this._unload();
-		
-		this._textureId = null;
-		
-		this._width = width;
-		this._height = height;
-		
-		globalLibs.forEach((l) => this._libs(l));
+		super();
 		
 		this._index = takeIndex();
 		viewInstances[this._index] = this;
+		this._timeout = null;
 		
-		this._silent = !! opts.silent;
-		this.on('_qml_error', (data) => setImmediate(() => {
-			if (!this._silent) {
+		this._opts = {
+			...opts,
+			width: opts.width || 512,
+			height: opts.height || 512,
+			silent: !!opts.silent,
+		};
+		
+		this._isLoaded = false;
+		this._isFile = null;
+		this._source = null;
+		this._finalSource = null;
+		this._width = this._opts.width;
+		this._height = this._opts.height;
+		this._textureId = null;
+		this._isConstructed = false;
+		
+		// This is fake temporary plug to receive event calls before `new View` is ready
+		this._view = {
+			_libs: emptyFunction,
+			_resize: emptyFunction,
+			_mouse: emptyFunction,
+			_keyboard: emptyFunction,
+			_destroy: emptyFunction,
+			_invoke: emptyFunction,
+			_set: emptyFunction,
+			_get: emptyFunction,
+		};
+		
+		JsView._enqueueLoad(this);
+	}
+	
+	
+	static _enqueueLoad(view) {
+		queueLoading = [...queueLoading, view];
+		if (queueLoading.length === 1) {
+			view._createView();
+		}
+	}
+	
+	static _finishLoad(view) {
+		if (view._timeout) {
+			clearTimeout(view._timeout);
+			view._timeout = null;
+		}
+		view._isLoading = false;
+		
+		queueLoading = queueLoading.filter((item) => (item !== view));
+		const [next] = queueLoading;
+		if (next) {
+			next._createView();
+		}
+	}
+	
+	_createView() {
+		this._timeout = setTimeout(
+			() => {
+				this._timeout = null;
+				JsView._finishLoad(this);
+			},
+			5000,
+		);
+		
+		this._view = new View(this._width, this._height);
+		this._view.__interceptor = (type, data) => {
+			if (!type.startsWith('_qml_')) {
+				this.emit(type, data);
+			}
+		};
+		
+		globalLibs.forEach((l) => this._view._libs(l));
+		this._isConstructed = true;
+		
+		this._view.on('_qml_error', (data) => setImmediate(() => {
+			if (!this._opts.silent) {
 				console.error(`Qml Error: (${data.type})`, data.message);
 			}
 			this.emit('error', new Error(`${data.type}: ${data.message}`));
 		}));
 		
 		// Expect FBO texture
-		this.on('_qml_fbo', (data) => setImmediate(() => {
+		this._view.on('_qml_fbo', (data) => setImmediate(() => {
 			this._textureId = data.texture;
 			this.emit('reset', this._textureId);
 		}));
 		
-		
-		this.on('_qml_load', (e) => setImmediate(() => {
+		this._view.on('_qml_load', (e) => setImmediate(() => {
 			if (e.source !== this._finalSource) {
 				return;
 			}
@@ -76,19 +147,22 @@ class JsView extends View {
 			}
 			
 			if (e.status !== 'success') {
+				JsView._finishLoad(this);
 				return console.error('Qml Error. Could not load:', this._source);
 			}
 			
 			this._isLoaded = true;
-			
+			JsView._finishLoad(this);
 			this.emit('load');
 		}));
 		
-		this.on('_qml_mouse', (e) => setImmediate(() => this.emit(e.type, e)));
-		this.on('_qml_key', (e) => setImmediate(() => this.emit(e.type, e)));
+		this._view.on('_qml_mouse', (e) => setImmediate(() => this.emit(e.type, e)));
+		this._view.on('_qml_key', (e) => setImmediate(() => this.emit(e.type, e)));
 		
-		if (opts.file || opts.source) {
-			this.load(opts);
+		if (this._opts.file || this._opts.source) {
+			this.load();
+		} else {
+			setImmediate(() => JsView._finishLoad(this));
 		}
 	}
 	
@@ -102,14 +176,14 @@ class JsView extends View {
 			return;
 		}
 		this._width = v;
-		this.resize(this._width, this._height);
+		this._view._resize(this._width, this._height);
 	}
 	set height(v) {
 		if (this._height === v) {
 			return;
 		}
 		this._height = v;
-		this.resize(this._width, this._height);
+		this._view._resize(this._width, this._height);
 	}
 	
 	get w() { return this.width; }
@@ -129,7 +203,7 @@ class JsView extends View {
 		}
 		this._width = width;
 		this._height = height;
-		this._resize(this._width, this._height);
+		this._view._resize(this._width, this._height);
 	}
 	
 	get textureId() {
@@ -147,47 +221,60 @@ class JsView extends View {
 	}
 	
 	mousedown(e) {
-		this._mouse(1, e.button, e.buttons, e.x, e.y);
+		this._view._mouse(1, e.button, e.buttons, e.x, e.y);
 	}
 	
 	mouseup(e) {
-		this._mouse(2, e.button, e.buttons, e.x, e.y);
+		this._view._mouse(2, e.button, e.buttons, e.x, e.y);
 	}
 	
 	
 	mousemove(e) {
-		this._mouse(0, 0, e.buttons, e.x, e.y);
+		this._view._mouse(0, 0, e.buttons, e.x, e.y);
 	}
 	
 	wheel(e) {
-		this._mouse(3, e.wheelDelta, e.buttons, e.x, e.y);
+		this._view._mouse(3, e.wheelDelta, e.buttons, e.x, e.y);
 	}
 	
 	keydown(e) {
-		this._keyboard(1, e.which, e.charCode);
+		this._view._keyboard(1, e.which, e.charCode);
 	}
 	
 	keyup(e) {
-		this._keyboard(0, e.which, e.charCode);
+		this._view._keyboard(0, e.which, e.charCode);
 	}
 	
-	load(opts) {
-		this._unload();
+	load(opts = {}) {
+		this._opts = { ...this._opts, ...opts };
 		
-		if (opts.file) {
+		// If not constructed yet, just let it cook
+		if (!this._isConstructed) {
+			return;
+		}
+		
+		// If already loading something - ignore
+		if (this._isLoading) {
+			return;
+		}
+		
+		this._isLoading = true;
+		this._isLoaded = false;
+		this._isFile = null;
+		this._source = null;
+		this._finalSource = null;
+		this._textureId = null;
+		
+		if (this._opts.file) {
 			this._isFile = true;
-			this._source = opts.file;
-		} else if (opts.source) {
+			this._source = this._opts.file;
+		} else if (this._opts.source) {
 			this._isFile = false;
-			this._source = opts.source;
+			this._source = this._opts.source;
 		} else {
 			throw new Error('To load QML, specify opts.file or opts.source.');
 		}
 		
-		this._loadWhenReady();
-	}
-	
-	_loadWhenReady() {
 		if (this._isLoaded || this._index === -1) {
 			return;
 		}
@@ -197,43 +284,39 @@ class JsView extends View {
 				? this._source
 				: `${qmlCwd}/${this._source}`;
 				
-			this._load(true, this._finalSource);
+			this._view._load(true, this._finalSource);
 		} else {
 			this._finalSource = this._source;
-			this._load(false, this._source);
+			this._view._load(false, this._source);
 		}
 	}
 	
-	_unload() {
+	destroy() {
+		this._isLoading = false;
 		this._isLoaded = false;
 		this._isFile = null;
 		this._source = null;
 		this._finalSource = null;
-	}
-	
-	destroy() {
-		this._unload();
-		
 		this._textureId = null;
 		
 		if (viewInstances[this._index]) {
 			delete viewInstances[this._index];
-			this._destroy();
+			this._view._destroy();
 		}
 		
 		this._index = -1;
 	}
 	
 	invoke(name, key, args) {
-		return parseJsonSafe(this._invoke(name, key, JSON.stringify(args)));
+		return parseJsonSafe(this._view._invoke(name, key, JSON.stringify(args)));
 	}
 	
 	set(name, key, value) {
-		this._set(name, key, `[${JSON.stringify(value)}]`);
+		this._view._set(name, key, `[${JSON.stringify(value)}]`);
 	}
 	
 	get(name, key) {
-		return parseJsonSafe(this._get(name, key));
+		return parseJsonSafe(this._view._get(name, key));
 	}
 	
 	static init(cwd, wnd, ctx, device = 0) {
@@ -267,6 +350,10 @@ class JsView extends View {
 		}
 		
 		View._style(name, def);
+	}
+	
+	static update() {
+		View.update();
 	}
 }
 
