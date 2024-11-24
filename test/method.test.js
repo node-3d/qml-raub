@@ -4,10 +4,8 @@
 const assert = require('node:assert').strict;
 const { describe, it } = require('node:test');
 
-const { View, Method } = require('..');
+const { View, Method } = require('./init');
 
-
-View.init(__dirname, 0, 0);
 
 const view = new View({ file: 'test.qml', silent: true });
 view.on('error', () => {});

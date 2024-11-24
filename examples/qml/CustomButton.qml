@@ -1,17 +1,14 @@
-import QtQuick 2.7
+import QtQuick
 
 Rectangle {
+	id : button
 	
 	signal clicked
-	
 	property alias text : buttonText.text
-	
-	id : button
 	
 	width  : buttonText.width + 40
 	height : 45
 	radius : 2
-	antialiasing : true
 	
 	gradient : Gradient {
 		GradientStop {
@@ -46,5 +43,4 @@ Rectangle {
 	Accessible.description : "This button does " + text
 	Accessible.role : Accessible.Button
 	Accessible.onPressAction : { button.clicked() }
-	
 }

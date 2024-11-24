@@ -1,40 +1,39 @@
-import QtQuick 2.7
-import QtQuick.Controls 1.4
+import QtQuick
+import QtQuick.Controls.Basic
 
 Rectangle {
-	
 	color: 'transparent'
 	anchors.fill: parent
 	
-	CustomButton {
+	Column {
+		padding: 16
+		spacing: 16
 		
-		id: button
-		
-		objectName: 'myButton1'
-		
-		text: qsTr('Hello world!')
-		
-		onClicked: { console.log('o hai'); eventEmit('ohai', { text: 'its me' }) }
-		
-		function func(x) {
-			console.log('func called', x);
+		CustomButton {
+			objectName: 'myButton1'
+			
+			text: qsTr('Hello world!')
+			onClicked: { eventEmit('press-button1', { text: 'button1' }) }
+			
+			function func(x) {
+				console.log('func called', x);
+				return 'returned from func';
+			}
 		}
 		
-		anchors.left: parent.left
-		anchors.leftMargin: 24
-		anchors.top: parent.top
-		anchors.topMargin: 24
+		CustomButton {
+			id: button2
+			objectName: 'myButton2'
+			
+			text: qsTr('Trigger error')
+			onClicked: { eventEmit('press-button2', { text: 'button2' }) }
+		}
 		
-	}
-	
-	TextArea {
-		text: 'Hello'
-		textColor: 'black'
-		font.pixelSize: 24
-		
-		anchors.left: button.left
-		anchors.top: button.bottom
-		anchors.topMargin: 24
+		TextArea {
+			text: 'Hello'
+			color: 'white'
+			font.pixelSize: 24
+		}
 	}
 	
 }

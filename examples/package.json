@@ -4,13 +4,14 @@
 	"private": true,
 	"type": "commonjs",
 	"scripts": {
-		"start": "npx ts-node-esm main.ts"
+		"start": "tsx main.ts"
 	},
 	"dependencies": {
 		"qml-raub": "file:..",
-		"glfw-raub": "^5.3.2",
-		"image-raub": "^4.2.1",
-		"ts-node": "^10.9.1",
-		"webgl-raub": "^4.1.0"
+		"glfw-raub": "^6.0.0",
+		"image-raub": "^5.0.1",
+		"tsconfig-paths": "^4.2.0",
+		"tsx": "^4.19.2",
+		"webgl-raub": "^5.0.0"
 	}
 }

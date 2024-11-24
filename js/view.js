@@ -34,7 +34,7 @@ const takeIndex = () => (++nextIndex);
 const parseJsonSafe = (json) => {
 	try {
 		return JSON.parse(json)[0];
-	} catch (e) {
+	} catch (_e) {
 		console.error(`Error: Qml event, bad JSON.\n${json}`);
 		return null;
 	}

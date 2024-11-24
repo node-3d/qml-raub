@@ -6,7 +6,7 @@ declare module "qml-raub" {
 		[key: string]: unknown;
 	};
 	
-	type TMouseEventCommon = Readonly<{
+	type TMouseEventCommon = TEvent & Readonly<{
 		buttons: number[],
 		x: number,
 		y: number,
@@ -20,12 +20,10 @@ declare module "qml-raub" {
 		wheelDelta: number,
 	}>;
 	
-	type TKeyEvent = Readonly<{
+	type TKeyEvent = TEvent & Readonly<{
 		which: number,
 		charCode: number,
 	}>;
-	
-	type TEventCb<T extends TEvent> = (event: T) => (void | boolean);
 	
 	type EventEmitter = import('node:events').EventEmitter;
 	

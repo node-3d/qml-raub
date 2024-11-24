@@ -21,7 +21,7 @@ for QML features and syntax.
 Node.js versions. Addon binaries are precompiled and **there is no compilation**
 step during the `npm i` command.
 
-```
+```js
 const { View } = require('qml-raub');
 View.init(process.cwd(), hwnd, ctx, device);
 
@@ -53,7 +53,7 @@ For example a screen-sized rectangle with this texture would look as if it is
 the app's UI, which it already almost is. Also some in-scene quads, e.g. a PC
 display in the distant corner of 3d room, can be textured this way.
 
-```
+```js
 const ui = new View({ width, height, file: 'gui.qml' });
 ```
 
@@ -75,7 +75,7 @@ be generated from QML side.
 Helper class to access QML data. Automates reading and writing QML objects. A QML object should
 have `objectName` and the target property. The value must be serializable.
 
-```
+```js
 const x1 = new Property({ view, name: 'obj1', key: 'x1' });
 x1.value = 10;
 ```
@@ -89,7 +89,7 @@ See [TypeScript declarations](/index.d.ts) for more details.
 Helper class to call a QML method. A QML object should have `objectName`
 and the target method.
 
-```
+```js
 const f1 = new Method({ view, name: 'obj1', key: 'f1' });
 const y = f1(a, b, c);
 ```

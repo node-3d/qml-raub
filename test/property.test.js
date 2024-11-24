@@ -4,10 +4,8 @@
 const assert = require('node:assert').strict;
 const { describe, it } = require('node:test');
 
-const { View, Property } = require('..');
+const { View, Property } = require('./init');
 
-
-View.init(__dirname, 0, 0);
 
 const view = new View({ file: 'test.qml', silent: true });
 const loadPromise = new Promise((res) => view.on('load', () => res(true)));

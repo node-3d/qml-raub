@@ -5,7 +5,7 @@ require('segfault-raub');
 const { getBin } = require('addon-tools-raub');
 const depUi = require('deps-qmlui-raub');
 
-const core = require(`./${getBin()}/qml`);
+const core = require(`./${getBin()}/qml.node`);
 
 core.View._plugins(`${depUi.core.bin}/plugins`);
 core.View._plugins(`${depUi.gui.bin}/plugins`);

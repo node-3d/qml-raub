@@ -2,7 +2,7 @@
 
 import Img from 'image-raub';
 import gl from 'webgl-raub';
-import { Document } from 'glfw-raub';
+import { Document, TEvent } from 'glfw-raub';
 import { View } from 'qml-raub';
 
 
@@ -19,14 +19,16 @@ View.init(process.cwd(), document.platformWindow, document.platformContext, docu
 const ui = new View({ width: document.w, height: document.h, file: 'qml/gui.qml' });
 release();
 
-document.on('mousedown', ui.mousedown.bind(ui));
-document.on('mouseup', ui.mouseup.bind(ui));
-document.on('mousemove', ui.mousemove.bind(ui));
-document.on('keydown', ui.keydown.bind(ui));
-document.on('keyup', ui.keyup.bind(ui));
-document.on('wheel', ui.wheel.bind(ui));
+document.on('mousedown', ui.mousedown.bind(ui) as (event: TEvent) => void);
+document.on('mouseup', ui.mouseup.bind(ui) as (event: TEvent) => void);
+document.on('mousemove', ui.mousemove.bind(ui) as (event: TEvent) => void);
+document.on('keydown', ui.keydown.bind(ui) as (event: TEvent) => void);
+document.on('keyup', ui.keyup.bind(ui) as (event: TEvent) => void);
+document.on('wheel', ui.wheel.bind(ui) as (event: TEvent) => void);
 
-document.on('resize', ({width, height}) => ui.wh = [width, height]);
+document.on('resize', ({ width, height }) => {
+	ui.wh = [width, height] as [number, number];
+});
 
 ui.on('mousedown', e => console.log('[>mousedown]', e));
 ui.on('mouseup', e => console.log('[>mouseup]', e));
@@ -35,10 +37,16 @@ ui.on('keydown', e => console.log('[>keydown]', e));
 ui.on('keyup', e => console.log('[>keyup]', e));
 ui.on('wheel', e => console.log('[>wheel]', e));
 
-ui.on('ohai', data => {
-	console.log('RECV', data);
+ui.on('press-button1', data => {
+	console.log('press-button1:', data);
 	ui.set('myButton1', 'text', `${Date.now()}`);
-	ui.invoke('myButton1', 'func', [{ uid: 'dwad2312414', value: 17 }]);
+	const ret = ui.invoke('myButton1', 'func', [{ uid: 'dwad2312414', value: 17 }]);
+	console.log('ret:', ret);
+});
+
+ui.on('press-button2', data => {
+	console.log('press-button2:', data);
+	const ret = ui.invoke('myButton2', 'func', []);
 });
 
 let texture = ui.textureId === null ? gl.createTexture() : new gl.WebGLTexture(ui.textureId);

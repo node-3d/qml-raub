@@ -4,10 +4,8 @@
 const assert = require('node:assert').strict;
 const { describe, it } = require('node:test');
 
-const { View } = require('..');
+const { View } = require('./init');
 
-
-View.init(__dirname, 0, 0);
 
 const properties = [
 	'width', 'height', 'w', 'h', 'wh', 'size', 'textureId', 'isLoaded',
