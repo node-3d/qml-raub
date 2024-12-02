@@ -1,0 +1,48 @@
+version: 2.1
+
+workflows:
+  pack-binaries:
+    jobs:
+      - pack-binaries
+      - upload-binaries:
+          context:
+            - github
+          requires:
+            - pack-binaries
+
+jobs:
+
+  pack-binaries:
+    machine:
+      image: ubuntu-2404:current
+    resource_class: arm.medium
+    steps:
+      - checkout
+
+      - run: |
+          mkdir -p ~/artifacts
+          node -p "require('./package').version" > ~/artifacts/pkg-version
+          
+      - run: npm ci
+      - run: npm run build
+
+      - run: |
+          cd bin-aarch64 && tar -czf ../aarch64.gz *
+          mv ../aarch64.gz ~/artifacts
+
+      - persist_to_workspace:
+          root: ~/artifacts
+          paths:
+            - aarch64.gz
+            - pkg-version
+
+  upload-binaries:
+    docker:
+      - image: cimg/go:1.23.1
+    steps:
+      - attach_workspace:
+          at: /tmp/artifacts
+      - run: go install github.com/tcnksm/ghr@latest
+      - run: |
+          PKG_VERSION=`cat /tmp/artifacts/pkg-version`
+          ghr -u "node-3d" -r "${CIRCLE_PROJECT_REPONAME}" -c "${CIRCLE_SHA1}" -n "Release ${PKG_VERSION}" -replace ${PKG_VERSION} /tmp/artifacts/aarch64.gz
