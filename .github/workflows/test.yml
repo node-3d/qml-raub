@@ -43,6 +43,7 @@ jobs:
         if: matrix.os == 'ubuntu-22.04'
         run: |
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/ci
+          objdump -T node_modules/deps-qmlui-raub/bin-linux/libqmlui.so
           LD_DEBUG=symbols xvfb-run --auto-servernum npm run test-ci
 
       # - name: Run Unit Tests - MacOS
