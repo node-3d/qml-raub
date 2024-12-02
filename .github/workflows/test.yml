@@ -50,5 +50,5 @@ jobs:
           xvfb-run --auto-servernum npm run test-ci
 
       - name: Run Unit Tests - MacOS
-        if: macos-14
+        if: matrix.os == 'macos-14'
         run: npm run test-ci
