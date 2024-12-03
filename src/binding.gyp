@@ -24,6 +24,7 @@
 			'conditions': [
 				['OS=="linux"', {
 					'libraries': [
+						'-lqmlui',
 						"-Wl,-rpath,'$$ORIGIN'",
 						"-Wl,-rpath,'$$ORIGIN/../node_modules/deps-qt-core-raub/bin-linux'",
 						"-Wl,-rpath,'$$ORIGIN/../node_modules/deps-qt-gui-raub/bin-linux'",
