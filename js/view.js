@@ -333,7 +333,7 @@ class JsView extends Emitter {
 		}
 		
 		globalLibs.push(l);
-		Object.entries(viewInstances).forEach((k, v) => v._libs(l));
+		Object.values(viewInstances).forEach((v) => v._libs(l));
 	}
 	
 	static plugins(p) {
