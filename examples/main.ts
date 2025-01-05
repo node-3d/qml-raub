@@ -2,31 +2,31 @@
 
 import Img from 'image-raub';
 import gl from 'webgl-raub';
-import { Document, TEvent } from 'glfw-raub';
+import glfw, { Document, TEvent } from 'glfw-raub';
 import { View } from 'qml-raub';
 
 
 Document.setWebgl(gl);
-const document = new Document({ vsync: true, autoEsc: true });
-const release = () => document.makeCurrent();
+
+const doc = new Document({ vsync: true, autoEsc: true });
 
 const icon = new Img(__dirname + '/qml.png');
-icon.on('load', () => { document.icon = (icon as unknown as typeof document.icon); });
-document.title = 'QML';
+icon.on('load', () => { doc.icon = (icon as unknown as typeof doc.icon); });
+doc.title = 'QML';
 
-View.init(process.cwd(), document.platformWindow, document.platformContext, document.platformDevice);
+View.init(process.cwd(), doc.platformWindow, doc.platformContext, doc.platformDevice);
 
-const ui = new View({ width: document.w, height: document.h, file: 'qml/gui.qml' });
-release();
+const ui = new View({ width: doc.w, height: doc.h, file: 'qml/gui.qml' });
+doc.makeCurrent();
 
-document.on('mousedown', ui.mousedown.bind(ui) as (event: TEvent) => void);
-document.on('mouseup', ui.mouseup.bind(ui) as (event: TEvent) => void);
-document.on('mousemove', ui.mousemove.bind(ui) as (event: TEvent) => void);
-document.on('keydown', ui.keydown.bind(ui) as (event: TEvent) => void);
-document.on('keyup', ui.keyup.bind(ui) as (event: TEvent) => void);
-document.on('wheel', ui.wheel.bind(ui) as (event: TEvent) => void);
+doc.on('mousedown', ui.mousedown.bind(ui) as (event: TEvent) => void);
+doc.on('mouseup', ui.mouseup.bind(ui) as (event: TEvent) => void);
+doc.on('mousemove', ui.mousemove.bind(ui) as (event: TEvent) => void);
+doc.on('keydown', ui.keydown.bind(ui) as (event: TEvent) => void);
+doc.on('keyup', ui.keyup.bind(ui) as (event: TEvent) => void);
+doc.on('wheel', ui.wheel.bind(ui) as (event: TEvent) => void);
 
-document.on('resize', ({ width, height }) => {
+doc.on('resize', ({ width, height }) => {
 	ui.wh = [width, height] as [number, number];
 });
 
@@ -50,13 +50,10 @@ ui.on('press-button2', data => {
 });
 
 let texture = ui.textureId === null ? gl.createTexture() : new gl.WebGLTexture(ui.textureId);
-
 ui.on('reset', (texId: number) => {
-	release();
+	doc.makeCurrent();
 	texture = texId ? new gl.WebGLTexture(texId) : gl.createTexture();
 });
-
-const requestAnimFrame = document.requestAnimationFrame;
 
 type TProgramInfo = {
 	vertexPositionAttribute: number,
@@ -67,7 +64,7 @@ type TProgramInfo = {
 const programInfo: TProgramInfo = {
 	vertexPositionAttribute: 0,
 	texUniform: new gl.WebGLUniformLocation(0),
-	sizeUniform: new gl.WebGLUniformLocation(0),
+	sizeUniform: new gl.WebGLUniformLocation(1),
 };
 
 const cubeVertexPositionBuffer = gl.createBuffer();
@@ -119,9 +116,14 @@ const getShader = (id: keyof typeof shaders): gl.WebGLShader | null => {
 	return shader;
 };
 
-const initShaders = () => {
-	let fragmentShader = getShader('shader-fs');
-	let vertexShader = getShader('shader-vs');
+// Init resources
+(() => {
+	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+	gl.blendEquation(gl.FUNC_ADD);
+	gl.enable(gl.BLEND);
+	
+	const fragmentShader = getShader('shader-fs');
+	const vertexShader = getShader('shader-vs');
 	
 	if (!fragmentShader || !vertexShader) {
 		return;
@@ -142,9 +144,7 @@ const initShaders = () => {
 	
 	programInfo.texUniform = gl.getUniformLocation(shaderProgram, 'tex');
 	programInfo.sizeUniform = gl.getUniformLocation(shaderProgram, 'size');
-};
-
-const initBuffers = () => {
+	
 	gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
 	const vertices = [
 		// Front face
@@ -164,13 +164,17 @@ const initBuffers = () => {
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
 	(cubeVertexIndexBuffer as unknown as { itemSize: number }).itemSize = 1;
 	(cubeVertexIndexBuffer as unknown as { numItems: number }).numItems = 6;
-};
+})();
 
 
 const drawScene = () => {
-	gl.viewport(0, 0, document.width, document.height);
+	gl.viewport(0, 0, doc.width, doc.height);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
+	gl.useProgram({ _: 0 });
+	(glfw.testScene as (w: number, h: number) => void)(doc.width, doc.height);
+	
+	gl.useProgram(shaderProgram);
 	gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
 	gl.vertexAttribPointer(
 		programInfo.vertexPositionAttribute,
@@ -184,22 +188,28 @@ const drawScene = () => {
 	gl.activeTexture(gl.TEXTURE0);
 	gl.bindTexture(gl.TEXTURE_2D, texture);
 	gl.uniform1i(programInfo.texUniform, 0);
-	gl.uniform2fv(programInfo.sizeUniform, [document.width, document.height]);
+	gl.uniform2fv(programInfo.sizeUniform, [doc.width, doc.height]);
 	
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
-	gl.drawElements(gl.TRIANGLES, (cubeVertexIndexBuffer as unknown as { numItems: number }).numItems, gl.UNSIGNED_SHORT, 0);
+	gl.drawElements(
+		gl.TRIANGLES,
+		(cubeVertexIndexBuffer as unknown as { numItems: number }).numItems,
+		gl.UNSIGNED_SHORT,
+		0,
+	);
 };
 
 
-const tick = () => {
-	requestAnimFrame(tick);
-	
+const drawFrame = (): void => {
+	glfw.pollEvents();
 	View.update();
-	release();
-	
+	doc.makeCurrent();
 	drawScene();
+	doc.swapBuffers();
 };
 
-initShaders();
-initBuffers();
-tick();
+const loopFunc = (): void => {
+	drawFrame();
+	setImmediate(loopFunc);
+};
+setImmediate(loopFunc);
