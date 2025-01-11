@@ -25,12 +25,12 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	dlopen("libQt6Qml.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QmlMeta.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6Quick.so.6", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt6QuickControls2.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QuickTemplates2.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QuickWidgets.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QuickVectorImage.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QmlCompiler.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QmlCore.so.6", RTLD_NOW | RTLD_GLOBAL);
+	dlopen("libQt6QuickControls2.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QuickControls2Basic.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QuickControls2Impl.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QuickDialogs2.so.6", RTLD_NOW | RTLD_GLOBAL);

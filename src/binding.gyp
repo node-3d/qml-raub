@@ -24,7 +24,6 @@
 			'conditions': [
 				['OS=="linux"', {
 					'libraries': [
-						'-lqmlui',
 						"-Wl,-rpath,'$$ORIGIN'",
 						"-Wl,-rpath,'$$ORIGIN/../node_modules/deps-qt-core-raub/bin-linux'",
 						"-Wl,-rpath,'$$ORIGIN/../node_modules/deps-qt-gui-raub/bin-linux'",
@@ -39,6 +38,7 @@
 				}],
 				
 				['OS=="mac"', {
+					'target_arch': 'arm',
 					'libraries': [
 						'<(qmlui_bin)/libqmlui.dylib',
 						'-Wl,-rpath,@loader_path',
