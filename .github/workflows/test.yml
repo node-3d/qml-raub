@@ -43,7 +43,8 @@ jobs:
         if: matrix.os == 'ubuntu-22.04'
         run: |
           # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/ci
-          LD_DEBUG=libs xvfb-run --auto-servernum npm run test-ci
+          # LD_DEBUG=libs xvfb-run --auto-servernum npm run test-ci
+          xvfb-run --auto-servernum npm run test-ci
 
       # - name: Run Unit Tests - MacOS
       #   if: matrix.os == 'macos-14'
