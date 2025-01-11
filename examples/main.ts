@@ -8,11 +8,15 @@ import { View } from 'qml-raub';
 
 Document.setWebgl(gl);
 
-const doc = new Document({ vsync: true, autoEsc: true });
+const doc = new Document({
+	vsync: true,
+	autoEsc: true,
+	autoFullscreen: true,
+	title: 'QML',
+});
 
 const icon = new Img(__dirname + '/qml.png');
 icon.on('load', () => { doc.icon = (icon as unknown as typeof doc.icon); });
-doc.title = 'QML';
 
 View.init(process.cwd(), doc.platformWindow, doc.platformContext, doc.platformDevice);
 
@@ -199,17 +203,10 @@ const drawScene = () => {
 	);
 };
 
-
-const drawFrame = (): void => {
-	glfw.pollEvents();
+const loopFunc = (): void => {
 	View.update();
 	doc.makeCurrent();
 	drawScene();
-	doc.swapBuffers();
+	doc.requestAnimationFrame(loopFunc);
 };
-
-const loopFunc = (): void => {
-	drawFrame();
-	setImmediate(loopFunc);
-};
-setImmediate(loopFunc);
+doc.requestAnimationFrame(loopFunc);
