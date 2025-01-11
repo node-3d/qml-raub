@@ -11,8 +11,8 @@ This is a part of [Node3D](https://github.com/node-3d) project.
 npm i -s qml-raub
 ```
 
-**QML** interoperation addon for **Node.js**.
-See [Qt Documentation](https://doc.qt.io/qt-5/qmlapplications.html)
+**QML (Qt 6.8.0)** interoperation addon for **Node.js**.
+See [Qt Documentation](https://doc.qt.io/qt-6/qmlapplications.html)
 for QML features and syntax.
 
 ![Example](examples/screenshot.png)
