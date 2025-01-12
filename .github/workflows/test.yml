@@ -44,7 +44,7 @@ jobs:
         run: |
           patchelf --force-rpath --set-rpath '$ORIGIN:$ORIGIN/../node_modules/deps-qt-core-raub/bin-linux:$ORIGIN/../node_modules/deps-qt-gui-raub/bin-linux:$ORIGIN/../node_modules/deps-qt-qml-raub/bin-linux:$ORIGIN/../../deps-qt-core-raub/bin-linux:$ORIGIN/../../deps-qt-gui-raub/bin-linux:$ORIGIN/../../deps-qt-qml-raub/bin-linux' $GITHUB_WORKSPACE/node_modules/deps-qmlui-raub/bin-linux/libqmlui.so
           sudo apt-get update
-          sudo apt-get install -y libgles2-mesa-dev libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0
+          sudo apt-get install -y libgles2-mesa-dev libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0 libxcb-xkb1
           # LD_DEBUG=libs node .
           # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/ci
           # LD_DEBUG=libs xvfb-run --auto-servernum npm run test-ci
