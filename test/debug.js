@@ -2,4 +2,4 @@
 
 const { View } = require('./init');
 
-const view = new View({ file: 'test.qml' });
+new View({ file: 'test.qml' });

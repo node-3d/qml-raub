@@ -48,7 +48,7 @@ jobs:
           # LD_DEBUG=libs node .
           # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/ci
           # LD_DEBUG=libs xvfb-run --auto-servernum npm run test-ci
-          cd examples && LD_DEBUG=libs xvfb-run --auto-servernum node debug.js
+          cd test && LD_DEBUG=libs xvfb-run --auto-servernum node debug.js
           # xvfb-run --auto-servernum npm run test-ci
 
       # - name: Run Unit Tests - MacOS
