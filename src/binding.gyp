@@ -24,7 +24,6 @@
 			'conditions': [
 				['OS=="linux"', {
 					'libraries': [
-						'-lqmlui',
 						"-Wl,--disable-new-dtags",
 						"-Wl,-rpath,'$$ORIGIN'",
 						"-Wl,-rpath,'$$ORIGIN/../node_modules/deps-qt-core-raub/bin-linux'",

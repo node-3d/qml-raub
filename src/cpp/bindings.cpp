@@ -22,17 +22,19 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	dlopen("libQt6Svg.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6Widgets.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6XcbQpa.so.6", RTLD_NOW | RTLD_GLOBAL);
+	dlopen("libQt6WaylandClient.so.6", RTLD_NOW | RTLD_GLOBAL);
+	dlopen("libQt6WaylandEglClientHwIntegration.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6Qml.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QmlMeta.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6Quick.so.6", RTLD_NOW | RTLD_GLOBAL);
+	dlopen("libQt6QuickControls2.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QuickTemplates2.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QuickWidgets.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QuickVectorImage.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QmlCompiler.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QmlCore.so.6", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt6QuickControls2.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QuickControls2Basic.so.6", RTLD_NOW | RTLD_GLOBAL);
-	dlopen("libQt6QuickControls2BasicImpl.so.6", RTLD_NOW | RTLD_GLOBAL);
+	dlopen("libQt6QuickControls2BasicStyleImpl.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QuickControls2Impl.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QuickDialogs2.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QuickDialogs2QuickImpl.so.6", RTLD_NOW | RTLD_GLOBAL);
@@ -43,6 +45,7 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	dlopen("libQt6QuickShapes.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QmlWorkerScript.so.6", RTLD_NOW | RTLD_GLOBAL);
 	dlopen("libQt6QmlModels.so.6", RTLD_NOW | RTLD_GLOBAL);
+	dlopen("libqmlui.so", RTLD_NOW | RTLD_GLOBAL);
 	#endif
 	
 	View::initClass(env, exports);
