@@ -45,6 +45,9 @@ jobs:
           # ls /home/runner/work/qml-raub/qml-raub/bin-linux/../node_modules/deps-qmlui-raub/bin-linux/../../deps-qt-qml-raub/bin-linux
           patchelf --force-rpath --set-rpath '$ORIGIN:$ORIGIN/../node_modules/deps-qt-core-raub/bin-linux:$ORIGIN/../node_modules/deps-qt-gui-raub/bin-linux:$ORIGIN/../node_modules/deps-qt-qml-raub/bin-linux:$ORIGIN/../../deps-qt-core-raub/bin-linux:$ORIGIN/../../deps-qt-gui-raub/bin-linux:$ORIGIN/../../deps-qt-qml-raub/bin-linux' $GITHUB_WORKSPACE/node_modules/deps-qmlui-raub/bin-linux/libqmlui.so
           # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/ci
+          
+          sudo apt-get update
+          sudo apt-get install -y libgles2-mesa-dev
           LD_DEBUG=libs node .
           # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/ci
           # LD_DEBUG=libs xvfb-run --auto-servernum npm run test-ci
