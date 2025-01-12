@@ -47,7 +47,7 @@ jobs:
           sudo apt-get install -qq libgles2-mesa-dev libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0 libxcb-xkb1 libxkbcommon-x11-0
           
           sudo apt-get install -qq mesa-utils
-          glxinfo -B
+          xvfb-run --auto-servernum glxinfo -B
           # LD_DEBUG=libs xvfb-run --auto-servernum npm run test-ci
           xvfb-run --auto-servernum npm run test-ci
 
