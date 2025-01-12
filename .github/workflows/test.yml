@@ -42,14 +42,11 @@ jobs:
       - name: Run Unit Tests - Linux
         if: matrix.os == 'ubuntu-22.04'
         run: |
-          patchelf --force-rpath --set-rpath '$ORIGIN:$ORIGIN/../node_modules/deps-qt-core-raub/bin-linux:$ORIGIN/../node_modules/deps-qt-gui-raub/bin-linux:$ORIGIN/../node_modules/deps-qt-qml-raub/bin-linux:$ORIGIN/../../deps-qt-core-raub/bin-linux:$ORIGIN/../../deps-qt-gui-raub/bin-linux:$ORIGIN/../../deps-qt-qml-raub/bin-linux' $GITHUB_WORKSPACE/node_modules/deps-qmlui-raub/bin-linux/libqmlui.so
-          sudo apt-get update
+          # patchelf --force-rpath --set-rpath '$ORIGIN:$ORIGIN/../node_modules/deps-qt-core-raub/bin-linux:$ORIGIN/../node_modules/deps-qt-gui-raub/bin-linux:$ORIGIN/../node_modules/deps-qt-qml-raub/bin-linux:$ORIGIN/../../deps-qt-core-raub/bin-linux:$ORIGIN/../../deps-qt-gui-raub/bin-linux:$ORIGIN/../../deps-qt-qml-raub/bin-linux' $GITHUB_WORKSPACE/node_modules/deps-qmlui-raub/bin-linux/libqmlui.so
+          sudo apt-get update -qq
           sudo apt-get install -qq libgles2-mesa-dev libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0 libxcb-xkb1 libxkbcommon-x11-0
-          # LD_DEBUG=libs node .
-          # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GITHUB_WORKSPACE/ci
-          LD_DEBUG=libs xvfb-run --auto-servernum npm run test-ci
-          # cd test && LD_DEBUG=libs xvfb-run --auto-servernum node debug.js
-          # xvfb-run --auto-servernum npm run test-ci
+          # LD_DEBUG=libs xvfb-run --auto-servernum npm run test-ci
+          xvfb-run --auto-servernum npm run test-ci
 
       # - name: Run Unit Tests - MacOS
       #   if: matrix.os == 'macos-14'

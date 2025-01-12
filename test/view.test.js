@@ -19,8 +19,15 @@ const methods = [
 const staticMethods = ['init', 'libs', 'plugins', 'style', 'update'];
 
 const view = new View({ file: 'test.qml' });
-const loadPromise = new Promise((res) => view.on('load', () => res(true)));
-const texturePromise = new Promise((res) => view.on('reset', (id) => res(id)));
+const loadPromise = Promise.race([
+	new Promise((res) => { setTimeout(() => res(false), 5000); }),
+	new Promise((res) => view.on('load', () => res(true))),
+]);
+const texturePromise = Promise.race([
+	new Promise((res) => { setTimeout(() => res(null), 5000); }),
+	new Promise((res) => view.on('reset', (id) => res(id))),
+]);
+
 
 const tested = describe('Qml View', () => {
 	it('has all static methods', () => {

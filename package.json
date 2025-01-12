@@ -5,6 +5,7 @@
 	"description": "QML interoperation for Node.js",
 	"license": "MIT",
 	"main": "index.js",
+	"type": "commonjs",
 	"keywords": [
 		"addon",
 		"qml",

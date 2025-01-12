@@ -8,6 +8,10 @@ const { View, Method } = require('./init');
 
 
 const view = new View({ file: 'test.qml', silent: true });
+const loadPromise = Promise.race([
+	new Promise((res) => { setTimeout(() => res(false), 5000); }),
+	new Promise((res) => view.on('load', () => res(true))),
+]);
 view.on('error', () => {});
 
 const opts = { view, name: 'obj1', key: 'method1' };
@@ -26,6 +30,9 @@ const tested = describe('Method', () => {
 	});
 	
 	it('calls QML method1', async () => {
+		const loaded = await loadPromise;
+		assert.strictEqual(loaded, true);
+		
 		const method1 = new Method(opts);
 		const called = await new Promise((res) => {
 			view.on('m1c', () => res(true));
@@ -35,6 +42,9 @@ const tested = describe('Method', () => {
 	});
 	
 	it('calls QML method2', async () => {
+		const loaded = await loadPromise;
+		assert.strictEqual(loaded, true);
+		
 		const method2 = new Method({ ...opts, key: 'method2' });
 		const called = await new Promise((res) => {
 			view.on('m2c', () => res(true));
@@ -43,12 +53,18 @@ const tested = describe('Method', () => {
 		assert.strictEqual(called, true);
 	});
 	
-	it('calls non-existent object\'s method, and gets null', () => {
+	it('calls non-existent object\'s method, and gets null', async () => {
+		const loaded = await loadPromise;
+		assert.strictEqual(loaded, true);
+		
 		const method = new Method({ ...opts, name: 'awdaldaklwd23' });
 		assert.strictEqual(method(), null);
 	});
 	
-	it('calls non-existent method, and gets null', () => {
+	it('calls non-existent method, and gets null', async () => {
+		const loaded = await loadPromise;
+		assert.strictEqual(loaded, true);
+		
 		const method = new Method({ ...opts, key: 'awdaldaklwd23' });
 		assert.strictEqual(method(), null);
 	});
