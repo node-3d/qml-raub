@@ -50,7 +50,7 @@ jobs:
           # xvfb-run --auto-servernum glxinfo -B
           # LD_DEBUG=libs xvfb-run --auto-servernum npm run test-ci
           # QT_DEBUG_PLUGINS=1 xvfb-run --auto-servernum npm run test-ci
-          cd test && xvfb-run --auto-servernum node debug.js
+          cd test && QT_DEBUG_PLUGINS=1 xvfb-run --auto-servernum node debug.js
 
       # - name: Run Unit Tests - MacOS
       #   if: matrix.os == 'macos-14'
