@@ -1,21 +1,19 @@
-'use strict';
+import { strict as assert } from 'node:assert';
+import { describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
+import { Method, View } from './index.ts';
 
-
-const assert = require('node:assert').strict;
-const { describe, it } = require('node:test');
-
-const { View, Method } = require('./init');
-
+const fixtureDir = fileURLToPath(new URL('../examples/assets/', import.meta.url));
+View.init(fixtureDir, 0, 0);
 
 const view = new View({ file: 'test.qml', silent: true });
 const loadPromise = Promise.race([
-	new Promise((res) => { setTimeout(() => res(false), 5000); }),
-	new Promise((res) => view.on('load', () => res(true))),
+	new Promise<boolean>((res) => { setTimeout(() => res(false), 5000); }),
+	new Promise<boolean>((res) => { view.on('load', () => res(true)); }),
 ]);
-view.on('error', () => {});
+view.on('error', () => { /* nop */ });
 
 const opts = { view, name: 'obj1', key: 'method1' };
-
 
 const tested = describe('Method', () => {
 	it('can be created', () => {
@@ -24,9 +22,9 @@ const tested = describe('Method', () => {
 	
 	it('has all properties', () => {
 		const method = new Method(opts);
-		['opts'].forEach(
-			(name) => assert.ok(method[name])
-		);
+		for (const name of ['opts'] as const) {
+			assert.ok(method[name]);
+		}
 	});
 	
 	it('calls QML method1', async () => {
@@ -34,7 +32,7 @@ const tested = describe('Method', () => {
 		assert.strictEqual(loaded, true);
 		
 		const method1 = new Method(opts);
-		const called = await new Promise((res) => {
+		const called = await new Promise<boolean>((res) => {
 			view.on('m1c', () => res(true));
 			method1();
 		});
@@ -46,14 +44,14 @@ const tested = describe('Method', () => {
 		assert.strictEqual(loaded, true);
 		
 		const method2 = new Method({ ...opts, key: 'method2' });
-		const called = await new Promise((res) => {
+		const called = await new Promise<boolean>((res) => {
 			view.on('m2c', () => res(true));
 			method2(10);
 		});
 		assert.strictEqual(called, true);
 	});
 	
-	it('calls non-existent object\'s method, and gets null', async () => {
+	it('calls non-existent object method, and gets null', async () => {
 		const loaded = await loadPromise;
 		assert.strictEqual(loaded, true);
 		
@@ -70,8 +68,6 @@ const tested = describe('Method', () => {
 	});
 });
 
-(async () => {
-	const interv = setInterval(View.update, 15);
-	await tested;
-	clearInterval(interv);
-})();
+const interval = setInterval(View.update, 15);
+await tested;
+clearInterval(interval);

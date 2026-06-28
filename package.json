@@ -1,11 +1,18 @@
 {
 	"author": "Luis Blanco <luisblanco1337@gmail.com>",
-	"name": "qml-raub",
-	"version": "4.0.0",
+	"name": "@node-3d/qml",
+	"version": "5.0.0",
 	"description": "QML interoperation for Node.js",
 	"license": "MIT",
-	"main": "index.js",
-	"type": "commonjs",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"type": "module",
 	"keywords": [
 		"addon",
 		"qml",
@@ -23,40 +30,52 @@
 		"c++"
 	],
 	"files": [
-		"js",
-		"core.js",
-		"index.js",
-		"index.d.ts",
+		"dist",
 		"install.js",
 		"LICENSE",
-		"package.json"
+		"package.json",
+		"tsconfig.json"
 	],
 	"engines": {
-		"node": ">=22.9.0",
-		"npm": ">=10.8.3"
+		"node": ">=24.13.0",
+		"npm": ">=11.6.2"
 	},
 	"scripts": {
-		"postinstall": "node install",
-		"eslint": "eslint .",
-		"build": "cd src && node-gyp rebuild -j max --silent && node -e \"require('addon-tools-raub').cpbin('qml')\" && cd ..",
-		"build-only": "cd src && node-gyp build -j max --silent && node -e \"require('addon-tools-raub').cpbin('qml')\" && cd ..",
-		"test": "node --test --watch",
-		"test-ci": "node --test"
+		"postinstall": "node install.js",
+		"build:rebuild": "cd src && node-gyp rebuild -j max --silent && node -e \"import('@node-3d/addon-tools').then((m) => m.cpbin('qml'))\"",
+		"build:compile": "cd src && node-gyp build -j max --silent && node -e \"import('@node-3d/addon-tools').then((m) => m.cpbin('qml'))\"",
+		"test:watch": "node --test --watch \"ts/**/*.test.ts\"",
+		"test:ci": "node --test \"ts/**/*.test.ts\"",
+		"lint:all": "npm run lint:gypi && npm run lint:ts && npm run lint:oxlint",
+		"lint:gypi": "node -e \"import('@node-3d/addon-tools').then((m) => m.checkGypi())\"",
+		"lint:oxlint": "oxlint .",
+		"build:ci": "rslib build",
+		"build:watch": "rslib build --watch",
+		"lint:ts": "tsgo -p tsconfig.json --noEmit",
+		"prepare": "npm run build:ci"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/node-3d/qml-raub.git"
+		"url": "https://github.com/node-3d/qml.git"
 	},
 	"dependencies": {
-		"addon-tools-raub": "^9.2.0",
-		"deps-qmlui-raub": "^4.0.0",
-		"segfault-raub": "^3.1.0"
+		"@node-3d/addon-tools": "^11.0.0",
+		"@node-3d/deps-qmlui": "^5.0.0",
+		"@node-3d/segfault": "^4.0.0"
 	},
 	"devDependencies": {
-		"@types/node": "^22.10.5",
-		"@eslint/js": "^9.17.0",
-		"eslint": "^9.17.0",
+		"@types/node": "^24.1.0",
 		"node-addon-api": "^8.3.0",
-		"typescript": "^5.7.2"
+		"typescript": "^6.0.3",
+		"oxlint": "^1.65.0",
+		"@rslib/core": "^0.21.3",
+		"@typescript/native-preview": "^7.0.0-dev.20260503.1"
+	},
+	"bugs": {
+		"url": "https://github.com/node-3d/node-3d/issues"
+	},
+	"homepage": "https://github.com/node-3d/node-3d#readme",
+	"publishConfig": {
+		"access": "public"
 	}
 }

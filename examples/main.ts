@@ -1,10 +1,10 @@
-'use strict';
-
-import Img from 'image-raub';
-import gl from 'webgl-raub';
-import glfw, { Document, TEvent } from 'glfw-raub';
-import { View } from 'qml-raub';
-
+import { Image } from '@node-3d/image';
+import {
+	webgl as gl,
+} from '@node-3d/webgl';
+import { glfw, Document } from '@node-3d/glfw';
+import type { TEvent } from '@node-3d/glfw';
+import { View } from '@node-3d/qml';
 
 Document.setWebgl(gl);
 
@@ -15,7 +15,7 @@ const doc = new Document({
 	title: 'QML',
 });
 
-const icon = new Img(__dirname + '/qml.png');
+const icon = new Image(`${import.meta.dirname}/qml.png`);
 icon.on('load', () => { doc.icon = (icon as unknown as typeof doc.icon); });
 
 View.init(process.cwd(), doc.platformWindow, doc.platformContext, doc.platformDevice);
@@ -49,8 +49,8 @@ ui.on('press-button1', data => {
 });
 
 ui.on('press-button2', data => {
-	console.log('press-button2:', data);
 	const ret = ui.invoke('myButton2', 'func', []);
+	console.log('press-button2:', data, '->', ret);
 });
 
 let texture = ui.textureId === null ? gl.createTexture() : new gl.WebGLTexture(ui.textureId);
@@ -61,8 +61,8 @@ ui.on('reset', (texId: number) => {
 
 type TProgramInfo = {
 	vertexPositionAttribute: number,
-	texUniform: gl.WebGLUniformLocation,
-	sizeUniform: gl.WebGLUniformLocation,
+	texUniform: WebGLUniformLocation,
+	sizeUniform: WebGLUniformLocation,
 };
 
 const programInfo: TProgramInfo = {
@@ -93,17 +93,17 @@ const shaders = {
 } as const;
 
 
-const getShader = (id: keyof typeof shaders): gl.WebGLShader | null => {
-	let shader;
+const getShader = (id: keyof typeof shaders): WebGLShader | null => {
+	let shader = null;
 	
 	if (!shaders[id]) {
 		return null;
 	}
-	let str = shaders[id];
+	const str = shaders[id];
 	
-	if (id.match(/-fs/)) {
+	if (id.includes('-fs')) {
 		shader = gl.createShader(gl.FRAGMENT_SHADER);
-	} else if (id.match(/-vs/)) {
+	} else if (id.includes('-vs')) {
 		shader = gl.createShader(gl.VERTEX_SHADER);
 	} else {
 		return null;
@@ -162,7 +162,7 @@ const getShader = (id: keyof typeof shaders): gl.WebGLShader | null => {
 	(cubeVertexPositionBuffer as unknown as { numItems: number }).numItems = 4;
 	
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
-	let cubeVertexIndices = [
+	const cubeVertexIndices = [
 		0, 1, 2, 0, 2, 3, // Front face
 	];
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
@@ -175,7 +175,7 @@ const drawScene = () => {
 	gl.viewport(0, 0, doc.width, doc.height);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
-	gl.useProgram({ _: 0 });
+	gl.useProgram();
 	(glfw.testScene as (w: number, h: number) => void)(doc.width, doc.height);
 	
 	gl.useProgram(shaderProgram);

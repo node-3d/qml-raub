@@ -38,7 +38,9 @@ void View::initClass(Napi::Env env, Napi::Object exports) {
 
 
 View::View(const Napi::CallbackInfo &info):
-_asyncCtx(info.Env(), "View::commonCb()") { NAPI_ENV;
+_asyncCtx(info.Env(), "View::commonCb()"),
+_isDestroyed(false),
+_qmlui(nullptr) { NAPI_ENV;
 	_that.Reset(info.This().As<Napi::Object>());
 	
 	super(info);
@@ -53,7 +55,6 @@ _asyncCtx(info.Env(), "View::commonCb()") { NAPI_ENV;
 	
 	_uis[_qmlui] = this;
 	
-	_isDestroyed = false;
 }
 
 
@@ -63,18 +64,25 @@ View::~View() {
 
 
 void View::_destroyImpl() { DES_CHECK;
+	QmlUi *qmlui = _qmlui;
+	
 	delete _qmlui;
-	_qmlui = NULL;
+	_qmlui = nullptr;
 	
 	_isDestroyed = true;
 	
-	_uis.erase(_qmlui);
+	_uis.erase(qmlui);
 }
 
 
 
 void View::commonCb(QmlUi *ui, const char *name, const char *json) {
-	View *view = _uis[ui];
+	auto found = _uis.find(ui);
+	if (found == _uis.end() || found->second == nullptr || found->second->_isDestroyed) {
+		return;
+	}
+	
+	View *view = found->second;
 	Napi::Env env = view->_that.Env();
 	NAPI_HS;
 	

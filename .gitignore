@@ -4,8 +4,8 @@
 .DS_Store
 .project
 .vscode
-.eslintrc
 node_modules/
+dist/
 src/build/
 src/node_modules/
 bin-*/

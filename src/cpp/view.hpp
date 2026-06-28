@@ -1,5 +1,4 @@
-#ifndef VIEW_HPP
-#define VIEW_HPP
+#pragma once
 
 #include <addon-tools.hpp>
 
@@ -42,6 +41,3 @@ private:
 	JS_DECLARE_METHOD(View, _invoke);
 	JS_DECLARE_METHOD(View, _libs);
 };
-
-
-#endif // VIEW_HPP

@@ -2,16 +2,18 @@
 	"name": "example",
 	"version": "0.0.0",
 	"private": true,
-	"type": "commonjs",
+	"type": "module",
 	"scripts": {
-		"start": "tsx main.ts"
+		"start": "node main.ts"
 	},
 	"dependencies": {
-		"qml-raub": "file:..",
-		"glfw-raub": "^6.3.0",
-		"image-raub": "^5.1.0",
-		"tsconfig-paths": "^4.2.0",
-		"tsx": "^4.19.2",
-		"webgl-raub": "^5.1.0"
+		"@node-3d/qml": "file:..",
+		"@node-3d/glfw": "^6.3.0",
+		"@node-3d/image": "^5.1.0",
+		"@node-3d/webgl": "^5.1.0"
+	},
+	"engines": {
+		"node": ">=24.13.0",
+		"npm": ">=11.6.2"
 	}
 }
