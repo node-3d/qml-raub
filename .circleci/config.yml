@@ -24,7 +24,7 @@ jobs:
           node -p "require('./package').version" > ~/artifacts/pkg-version
           
       - run: npm ci
-      - run: npm run build
+      - run: npm run build:rebuild
 
       - run: |
           cd bin-aarch64 && tar -czf ../aarch64.gz *
